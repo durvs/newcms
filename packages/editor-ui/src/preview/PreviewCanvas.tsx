@@ -233,10 +233,28 @@ function ElementBlock({ node }: { node: ElementNode }) {
 
 	// Container
 	if (node.elType === 'container') {
+		const displayMode = String(node.settings.display ?? 'flex');
 		const dir = String(node.settings.direction ?? 'column');
 		const justify = String(node.settings.justifyContent ?? 'flex-start');
 		const align = String(node.settings.alignItems ?? 'stretch');
+		const flexWrap = String(node.settings.flexWrap ?? 'nowrap');
+		const gridCols = Number(node.settings.gridColumns ?? 2);
+		const gridRows = Number(node.settings.gridRows ?? 0);
 		const userStyles = extractStyles(node.settings);
+
+		const layoutStyle: CSSProperties = displayMode === 'grid'
+			? {
+				display: 'grid',
+				gridTemplateColumns: `repeat(${gridCols}, 1fr)`,
+				...(gridRows > 0 ? { gridTemplateRows: `repeat(${gridRows}, auto)` } : {}),
+			}
+			: {
+				display: 'flex',
+				flexDirection: dir as CSSProperties['flexDirection'],
+				flexWrap: flexWrap as CSSProperties['flexWrap'],
+				justifyContent: justify,
+				alignItems: align,
+			};
 
 		return (
 			<div
@@ -245,10 +263,7 @@ function ElementBlock({ node }: { node: ElementNode }) {
 				onMouseLeave={(e) => { e.stopPropagation(); hoverElement(null); }}
 				style={{
 					position: 'relative',
-					display: 'flex',
-					flexDirection: dir as CSSProperties['flexDirection'],
-					justifyContent: justify,
-					alignItems: align,
+					...layoutStyle,
 					padding: '16px',
 					minHeight: 48,
 					outline: `2px solid ${outlineColor}`,
@@ -417,8 +432,81 @@ function WidgetPreview({ node }: { node: ElementNode }) {
 		case 'list':
 			return <ul style={{ margin: 0, paddingLeft: 20 }}>{(Array.isArray(s.items) ? s.items : ['Item 1', 'Item 2', 'Item 3']).map((item: unknown, i: number) => <li key={i} style={{ marginBottom: 4 }}>{String(item)}</li>)}</ul>;
 		case 'html':
-			return <div style={{ padding: 12, background: '#f8f9fa', borderRadius: 4, fontFamily: 'monospace', fontSize: 12, color: '#6c757d' }}>{String(s.content || '<div>Custom HTML</div>')}</div>;
+		case 'shortcode':
+			return <div style={{ padding: 12, background: '#f8f9fa', borderRadius: 4, fontFamily: 'monospace', fontSize: 12, color: '#6c757d' }}>{String(s.content || node.widgetType === 'shortcode' ? '[shortcode]' : '<div>Custom HTML</div>')}</div>;
+		case 'video':
+			return <div style={{ background: '#000', borderRadius: 8, padding: '40px 20px', textAlign: 'center', color: '#fff', fontSize: 13 }}><div style={{ fontSize: 32, marginBottom: 8 }}>▶</div>Video{s.url ? `: ${String(s.url).slice(0, 40)}...` : ' Player'}</div>;
+		case 'gallery':
+			return <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4, borderRadius: 4, overflow: 'hidden' }}>{[1,2,3,4,5,6].map((i) => <div key={i} style={{ background: '#e9ecef', aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#adb5bd', fontSize: 11 }}>📷</div>)}</div>;
+		case 'carousel':
+		case 'testimonial':
+		case 'slides':
+			return <div style={{ background: '#f8f9fa', borderRadius: 8, padding: 24, textAlign: 'center', border: '1px dashed #dee2e6' }}><div style={{ fontSize: 24, marginBottom: 8 }}>⟵ ⟶</div><span style={{ color: '#868e96', fontSize: 13 }}>{node.widgetType === 'testimonial' ? 'Testimonial Carousel' : node.widgetType === 'slides' ? 'Custom Slides' : 'Media Carousel'}</span></div>;
+		case 'tabs':
+			return <div><div style={{ display: 'flex', borderBottom: '2px solid #e9ecef', gap: 0 }}>{['Tab 1', 'Tab 2', 'Tab 3'].map((t, i) => <div key={t} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, color: i === 0 ? 'var(--color-accent)' : '#868e96', borderBottom: i === 0 ? '2px solid var(--color-accent)' : 'none', marginBottom: -2, cursor: 'pointer' }}>{t}</div>)}</div><div style={{ padding: 16, color: '#495057', fontSize: 13 }}>Tab content goes here.</div></div>;
+		case 'accordion':
+		case 'toggle':
+			return <div>{['Accordion Item 1', 'Accordion Item 2', 'Accordion Item 3'].map((t, i) => <div key={t} style={{ borderBottom: '1px solid #e9ecef' }}><div style={{ padding: '10px 0', display: 'flex', justifyContent: 'space-between', fontSize: 14, fontWeight: 500, color: '#212529', cursor: 'pointer' }}>{t}<span>{i === 0 ? '−' : '+'}</span></div>{i === 0 && <div style={{ padding: '0 0 10px', fontSize: 13, color: '#6c757d' }}>Content for this item.</div>}</div>)}</div>;
+		case 'icon':
+			return <div style={{ textAlign: 'center', fontSize: 40 }}>⭐</div>;
+		case 'icon-box':
+			return <div style={{ textAlign: 'center', padding: 16 }}><div style={{ fontSize: 32, marginBottom: 8 }}>💡</div><div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>Icon Box Title</div><div style={{ fontSize: 13, color: '#6c757d' }}>Description text goes here.</div></div>;
+		case 'counter':
+			return <div style={{ textAlign: 'center', padding: 16 }}><div style={{ fontSize: 48, fontWeight: 700, color: 'var(--color-accent)' }}>{String(s.endValue ?? '100')}</div><div style={{ fontSize: 13, color: '#6c757d', marginTop: 4 }}>{String(s.title ?? 'Counter')}</div></div>;
+		case 'progress-bar':
+			return <div><div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4, fontSize: 13 }}><span>{String(s.title ?? 'Progress')}</span><span>{String(s.percent ?? '70')}%</span></div><div style={{ height: 8, background: '#e9ecef', borderRadius: 4, overflow: 'hidden' }}><div style={{ width: `${Number(s.percent ?? 70)}%`, height: '100%', background: 'var(--color-accent)', borderRadius: 4, transition: 'width .3s' }} /></div></div>;
+		case 'alert':
+			return <div style={{ padding: '12px 16px', borderRadius: 6, background: '#fff3cd', color: '#856404', fontSize: 13, border: '1px solid #ffc107', display: 'flex', justifyContent: 'space-between' }}><span>{String(s.content ?? 'This is an alert message.')}</span><span style={{ cursor: 'pointer' }}>×</span></div>;
+		case 'pricing-table':
+			return <div style={{ border: '1px solid #e9ecef', borderRadius: 8, textAlign: 'center', overflow: 'hidden' }}><div style={{ padding: 16, background: '#f8f9fa' }}><div style={{ fontSize: 18, fontWeight: 700 }}>Pro Plan</div></div><div style={{ padding: '16px', fontSize: 32, fontWeight: 700 }}>$29<span style={{ fontSize: 14, fontWeight: 400, color: '#868e96' }}>/mo</span></div><div style={{ padding: '0 16px 16px', fontSize: 13, color: '#6c757d' }}>• Feature 1<br/>• Feature 2<br/>• Feature 3</div><div style={{ padding: 16 }}><span style={{ display: 'inline-block', padding: '10px 24px', background: 'var(--color-accent)', color: '#fff', borderRadius: 6, fontSize: 14, fontWeight: 600 }}>Get Started</span></div></div>;
+		case 'cta':
+			return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 24, background: '#f8f9fa', borderRadius: 8, border: '1px solid #e9ecef' }}><div><div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Call to Action</div><div style={{ fontSize: 13, color: '#6c757d' }}>Click the button to take action.</div></div><span style={{ padding: '10px 24px', background: 'var(--color-accent)', color: '#fff', borderRadius: 6, fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap' }}>Click Here</span></div>;
+		case 'countdown':
+			return <div style={{ display: 'flex', gap: 12, justifyContent: 'center', padding: 16 }}>{['Days', 'Hours', 'Min', 'Sec'].map((u, i) => <div key={u} style={{ textAlign: 'center' }}><div style={{ fontSize: 32, fontWeight: 700 }}>{[12, 8, 45, 30][i]}</div><div style={{ fontSize: 11, color: '#868e96', marginTop: 2 }}>{u}</div></div>)}</div>;
+		case 'flip-box':
+			return <div style={{ padding: 24, textAlign: 'center', background: '#f8f9fa', borderRadius: 8, border: '1px solid #e9ecef' }}><div style={{ fontSize: 24, marginBottom: 8 }}>🔄</div><div style={{ fontSize: 16, fontWeight: 600 }}>Flip Box</div><div style={{ fontSize: 12, color: '#868e96', marginTop: 4 }}>Hover to see the back</div></div>;
+		case 'nav-menu':
+		case 'mega-menu':
+			return <div style={{ display: 'flex', gap: 20, padding: '10px 0', borderBottom: '1px solid #e9ecef' }}>{['Home', 'About', 'Services', 'Contact'].map((t) => <span key={t} style={{ fontSize: 14, color: '#495057', cursor: 'pointer' }}>{t}</span>)}</div>;
+		case 'breadcrumb':
+			return <div style={{ fontSize: 13, color: '#868e96' }}>Home &rsaquo; Category &rsaquo; <span style={{ color: '#212529' }}>Current Page</span></div>;
+		case 'search':
+			return <div style={{ display: 'flex', gap: 8 }}><input type="text" placeholder="Search..." readOnly style={{ flex: 1, height: 36, borderRadius: 6, border: '1px solid #dee2e6', padding: '0 10px', fontSize: 13 }} /><span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, background: 'var(--color-accent)', color: '#fff', borderRadius: 6 }}>🔍</span></div>;
+		case 'form':
+		case 'login-form':
+			return <div style={{ padding: 16, border: '1px solid #e9ecef', borderRadius: 8 }}><div style={{ marginBottom: 8 }}><div style={{ fontSize: 11, fontWeight: 500, color: '#6c757d', marginBottom: 4 }}>Name</div><div style={{ height: 32, borderRadius: 6, border: '1px solid #dee2e6', background: '#fff' }} /></div><div style={{ marginBottom: 8 }}><div style={{ fontSize: 11, fontWeight: 500, color: '#6c757d', marginBottom: 4 }}>Email</div><div style={{ height: 32, borderRadius: 6, border: '1px solid #dee2e6', background: '#fff' }} /></div><div style={{ height: 36, borderRadius: 6, background: 'var(--color-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 14, fontWeight: 600 }}>Submit</div></div>;
+		case 'share-buttons':
+		case 'social-icons':
+			return <div style={{ display: 'flex', gap: 8 }}>{['📘', '🐦', '📸', '💼', '📌'].map((e, i) => <div key={i} style={{ width: 36, height: 36, borderRadius: '50%', background: '#e9ecef', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>{e}</div>)}</div>;
+		case 'toc':
+			return <div style={{ padding: 16, border: '1px solid #e9ecef', borderRadius: 8 }}><div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>Table of Contents</div>{['Section 1', '  Subsection 1.1', 'Section 2', 'Section 3'].map((t, i) => <div key={i} style={{ fontSize: 13, padding: '4px 0', paddingLeft: t.startsWith('  ') ? 16 : 0, color: '#4263eb' }}>{t.trim()}</div>)}</div>;
+		case 'lottie':
+			return <div style={{ padding: 24, textAlign: 'center', background: '#f8f9fa', borderRadius: 8, border: '1px dashed #dee2e6' }}><div style={{ fontSize: 40, marginBottom: 8 }}>🎬</div><span style={{ color: '#868e96', fontSize: 13 }}>Lottie Animation</span></div>;
+		case 'hotspot':
+			return <div style={{ padding: 24, textAlign: 'center', background: '#f8f9fa', borderRadius: 8, border: '1px dashed #dee2e6', position: 'relative' }}><div style={{ fontSize: 13, color: '#868e96' }}>Image with Hotspots</div><div style={{ position: 'absolute', top: 16, right: 24, width: 16, height: 16, borderRadius: '50%', background: 'var(--color-accent)', animation: 'pulse 1.5s infinite' }} /></div>;
+		case 'map':
+			return <div style={{ height: 200, background: '#e9ecef', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#adb5bd', fontSize: 13 }}>📍 Map</div>;
+		case 'audio':
+			return <div style={{ padding: 12, background: '#f8f9fa', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8 }}><span style={{ fontSize: 20 }}>🔊</span><div style={{ flex: 1, height: 4, background: '#dee2e6', borderRadius: 2 }}><div style={{ width: '35%', height: '100%', background: 'var(--color-accent)', borderRadius: 2 }} /></div><span style={{ fontSize: 11, color: '#868e96' }}>1:23</span></div>;
+		case 'anchor':
+			return <div style={{ padding: 8, textAlign: 'center', fontSize: 11, color: '#adb5bd', borderTop: '1px dashed #dee2e6', borderBottom: '1px dashed #dee2e6' }}>⚓ Anchor: #{String(s.anchorId ?? 'section')}</div>;
+		case 'product-grid':
+		case 'cart':
+		case 'checkout':
+			return <div style={{ padding: 24, textAlign: 'center', background: '#f8f9fa', borderRadius: 8, border: '1px dashed #dee2e6' }}><div style={{ fontSize: 24, marginBottom: 8 }}>🛒</div><span style={{ color: '#868e96', fontSize: 13 }}>{node.widgetType === 'cart' ? 'Shopping Cart' : node.widgetType === 'checkout' ? 'Checkout Form' : 'Product Grid'}</span></div>;
+		case 'rating':
+			return <div style={{ fontSize: 24, letterSpacing: 4 }}>★★★★☆</div>;
+		case 'heading-animated':
+			return <div style={{ fontSize: '1.5em', fontWeight: 700 }}>{String(s.beforeText ?? 'This is ')} <span style={{ color: 'var(--color-accent)', borderBottom: '2px solid var(--color-accent)' }}>{String(s.animatedText ?? 'Amazing')}</span> {String(s.afterText ?? '')}</div>;
+		case 'icon-list':
+			return <div>{['Feature one included', 'Feature two included', 'Feature three included'].map((t, i) => <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', fontSize: 13 }}><span style={{ color: 'var(--color-accent)' }}>✓</span>{t}</div>)}</div>;
+		case 'price-list':
+			return <div>{[['Coffee', '$4'], ['Sandwich', '$8'], ['Dessert', '$6']].map(([n, p], i) => <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px dotted #dee2e6', fontSize: 13 }}><span>{n}</span><span style={{ fontWeight: 600 }}>{p}</span></div>)}</div>;
+		case 'progress-tracker':
+			return <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>{['Step 1', 'Step 2', 'Step 3'].map((t, i) => <div key={i} style={{ flex: 1, textAlign: 'center' }}><div style={{ width: 28, height: 28, borderRadius: '50%', background: i === 0 ? 'var(--color-accent)' : '#e9ecef', color: i === 0 ? '#fff' : '#868e96', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto', fontSize: 12, fontWeight: 600 }}>{i + 1}</div><div style={{ fontSize: 11, marginTop: 4, color: i === 0 ? '#212529' : '#868e96' }}>{t}</div></div>)}</div>;
+		case 'link-in-bio':
+			return <div style={{ maxWidth: 280, margin: '0 auto', textAlign: 'center' }}><div style={{ fontSize: 24, marginBottom: 8 }}>👤</div>{['My Website', 'Latest Post', 'Shop'].map((t, i) => <div key={i} style={{ padding: '10px', marginBottom: 6, borderRadius: 8, border: '1px solid #dee2e6', fontSize: 13, cursor: 'pointer' }}>{t}</div>)}</div>;
 		default:
-			return <div style={{ padding: 16, background: '#f8f9fa', borderRadius: 4, color: '#888', fontSize: 13 }}>Widget: {node.widgetType}</div>;
+			return <div style={{ padding: 16, background: '#f8f9fa', borderRadius: 4, color: '#888', fontSize: 13, textAlign: 'center' }}>{node.widgetType ?? 'Unknown'}</div>;
 	}
 }

@@ -205,17 +205,71 @@ export function ControlPanel() {
 					{selected.elType === 'container' && (
 						<ControlSection title="Layout">
 							<SelectControl
-								label="Direction"
-								value={String(s.direction ?? 'column')}
+								label="Display"
+								value={String(s.display ?? 'flex')}
 								options={[
-									{ value: 'column', label: 'Column', icon: 'arrow-down' },
-									{ value: 'row', label: 'Row', icon: 'arrow-right' },
-									{ value: 'column-reverse', label: 'Col Rev', icon: 'arrow-up' },
-									{ value: 'row-reverse', label: 'Row Rev', icon: 'arrow-left' },
+									{ value: 'flex', label: 'Flex' },
+									{ value: 'grid', label: 'Grid' },
+									{ value: 'block', label: 'Block' },
 								]}
-								onChange={(v) => update(id, 'direction', v)}
+								onChange={(v) => update(id, 'display', v)}
 								mode="icons"
 							/>
+
+							{/* Flex controls */}
+							{String(s.display ?? 'flex') === 'flex' && (
+								<>
+									<SelectControl
+										label="Direction"
+										value={String(s.direction ?? 'column')}
+										options={[
+											{ value: 'column', label: 'Column', icon: 'arrow-down' },
+											{ value: 'row', label: 'Row', icon: 'arrow-right' },
+											{ value: 'column-reverse', label: 'Col Rev', icon: 'arrow-up' },
+											{ value: 'row-reverse', label: 'Row Rev', icon: 'arrow-left' },
+										]}
+										onChange={(v) => update(id, 'direction', v)}
+										mode="icons"
+									/>
+									<SelectControl
+										label="Flex Wrap"
+										value={String(s.flexWrap ?? 'nowrap')}
+										options={[
+											{ value: 'nowrap', label: 'No Wrap' },
+											{ value: 'wrap', label: 'Wrap' },
+											{ value: 'wrap-reverse', label: 'Wrap Rev' },
+										]}
+										onChange={(v) => update(id, 'flexWrap', v)}
+										mode="icons"
+									/>
+								</>
+							)}
+
+							{/* Grid controls */}
+							{String(s.display ?? 'flex') === 'grid' && (
+								<>
+									<SliderControl
+										label="Columns"
+										value={Number(s.gridColumns ?? 2)}
+										unit=""
+										units={['']}
+										min={1}
+										max={12}
+										step={1}
+										onChange={(v) => update(id, 'gridColumns', v)}
+									/>
+									<SliderControl
+										label="Rows"
+										value={Number(s.gridRows ?? 0)}
+										unit=""
+										units={['']}
+										min={0}
+										max={12}
+										step={1}
+										onChange={(v) => update(id, 'gridRows', v)}
+									/>
+								</>
+							)}
 							<SelectControl
 								label="Justify Content"
 								value={String(s.justifyContent ?? 'flex-start')}
