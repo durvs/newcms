@@ -63,6 +63,7 @@ export default function VisualEditorPage() {
 			}
 		},
 		enabled: id > 0,
+		staleTime: 0, // Always fetch fresh — builder data must be current
 	});
 
 	const { data: designKit } = useQuery({
@@ -80,6 +81,7 @@ export default function VisualEditorPage() {
 			await api.put(`/posts/${id}`, { content: html });
 
 			qc.invalidateQueries({ queryKey: ['post', id] });
+			qc.invalidateQueries({ queryKey: ['builder-data', id] });
 			toast.success('Saved');
 		} catch (err) {
 			toast.error(err instanceof Error ? err.message : 'Failed to save');

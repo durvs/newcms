@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { Toolbar } from './Toolbar';
 import { Panel } from '../panel/Panel';
 import { PreviewCanvas } from '../preview/PreviewCanvas';
@@ -39,11 +39,18 @@ export function EditorShell({
 	const selectedId = useEditorStore((s) => s.selectedId);
 	const setDesignKit = useEditorStore((s) => s.setDesignKit);
 
-	// Initialize document
+	// Initialize document — only on first load or when documentId changes.
+	// Do NOT re-run when initialElements changes (query refetch after save
+	// would reset the store and lose the current editing state).
+	const initialized = useRef(false);
 	useEffect(() => {
-		setDocument(documentId, documentType, initialElements ?? []);
+		if (!initialized.current || useEditorStore.getState().documentId !== documentId) {
+			setDocument(documentId, documentType, initialElements ?? []);
+			initialized.current = true;
+		}
 		if (designKitProp) setDesignKit(designKitProp);
-	}, [documentId, documentType, initialElements, setDocument]);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [documentId]);
 
 	// Keyboard shortcuts
 	const handleKeyDown = useCallback(
