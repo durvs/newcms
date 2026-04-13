@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { Upload, FileArchive, Check, AlertTriangle, ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { getToken } from '@/lib/api';
@@ -16,6 +17,7 @@ interface ImportResult {
 
 export default function ImportTemplatePage() {
 	const router = useRouter();
+	const qc = useQueryClient();
 	const fileRef = useRef<HTMLInputElement>(null);
 	const [file, setFile] = useState<File | null>(null);
 	const [importing, setImporting] = useState(false);
@@ -56,6 +58,7 @@ export default function ImportTemplatePage() {
 
 			const data: ImportResult = await res.json();
 			setResult(data);
+			qc.invalidateQueries({ queryKey: ['templates'] });
 			toast.success(`Kit "${data.kit.name}" imported successfully`);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : 'Import failed');
