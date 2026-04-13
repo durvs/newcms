@@ -8,6 +8,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { TaxonomyModule } from './modules/taxonomy/taxonomy.module';
 import { OptionsModule } from './modules/options/options.module';
+import { CommentsModule } from './modules/comments/comments.module';
 
 @Module({
 	imports: [
@@ -19,6 +20,7 @@ import { OptionsModule } from './modules/options/options.module';
 		AuthModule,
 		TaxonomyModule,
 		OptionsModule,
+		CommentsModule,
 	],
 })
 export class AppModule implements OnModuleInit {

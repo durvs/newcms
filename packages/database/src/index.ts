@@ -11,3 +11,5 @@ export type { MetaTableColumns, MetaColumnNames, MetaEntry } from './repositorie
 export { TaxonomyRepository } from './repositories/taxonomy-repository';
 export type { CreateTermInput, TermRow } from './repositories/taxonomy-repository';
 export { RevisionRepository } from './repositories/revision-repository';
+export { CommentRepository } from './repositories/comment-repository';
+export type { CreateCommentInput, CommentRow, CommentModerationRules } from './repositories/comment-repository';

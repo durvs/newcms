@@ -6,6 +6,7 @@ import {
 	PostRepository,
 	TaxonomyRepository,
 	RevisionRepository,
+	CommentRepository,
 	type Database,
 } from '@newcms/database';
 
@@ -17,6 +18,7 @@ export class DatabaseProvider implements OnModuleDestroy {
 	readonly posts: PostRepository;
 	readonly taxonomy: TaxonomyRepository;
 	readonly revisions: RevisionRepository;
+	readonly comments: CommentRepository;
 
 	private client: ReturnType<typeof createConnection>['client'];
 
@@ -40,6 +42,7 @@ export class DatabaseProvider implements OnModuleDestroy {
 		this.posts = new PostRepository(this.db);
 		this.taxonomy = new TaxonomyRepository(this.db);
 		this.revisions = new RevisionRepository(this.db);
+		this.comments = new CommentRepository(this.db);
 	}
 
 	async onModuleDestroy() {
