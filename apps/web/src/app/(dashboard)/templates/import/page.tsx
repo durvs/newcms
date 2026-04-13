@@ -9,12 +9,9 @@ import { toast } from 'sonner';
 
 interface ImportResult {
 	success: boolean;
-	kit: { name: string; version: string };
-	imported: {
-		templates: { id: number; title: string; type: string }[];
-		content: { id: number; title: string; type: string }[];
-		mediaUrls: number;
-	};
+	kit: { name: string; version: string; templateCount?: number };
+	imported: { id: number; title: string; type: string; postType: string }[];
+	errors?: string[];
 }
 
 export default function ImportTemplatePage() {
@@ -157,42 +154,40 @@ export default function ImportTemplatePage() {
 							</div>
 						</div>
 
-						{result.imported.templates.length > 0 && (
+						{result.imported.length > 0 && (
 							<div className="mb-4">
-								<p className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-2">Templates ({result.imported.templates.length})</p>
+								<p className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-2">
+									Imported ({result.imported.length})
+								</p>
 								<div className="space-y-1">
-									{result.imported.templates.map((t) => (
-										<div key={t.id} className="flex items-center justify-between rounded-lg bg-surface px-3 py-2">
-											<span className="text-[13px] text-text">{t.title}</span>
-											<span className="text-[10px] text-text-faint uppercase">{t.type}</span>
-										</div>
-									))}
-								</div>
-							</div>
-						)}
-
-						{result.imported.content.length > 0 && (
-							<div className="mb-4">
-								<p className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-2">Pages ({result.imported.content.length})</p>
-								<div className="space-y-1">
-									{result.imported.content.map((c) => (
+									{result.imported.map((item) => (
 										<Link
-											key={c.id}
-											href={`/editor/${c.id}`}
+											key={item.id}
+											href={`/editor/${item.id}`}
 											className="flex items-center justify-between rounded-lg bg-surface px-3 py-2 hover:bg-accent/5 transition-colors"
 										>
-											<span className="text-[13px] text-text">{c.title}</span>
-											<span className="text-[10px] text-accent font-medium">Edit →</span>
+											<span className="text-[13px] text-text">{item.title}</span>
+											<div className="flex items-center gap-2">
+												<span className="text-[10px] text-text-faint uppercase">{item.type}</span>
+												<span className="text-[10px] text-accent font-medium">Edit →</span>
+											</div>
 										</Link>
 									))}
 								</div>
 							</div>
 						)}
 
-						{result.imported.mediaUrls > 0 && (
-							<p className="text-xs text-text-faint">
-								{result.imported.mediaUrls} media URLs referenced (download pending)
-							</p>
+						{result.errors && result.errors.length > 0 && (
+							<div className="mb-4">
+								<p className="text-xs font-semibold uppercase tracking-wider text-error-soft mb-2">
+									Errors ({result.errors.length})
+								</p>
+								<div className="space-y-1">
+									{result.errors.map((err, i) => (
+										<p key={i} className="text-xs text-error-soft">{err}</p>
+									))}
+								</div>
+							</div>
 						)}
 
 						<div className="mt-4 flex gap-2">
