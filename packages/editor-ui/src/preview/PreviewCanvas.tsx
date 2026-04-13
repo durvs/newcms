@@ -75,7 +75,7 @@ export function PreviewCanvas() {
 
 	return (
 		<div
-			style={{ display: 'flex', justifyContent: 'center', padding: 20, minHeight: '100%', overflow: 'auto' }}
+			style={{ display: 'flex', justifyContent: 'center', padding: 20, height: '100%', overflow: 'auto' }}
 			onClick={() => useEditorStore.getState().selectElement(null)}
 		>
 			<div style={{
@@ -83,7 +83,6 @@ export function PreviewCanvas() {
 				background: '#fff', borderRadius: 10,
 				boxShadow: '0 0 0 1px rgba(0,0,0,.05), 0 4px 24px rgba(0,0,0,.06)',
 				transition: 'width .3s ease',
-				overflow: 'hidden',
 			}}>
 				<div style={{ padding: 16 }}>
 					<DropZone parentId={null} index={0} />
