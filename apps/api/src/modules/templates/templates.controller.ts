@@ -65,6 +65,51 @@ function resolvePostType(entry: EnvatoManifestEntry): string {
 	return 'builder_section';
 }
 
+/**
+ * Extract Design Kit from Elementor global.json page_settings.
+ */
+function extractDesignKit(settings: Record<string, unknown>): Record<string, unknown> {
+	const kit: Record<string, unknown> = {};
+
+	// System colors (primary, secondary, text, accent)
+	const sysColors = settings.system_colors as { _id: string; title: string; color: string }[] | undefined;
+	const customColors = settings.custom_colors as { _id: string; title: string; color: string }[] | undefined;
+	kit.colors = [
+		...(sysColors ?? []).map((c) => ({ id: c._id, title: c.title, color: c.color })),
+		...(customColors ?? []).map((c) => ({ id: c._id, title: c.title, color: c.color })),
+	];
+
+	// Typography presets
+	const sysTypo = settings.system_typography as Record<string, unknown>[] | undefined;
+	const customTypo = settings.custom_typography as Record<string, unknown>[] | undefined;
+	kit.typography = [
+		...(sysTypo ?? []),
+		...(customTypo ?? []),
+	].map((t: Record<string, unknown>) => ({
+		id: t._id,
+		title: t.title,
+		fontFamily: t.typography_font_family ?? '',
+		fontSize: t.typography_font_size ?? { size: 16, unit: 'px' },
+		fontWeight: t.typography_font_weight ?? '400',
+		lineHeight: t.typography_line_height ?? { size: 1.5, unit: 'em' },
+		letterSpacing: t.typography_letter_spacing ?? { size: 0, unit: 'px' },
+		textTransform: t.typography_text_transform ?? 'none',
+		fontStyle: t.typography_font_style ?? 'normal',
+	}));
+
+	// Body defaults
+	kit.bodyFontFamily = (kit.typography as Record<string, unknown>[])?.find((t: Record<string, unknown>) => t.id === 'text')?.fontFamily ?? 'system-ui, sans-serif';
+
+	// Breakpoints
+	if (settings.viewport_md) kit.breakpointTablet = settings.viewport_md;
+	if (settings.viewport_lg) kit.breakpointDesktop = settings.viewport_lg;
+
+	// Default fonts
+	if (settings.default_generic_fonts) kit.defaultGenericFonts = settings.default_generic_fonts;
+
+	return kit;
+}
+
 @ApiTags('templates')
 @Controller('v2/templates')
 export class TemplatesController {
@@ -116,9 +161,11 @@ export class TemplatesController {
 					const elements = convertElementorTree(content as ElementorNode[]);
 					const postType = resolvePostType(entry);
 
-					// Skip global styles (they're kit settings, not a visual template)
+					// Global styles → extract as Design Kit
 					if (postType === 'builder_global') {
-						// Could extract site settings here in the future
+						const pageSettings = templateJson.page_settings ?? templateJson.settings ?? {};
+						const designKit = extractDesignKit(pageSettings);
+						await this.dbProvider.options.updateOption('builder_design_kit', designKit);
 						continue;
 					}
 
@@ -181,5 +228,12 @@ export class TemplatesController {
 			perPage: 100,
 		});
 		return result.posts;
+	}
+
+	@Get('design-kit')
+	@ApiOperation({ summary: 'Get the active design kit (global colors, typography)' })
+	async getDesignKit() {
+		const kit = await this.dbProvider.options.getOption('builder_design_kit');
+		return kit ?? { colors: [], typography: [] };
 	}
 }

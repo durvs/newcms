@@ -5,9 +5,16 @@ import { PreviewCanvas } from '../preview/PreviewCanvas';
 import { useEditorStore } from '../store/editor-store';
 import type { ElementNode } from '@newcms/editor';
 
+interface DesignKitData {
+	colors: { id: string; title: string; color: string }[];
+	typography: Record<string, unknown>[];
+	bodyFontFamily?: string;
+}
+
 interface EditorShellProps {
 	documentId: number;
 	documentType?: string;
+	designKit?: DesignKitData | null;
 	initialElements?: ElementNode[];
 	title?: string;
 	onSave: (elements: ElementNode[]) => Promise<void>;
@@ -18,6 +25,7 @@ export function EditorShell({
 	documentId,
 	documentType = 'page',
 	initialElements,
+	designKit: designKitProp,
 	title,
 	onSave,
 	onBack,
@@ -29,10 +37,12 @@ export function EditorShell({
 	const removeElement = useEditorStore((s) => s.removeElement);
 	const duplicateElement = useEditorStore((s) => s.duplicateElement);
 	const selectedId = useEditorStore((s) => s.selectedId);
+	const setDesignKit = useEditorStore((s) => s.setDesignKit);
 
 	// Initialize document
 	useEffect(() => {
 		setDocument(documentId, documentType, initialElements ?? []);
+		if (designKitProp) setDesignKit(designKitProp);
 	}, [documentId, documentType, initialElements, setDocument]);
 
 	// Keyboard shortcuts

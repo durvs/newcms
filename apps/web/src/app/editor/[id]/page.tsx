@@ -65,6 +65,11 @@ export default function VisualEditorPage() {
 		enabled: id > 0,
 	});
 
+	const { data: designKit } = useQuery({
+		queryKey: ['design-kit'],
+		queryFn: () => api.get<Record<string, unknown>>('/templates/design-kit'),
+	});
+
 	async function handleSave(elements: ElementNode[]) {
 		try {
 			// Save builder data to postmeta
@@ -94,6 +99,7 @@ export default function VisualEditorPage() {
 			documentId={id}
 			documentType="post"
 			initialElements={builderData ?? []}
+			designKit={designKit as any}
 			title={post?.postTitle}
 			onSave={handleSave}
 			onBack={() => router.push('/posts')}

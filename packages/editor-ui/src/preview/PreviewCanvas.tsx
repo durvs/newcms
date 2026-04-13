@@ -63,9 +63,29 @@ function extractStyles(settings: Record<string, unknown>): CSSProperties {
 	return css;
 }
 
+function buildKitCSS(kit: { colors: { id: string; color: string }[]; typography: Record<string, unknown>[]; bodyFontFamily?: string } | null): string {
+	if (!kit) return '';
+	const lines: string[] = [];
+	for (const c of kit.colors) lines.push(`--e-global-color-${c.id}: ${c.color};`);
+	for (const t of kit.typography) {
+		const id = String((t as Record<string, unknown>).id ?? '');
+		const ff = (t as Record<string, unknown>).fontFamily;
+		if (ff) lines.push(`--e-global-typography-${id}-font-family: ${ff};`);
+	}
+	const rootVars = lines.length > 0 ? `:root{${lines.join('')}}` : '';
+	const bodyFont = kit.bodyFontFamily ?? ((kit.typography[0] as Record<string, unknown>)?.fontFamily as string);
+	const bodyRule = bodyFont ? `.preview-body{font-family:${bodyFont},system-ui,sans-serif}` : '';
+	const fonts = new Set<string>();
+	for (const t of kit.typography) { const ff = (t as Record<string, unknown>).fontFamily; if (ff && typeof ff === 'string') fonts.add(ff); }
+	const fontImport = fonts.size > 0 ? `@import url('https://fonts.googleapis.com/css2?${[...fonts].map((f) => `family=${f.replace(/\s/g, '+')}:wght@300;400;500;600;700`).join('&')}&display=swap');` : '';
+	return [fontImport, rootVars, bodyRule].filter(Boolean).join('\n');
+}
+
 export function PreviewCanvas() {
 	const elements = useEditorStore((s) => s.elements);
 	const bp = useEditorStore((s) => s.activeBreakpoint);
+	const designKit = useEditorStore((s) => s.designKit);
+	const kitCSS = buildKitCSS(designKit);
 
 	const widths: Record<string, string> = { desktop: '100%', tablet: '768px', mobile: '375px' };
 	const isDevice = bp !== 'desktop';
@@ -97,7 +117,8 @@ export function PreviewCanvas() {
 				transition: 'all .3s ease',
 				overflow: 'hidden',
 			}}>
-				<div style={{ padding: 16 }}>
+				{kitCSS && <style>{kitCSS}</style>}
+				<div className="preview-body" style={{ padding: 16 }}>
 					<DropZone parentId={null} index={0} />
 					{elements.map((el, i) => (
 						<div key={el.id}>

@@ -32,6 +32,9 @@ export interface EditorState {
 	// Responsive
 	activeBreakpoint: string;
 
+	// Design Kit (global colors, typography)
+	designKit: { colors: { id: string; title: string; color: string }[]; typography: Record<string, unknown>[]; bodyFontFamily?: string } | null;
+
 	// Drag-and-drop
 	dragging: { type: string; sourceId?: string } | null;
 	dropTarget: { parentId: string | null; index: number } | null;
@@ -42,6 +45,7 @@ export interface EditorState {
 
 	// Actions — document
 	setDocument: (id: number, type: string, elements: ElementNode[]) => void;
+	setDesignKit: (kit: EditorState['designKit']) => void;
 	setElements: (elements: ElementNode[]) => void;
 
 	// Actions — elements
@@ -99,6 +103,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
 	activeBreakpoint: 'desktop',
 
+	designKit: null,
+
 	dragging: null,
 	dropTarget: null,
 
@@ -107,6 +113,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
 	setDocument: (id, type, elements) =>
 		set({ documentId: id, documentType: type, elements, dirty: false, past: [], future: [], selectedId: null }),
+
+	setDesignKit: (kit) => set({ designKit: kit }),
 
 	setElements: (elements) =>
 		set((s) => ({ ...pushHistory(s), elements, dirty: true })),
