@@ -1,0 +1,18 @@
+# Source (dist is the only published artifact)
+src/
+__tests__/
+*.test.ts
+*.spec.ts
+
+# Database tooling (dev only, never published)
+drizzle/
+drizzle.config.ts
+
+# Config
+tsconfig.json
+vitest.config.ts
+.turbo/
+
+# Dev
+.env*
+*.tsbuildinfo
