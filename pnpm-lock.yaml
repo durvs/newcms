@@ -240,6 +240,25 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@22.19.17)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)
 
+  packages/editor:
+    dependencies:
+      zod:
+        specifier: ^3.25.7
+        version: 3.25.76
+    devDependencies:
+      '@newcms/config':
+        specifier: workspace:*
+        version: link:../config
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.6.1)(postcss@8.5.9)(tsx@4.21.0)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@22.19.17)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)
+
   packages/html-processor:
     devDependencies:
       '@newcms/config':
