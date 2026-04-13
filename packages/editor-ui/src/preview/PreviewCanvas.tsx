@@ -370,7 +370,8 @@ function WidgetPreview({ node }: { node: ElementNode }) {
 	const s = node.settings;
 	switch (node.widgetType) {
 		case 'heading': {
-			const level = Number(s.level ?? 2);
+			const rawLevel = parseInt(String(s.level ?? s.header_size ?? '2').replace(/\D/g, ''), 10);
+			const level = (rawLevel >= 1 && rawLevel <= 6) ? rawLevel : 2;
 			const Tag = `h${level}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 			const headingSizes: Record<number, { fontSize: string; fontWeight: number; lineHeight: number }> = {
 				1: { fontSize: '2.5em', fontWeight: 700, lineHeight: 1.2 },
