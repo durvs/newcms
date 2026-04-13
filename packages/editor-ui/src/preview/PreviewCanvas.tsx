@@ -68,6 +68,7 @@ export function PreviewCanvas() {
 	const bp = useEditorStore((s) => s.activeBreakpoint);
 
 	const widths: Record<string, string> = { desktop: '100%', tablet: '768px', mobile: '375px' };
+	const isDevice = bp !== 'desktop';
 
 	if (elements.length === 0) {
 		return <EmptyState />;
@@ -75,14 +76,26 @@ export function PreviewCanvas() {
 
 	return (
 		<div
-			style={{ display: 'flex', justifyContent: 'center', padding: 20, minHeight: '100%' }}
+			style={{
+				display: 'flex',
+				justifyContent: 'center',
+				alignItems: isDevice ? 'flex-start' : undefined,
+				padding: isDevice ? '24px 20px' : 0,
+				minHeight: '100%',
+			}}
 			onClick={() => useEditorStore.getState().selectElement(null)}
 		>
 			<div style={{
-				width: widths[bp] ?? '100%', maxWidth: '100%', minHeight: 400,
-				background: '#fff', borderRadius: 10,
-				boxShadow: '0 0 0 1px rgba(0,0,0,.05), 0 4px 24px rgba(0,0,0,.06)',
-				transition: 'width .3s ease',
+				width: widths[bp] ?? '100%',
+				maxWidth: '100%',
+				minHeight: isDevice ? 600 : 400,
+				background: '#fff',
+				borderRadius: isDevice ? 16 : 0,
+				boxShadow: isDevice
+					? '0 0 0 8px #1e293b, 0 0 0 9px #334155, 0 20px 60px rgba(0,0,0,.15)'
+					: 'none',
+				transition: 'all .3s ease',
+				overflow: 'hidden',
 			}}>
 				<div style={{ padding: 16 }}>
 					<DropZone parentId={null} index={0} />
