@@ -56,7 +56,7 @@ export default function VisualEditorPage() {
 		queryKey: ['builder-data', id],
 		queryFn: async () => {
 			try {
-				const meta = await api.get<{ name: string; value: unknown }>(`/settings/_builder_data_${id}`);
+				const meta = await api.get<{ key: string; value: unknown }>(`/posts/${id}/meta/_builder_data`);
 				return (meta.value as ElementNode[]) ?? [];
 			} catch {
 				return [] as ElementNode[];
@@ -67,10 +67,10 @@ export default function VisualEditorPage() {
 
 	async function handleSave(elements: ElementNode[]) {
 		try {
-			// Save builder data
-			await api.put(`/settings/_builder_data_${id}`, { value: elements });
+			// Save builder data to postmeta
+			await api.put(`/posts/${id}/meta/_builder_data`, { value: elements });
 
-			// Also update postContent with HTML serialization
+			// Also update postContent with HTML serialization for search/RSS/fallback
 			const html = serializeToHtml(elements);
 			await api.put(`/posts/${id}`, { content: html });
 

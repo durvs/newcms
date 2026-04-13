@@ -166,4 +166,34 @@ export class PostsController {
 		if (!trashed) throw new NotFoundException(`Post ${id} not found`);
 		return trashed;
 	}
+
+	// ─── Post Meta ───────────────────────────────────────────
+
+	@Get(':id/meta/:key')
+	@ApiOperation({ summary: 'Get a post meta value' })
+	@ApiParam({ name: 'id', type: Number })
+	@ApiParam({ name: 'key', type: String })
+	async getMeta(
+		@Param('id', ParseIntPipe) id: number,
+		@Param('key') key: string,
+	) {
+		const value = await this.dbProvider.posts.meta.get(id, key);
+		return { key, value: value ?? null };
+	}
+
+	@Put(':id/meta/:key')
+	@ApiOperation({ summary: 'Set a post meta value' })
+	@ApiParam({ name: 'id', type: Number })
+	@ApiParam({ name: 'key', type: String })
+	@ApiBearerAuth()
+	@UseGuards(AuthGuard, PermissionGuard)
+	@RequireCapability('edit_posts')
+	async setMeta(
+		@Param('id', ParseIntPipe) id: number,
+		@Param('key') key: string,
+		@Body() body: { value: unknown },
+	) {
+		await this.dbProvider.posts.meta.update(id, key, body.value);
+		return { key, value: body.value, updated: true };
+	}
 }
