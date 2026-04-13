@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCreatePost, useUpdatePost } from '@/hooks/use-posts';
-import { ArrowLeft, Save, Eye, Globe } from 'lucide-react';
+import { ArrowLeft, Save, Eye, Globe, Code2 } from 'lucide-react';
+import { BlockPreview } from './block-preview';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import type { Post } from '@/types/api';
@@ -23,6 +24,7 @@ export function PostEditor({ post }: PostEditorProps) {
 	const [excerpt, setExcerpt] = useState(post?.postExcerpt ?? '');
 	const [status, setStatus] = useState(post?.postStatus ?? 'draft');
 	const [slug, setSlug] = useState(post?.postName ?? '');
+	const [viewMode, setViewMode] = useState<'code' | 'preview'>('code');
 
 	const saving = createMut.isPending || updateMut.isPending;
 
@@ -105,13 +107,39 @@ export function PostEditor({ post }: PostEditorProps) {
 						className="w-full bg-transparent text-2xl font-bold tracking-tight text-text placeholder:text-text-faint outline-none"
 					/>
 
-					<textarea
-						placeholder="Write your content..."
-						value={content}
-						onChange={(e) => setContent(e.target.value)}
-						rows={20}
-						className="w-full resize-none rounded-xl border border-border bg-surface-elevated px-5 py-4 text-sm leading-relaxed text-text placeholder:text-text-faint outline-none transition-colors focus:border-accent/50 focus:ring-1 focus:ring-accent/20"
-					/>
+					{/* View mode toggle */}
+					<div className="flex gap-1 rounded-lg bg-surface-elevated p-1 w-fit">
+						<button
+							onClick={() => setViewMode('code')}
+							className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
+								viewMode === 'code' ? 'bg-surface text-text shadow-sm' : 'text-text-muted hover:text-text'
+							}`}
+						>
+							<Code2 className="h-3.5 w-3.5" />
+							Code
+						</button>
+						<button
+							onClick={() => setViewMode('preview')}
+							className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
+								viewMode === 'preview' ? 'bg-surface text-text shadow-sm' : 'text-text-muted hover:text-text'
+							}`}
+						>
+							<Eye className="h-3.5 w-3.5" />
+							Preview
+						</button>
+					</div>
+
+					{viewMode === 'code' ? (
+						<textarea
+							placeholder="Write your content using block syntax...&#10;&#10;<!-- cms:paragraph -->&#10;<p>Your text here</p>&#10;<!-- /cms:paragraph -->"
+							value={content}
+							onChange={(e) => setContent(e.target.value)}
+							rows={20}
+							className="w-full resize-none rounded-xl border border-border bg-surface-elevated px-5 py-4 font-mono text-sm leading-relaxed text-text placeholder:text-text-faint outline-none transition-colors focus:border-accent/50 focus:ring-1 focus:ring-accent/20"
+						/>
+					) : (
+						<BlockPreview content={content} />
+					)}
 				</div>
 
 				{/* Sidebar */}
