@@ -75,7 +75,7 @@ export function PreviewCanvas() {
 
 	return (
 		<div
-			style={{ display: 'flex', justifyContent: 'center', padding: 20, height: '100%', overflow: 'auto' }}
+			style={{ display: 'flex', justifyContent: 'center', padding: 20, minHeight: '100%' }}
 			onClick={() => useEditorStore.getState().selectElement(null)}
 		>
 			<div style={{

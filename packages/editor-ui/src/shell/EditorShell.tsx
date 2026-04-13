@@ -76,10 +76,21 @@ export function EditorShell({
 				onBack={onBack}
 				title={title}
 			/>
-			<div className="flex flex-1 overflow-hidden">
+			<div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
 				<Panel />
-				<div className="flex-1 overflow-auto" style={{ background: 'var(--cm-surface-elevated)' }}>
-					<PreviewCanvas />
+				<div style={{
+					flex: 1,
+					position: 'relative',
+					overflow: 'hidden',
+					background: 'var(--cm-surface-elevated)',
+				}}>
+					<div style={{
+						position: 'absolute',
+						inset: 0,
+						overflow: 'auto',
+					}}>
+						<PreviewCanvas />
+					</div>
 				</div>
 			</div>
 		</div>
