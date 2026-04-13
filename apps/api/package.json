@@ -23,6 +23,7 @@
     "@newcms/core": "workspace:*",
     "@newcms/database": "workspace:*",
     "@newcms/editor": "workspace:*",
+    "@newcms/media": "workspace:*",
     "@newcms/query-engine": "workspace:*",
     "@types/multer": "^2.1.0",
     "class-transformer": "^0.5.1",

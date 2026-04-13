@@ -33,3 +33,7 @@ export { MenuRegistry } from './menu-registry';
 export type { MenuLocation, MenuItem } from './menu-registry';
 export { UrlRewriter } from './url-rewrite';
 export type { RewriteRule, RewriteResult } from './url-rewrite';
+export { generateSitemapXml, generateSitemapIndexXml, paginateEntries } from './sitemap';
+export type { SitemapEntry, SitemapIndex } from './sitemap';
+export { OEMBED_PROVIDERS, findProvider, buildOEmbedUrl } from './oembed';
+export type { OEmbedProvider } from './oembed';

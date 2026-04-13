@@ -47,6 +47,9 @@ importers:
       '@newcms/editor':
         specifier: workspace:*
         version: link:../../packages/editor
+      '@newcms/media':
+        specifier: workspace:*
+        version: link:../../packages/media
       '@newcms/query-engine':
         specifier: workspace:*
         version: link:../../packages/query-engine
@@ -313,6 +316,28 @@ importers:
       '@newcms/config':
         specifier: workspace:*
         version: link:../config
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.6.1)(postcss@8.5.9)(tsx@4.21.0)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@22.19.17)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)
+
+  packages/media:
+    dependencies:
+      sharp:
+        specifier: ^0.34.1
+        version: 0.34.5
+    devDependencies:
+      '@newcms/config':
+        specifier: workspace:*
+        version: link:../config
+      '@types/node':
+        specifier: ^22.15.3
+        version: 22.19.17
       tsup:
         specifier: ^8.5.1
         version: 8.5.1(jiti@2.6.1)(postcss@8.5.9)(tsx@4.21.0)(typescript@5.9.3)
@@ -3687,8 +3712,7 @@ snapshots:
       '@standard-schema/utils': 0.3.0
       react-hook-form: 7.72.1(react@19.2.5)
 
-  '@img/colour@1.1.0':
-    optional: true
+  '@img/colour@1.1.0': {}
 
   '@img/sharp-darwin-arm64@0.34.5':
     optionalDependencies:
@@ -5622,7 +5646,6 @@ snapshots:
       '@img/sharp-win32-arm64': 0.34.5
       '@img/sharp-win32-ia32': 0.34.5
       '@img/sharp-win32-x64': 0.34.5
-    optional: true
 
   side-channel-list@1.0.1:
     dependencies:

@@ -1,0 +1,42 @@
+{
+  "name": "@newcms/media",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Image processing, upload handling, and storage abstraction for NewCMS",
+  "license": "GPL-2.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/durvs/newcms.git",
+    "directory": "packages/media"
+  },
+  "keywords": ["cms", "media", "image", "sharp", "upload", "newcms"],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "echo 'lint ok'",
+    "clean": "rm -rf dist .turbo",
+    "prepublishOnly": "pnpm run build"
+  },
+  "dependencies": {
+    "sharp": "^0.34.1"
+  },
+  "devDependencies": {
+    "@newcms/config": "workspace:*",
+    "@types/node": "^22.15.3",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

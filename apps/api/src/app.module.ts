@@ -10,6 +10,7 @@ import { TaxonomyModule } from './modules/taxonomy/taxonomy.module';
 import { OptionsModule } from './modules/options/options.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { TemplatesModule } from './modules/templates/templates.module';
+import { MediaModule } from './modules/media/media.module';
 
 @Module({
 	imports: [
@@ -23,6 +24,7 @@ import { TemplatesModule } from './modules/templates/templates.module';
 		OptionsModule,
 		CommentsModule,
 		TemplatesModule,
+		MediaModule,
 	],
 })
 export class AppModule implements OnModuleInit {
