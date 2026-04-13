@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { Search, Plus, Box, Type, Image, Columns, Minus, Square, Code2, List, Quote, ChevronsUpDown } from 'lucide-react';
+import { useState, type DragEvent } from 'react';
+import { Search, Box, Image, Minus, Square, Code2, List, Quote, ChevronsUpDown, AlignLeft, Heading } from 'lucide-react';
 import { useEditorStore } from '../store/editor-store';
 
 interface WidgetDef {
 	type: string;
 	label: string;
-	icon: typeof Type;
+	icon: typeof Heading;
 	category: 'text' | 'media' | 'layout';
 }
 
 const WIDGETS: WidgetDef[] = [
-	{ type: 'heading', label: 'Heading', icon: Type, category: 'text' },
-	{ type: 'paragraph', label: 'Text', icon: Type, category: 'text' },
+	{ type: 'heading', label: 'Heading', icon: Heading, category: 'text' },
+	{ type: 'paragraph', label: 'Text', icon: AlignLeft, category: 'text' },
 	{ type: 'list', label: 'List', icon: List, category: 'text' },
 	{ type: 'quote', label: 'Quote', icon: Quote, category: 'text' },
 	{ type: 'code', label: 'Code', icon: Code2, category: 'text' },
@@ -22,65 +22,99 @@ const WIDGETS: WidgetDef[] = [
 	{ type: 'html', label: 'HTML', icon: Code2, category: 'layout' },
 ];
 
+const catLabels = { text: 'Text', media: 'Media', layout: 'Layout' };
+
 export function WidgetPicker() {
 	const [search, setSearch] = useState('');
-	const addElement = useEditorStore((s) => s.addElement);
 	const addContainer = useEditorStore((s) => s.addContainer);
+	const startDrag = useEditorStore((s) => s.startDrag);
 
 	const filtered = search
 		? WIDGETS.filter((w) => w.label.toLowerCase().includes(search.toLowerCase()))
 		: WIDGETS;
 
-	const categories = ['text', 'media', 'layout'] as const;
-	const categoryLabels = { text: 'Text', media: 'Media', layout: 'Layout' };
+	function onDragStart(e: DragEvent, type: string) {
+		e.dataTransfer.setData('widget-type', type);
+		e.dataTransfer.effectAllowed = 'copy';
+		startDrag(type);
+	}
 
 	return (
-		<div className="p-3">
-			{/* Search */}
-			<div className="relative mb-3">
-				<Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--cm-text-faint)]" />
+		<div style={{ padding: 12 }}>
+			<div style={{ position: 'relative', marginBottom: 12 }}>
+				<Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--cm-text-faint)' }} />
 				<input
 					type="text"
 					placeholder="Search widgets..."
 					value={search}
 					onChange={(e) => setSearch(e.target.value)}
-					className="h-8 w-full rounded-lg border border-[var(--cm-border)] bg-[var(--cm-input-bg)] pl-8 pr-3 text-xs text-[var(--cm-text)] placeholder:text-[var(--cm-text-faint)] outline-none focus:border-[var(--color-accent)]/50"
+					style={{
+						width: '100%', height: 32, borderRadius: 8, boxSizing: 'border-box',
+						border: '1px solid var(--cm-border)', background: 'var(--cm-input-bg)',
+						paddingLeft: 32, paddingRight: 10, fontSize: 12,
+						color: 'var(--cm-text)', outline: 'none',
+					}}
 				/>
 			</div>
 
-			{/* Add Container button */}
 			<button
 				onClick={() => addContainer(null)}
-				className="mb-3 flex w-full items-center gap-2 rounded-lg border border-dashed border-[var(--cm-border)] px-3 py-2 text-xs font-medium text-[var(--cm-text-muted)] transition-colors hover:border-[var(--color-accent)]/40 hover:text-[var(--color-accent)]"
+				draggable
+				onDragStart={(e) => { e.dataTransfer.setData('widget-type', '__container'); startDrag('__container'); }}
+				style={{
+					width: '100%', display: 'flex', alignItems: 'center', gap: 8,
+					padding: '8px 12px', borderRadius: 8, marginBottom: 16,
+					border: '1.5px dashed var(--cm-border)', background: 'transparent',
+					color: 'var(--cm-text-muted)', fontSize: 12, fontWeight: 500,
+					cursor: 'grab', boxSizing: 'border-box',
+				}}
 			>
-				<Box className="h-4 w-4" />
-				Add Container
+				<Box size={16} /> Container
 			</button>
 
-			{/* Widget grid by category */}
-			{categories.map((cat) => {
+			{(['text', 'media', 'layout'] as const).map((cat) => {
 				const items = filtered.filter((w) => w.category === cat);
 				if (items.length === 0) return null;
 				return (
-					<div key={cat} className="mb-4">
-						<p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-[var(--cm-text-faint)]">
-							{categoryLabels[cat]}
-						</p>
-						<div className="grid grid-cols-3 gap-1.5">
+					<div key={cat} style={{ marginBottom: 16 }}>
+						<div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--cm-text-faint)', marginBottom: 8 }}>
+							{catLabels[cat]}
+						</div>
+						<div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4 }}>
 							{items.map((w) => (
-								<button
-									key={w.type}
-									onClick={() => addElement(w.type, null)}
-									className="flex flex-col items-center gap-1.5 rounded-lg px-2 py-3 text-[var(--cm-text-muted)] transition-colors hover:bg-[var(--cm-surface-elevated)] hover:text-[var(--color-accent)]"
-								>
-									<w.icon className="h-5 w-5" />
-									<span className="text-[10px] font-medium">{w.label}</span>
-								</button>
+								<WidgetCard key={w.type} widget={w} onDragStart={onDragStart} />
 							))}
 						</div>
 					</div>
 				);
 			})}
 		</div>
+	);
+}
+
+function WidgetCard({ widget, onDragStart }: { widget: WidgetDef; onDragStart: (e: DragEvent, type: string) => void }) {
+	const [hover, setHover] = useState(false);
+	const addElement = useEditorStore((s) => s.addElement);
+	const Icon = widget.icon;
+
+	return (
+		<button
+			draggable
+			onDragStart={(e) => onDragStart(e, widget.type)}
+			onClick={() => addElement(widget.type, null)}
+			onMouseEnter={() => setHover(true)}
+			onMouseLeave={() => setHover(false)}
+			style={{
+				display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+				padding: '12px 4px', borderRadius: 8, border: 'none',
+				background: hover ? 'var(--cm-surface-elevated)' : 'transparent',
+				color: hover ? 'var(--color-accent)' : 'var(--cm-text-muted)',
+				fontSize: 10, fontWeight: 500, cursor: 'grab',
+				transition: 'all .12s',
+			}}
+		>
+			<Icon size={20} strokeWidth={1.5} />
+			{widget.label}
+		</button>
 	);
 }

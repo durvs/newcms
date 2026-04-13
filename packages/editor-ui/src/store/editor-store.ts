@@ -32,6 +32,10 @@ export interface EditorState {
 	// Responsive
 	activeBreakpoint: string;
 
+	// Drag-and-drop
+	dragging: { type: string; sourceId?: string } | null;
+	dropTarget: { parentId: string | null; index: number } | null;
+
 	// History
 	past: ElementNode[][];
 	future: ElementNode[][];
@@ -59,6 +63,12 @@ export interface EditorState {
 
 	// Actions — responsive
 	setBreakpoint: (bp: string) => void;
+
+	// Actions — drag
+	startDrag: (type: string, sourceId?: string) => void;
+	setDropTarget: (parentId: string | null, index: number) => void;
+	clearDropTarget: () => void;
+	executeDrop: () => void;
 
 	// Actions — history
 	undo: () => void;
@@ -88,6 +98,9 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	controlTab: 'content',
 
 	activeBreakpoint: 'desktop',
+
+	dragging: null,
+	dropTarget: null,
 
 	past: [],
 	future: [],
@@ -148,6 +161,37 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	setPanelView: (view) => set({ panelView: view }),
 	setControlTab: (tab) => set({ controlTab: tab }),
 	setBreakpoint: (bp) => set({ activeBreakpoint: bp }),
+
+	startDrag: (type, sourceId) => set({ dragging: { type, sourceId } }),
+	setDropTarget: (parentId, index) => set({ dropTarget: { parentId, index } }),
+	clearDropTarget: () => set({ dropTarget: null, dragging: null }),
+	executeDrop: () =>
+		set((s) => {
+			if (!s.dragging || !s.dropTarget) return { dragging: null, dropTarget: null };
+
+			if (s.dragging.sourceId) {
+				// Moving existing element
+				return {
+					...pushHistory(s),
+					elements: moveNode(s.elements, s.dragging.sourceId, s.dropTarget.parentId, s.dropTarget.index),
+					dirty: true,
+					dragging: null,
+					dropTarget: null,
+				};
+			} else {
+				// Inserting new widget
+				const node = createElement('widget', s.dragging.type);
+				return {
+					...pushHistory(s),
+					elements: insertNode(s.elements, node, s.dropTarget.parentId, s.dropTarget.index),
+					dirty: true,
+					selectedId: node.id,
+					panelView: 'controls' as PanelView,
+					dragging: null,
+					dropTarget: null,
+				};
+			}
+		}),
 
 	undo: () =>
 		set((s) => {
