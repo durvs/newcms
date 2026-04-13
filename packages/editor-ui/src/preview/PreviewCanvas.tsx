@@ -312,10 +312,10 @@ function ElementToolbar({ id, label, onRemove, onDuplicate, onDragStart }: {
 	return (
 		<div
 			style={{
-				position: 'absolute', top: -28, left: -2,
+				position: 'absolute', top: 0, right: 0,
 				display: 'flex', alignItems: 'center', gap: 2,
-				background: 'var(--color-accent)', borderRadius: '6px 6px 0 0',
-				padding: '3px 4px', zIndex: 10,
+				background: 'var(--color-accent)', borderRadius: '0 0 0 6px',
+				padding: '3px 6px', zIndex: 10,
 			}}
 		>
 			<div
