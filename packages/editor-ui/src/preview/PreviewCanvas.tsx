@@ -14,14 +14,18 @@ export function PreviewCanvas() {
 	}
 
 	return (
-		<div style={{ display: 'flex', justifyContent: 'center', padding: 24, minHeight: '100%', overflow: 'auto' }}>
+		<div
+			style={{ display: 'flex', justifyContent: 'center', padding: 20, minHeight: '100%', overflow: 'auto' }}
+			onClick={() => useEditorStore.getState().selectElement(null)}
+		>
 			<div style={{
 				width: widths[bp] ?? '100%', maxWidth: '100%', minHeight: 400,
-				background: '#fff', borderRadius: 8,
-				boxShadow: '0 0 0 1px rgba(0,0,0,.06), 0 8px 40px rgba(0,0,0,.08)',
+				background: '#fff', borderRadius: 10,
+				boxShadow: '0 0 0 1px rgba(0,0,0,.05), 0 4px 24px rgba(0,0,0,.06)',
 				transition: 'width .3s ease',
+				overflow: 'hidden',
 			}}>
-				<div style={{ padding: 24 }}>
+				<div style={{ padding: 0 }}>
 					<DropZone parentId={null} index={0} />
 					{elements.map((el, i) => (
 						<div key={el.id}>
@@ -98,11 +102,7 @@ function SmallBtn({ children, onClick }: { children: React.ReactNode; onClick: (
 function DropZone({ parentId, index }: { parentId: string | null; index: number }) {
 	const [over, setOver] = useState(false);
 	const setDropTarget = useEditorStore((s) => s.setDropTarget);
-	const clearDropTarget = useEditorStore((s) => s.clearDropTarget);
 	const executeDrop = useEditorStore((s) => s.executeDrop);
-	const dragging = useEditorStore((s) => s.dragging);
-
-	if (!dragging) return <div style={{ height: 4 }} />;
 
 	return (
 		<div
@@ -110,13 +110,43 @@ function DropZone({ parentId, index }: { parentId: string | null; index: number 
 			onDragLeave={(e) => { e.stopPropagation(); setOver(false); }}
 			onDrop={(e) => { e.preventDefault(); e.stopPropagation(); setOver(false); executeDrop(); }}
 			style={{
-				height: over ? 4 : 4,
-				margin: '2px 0',
-				borderRadius: 2,
-				background: over ? 'var(--color-accent)' : 'transparent',
-				transition: 'all .12s',
+				height: over ? 4 : 8,
+				margin: over ? '4px 8px' : '0 8px',
+				borderRadius: 3,
+				background: over ? 'var(--color-accent, #f59e0b)' : 'transparent',
+				transition: 'all .15s ease',
 			}}
 		/>
+	);
+}
+
+function ContainerEmptyState({ parentId }: { parentId: string }) {
+	const [over, setOver] = useState(false);
+	const setDropTarget = useEditorStore((s) => s.setDropTarget);
+	const executeDrop = useEditorStore((s) => s.executeDrop);
+	const addElement = useEditorStore((s) => s.addElement);
+
+	return (
+		<div
+			onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setOver(true); setDropTarget(parentId, 0); }}
+			onDragLeave={(e) => { e.stopPropagation(); setOver(false); }}
+			onDrop={(e) => { e.preventDefault(); e.stopPropagation(); setOver(false); executeDrop(); }}
+			onClick={(e) => { e.stopPropagation(); addElement('paragraph', parentId); }}
+			style={{
+				padding: '32px 16px',
+				textAlign: 'center',
+				border: `2px dashed ${over ? 'var(--color-accent, #f59e0b)' : '#e5e7eb'}`,
+				borderRadius: 8,
+				background: over ? 'rgba(245,158,11,.04)' : 'transparent',
+				color: '#adb5bd',
+				fontSize: 12,
+				cursor: 'pointer',
+				transition: 'all .15s',
+				width: '100%',
+			}}
+		>
+			{over ? 'Drop here' : '+ Add widget or drag here'}
+		</div>
 	);
 }
 
@@ -167,18 +197,19 @@ function ElementBlock({ node }: { node: ElementNode }) {
 			>
 				{isSelected && <ElementToolbar id={node.id} label="Container" onRemove={removeElement} onDuplicate={duplicateElement} onDragStart={onDragStartExisting} />}
 
-				{node.elements.length === 0 && (
-					<div style={{ padding: 20, textAlign: 'center', color: '#bbb', fontSize: 12, border: '1px dashed #e5e7eb', borderRadius: 6, width: '100%' }}>
-						Drop widgets here
-					</div>
+				{node.elements.length === 0 ? (
+					<ContainerEmptyState parentId={node.id} />
+				) : (
+					<>
+						<DropZone parentId={node.id} index={0} />
+						{node.elements.map((child, i) => (
+							<div key={child.id}>
+								<ElementBlock node={child} />
+								<DropZone parentId={node.id} index={i + 1} />
+							</div>
+						))}
+					</>
 				)}
-				<DropZone parentId={node.id} index={0} />
-				{node.elements.map((child, i) => (
-					<div key={child.id}>
-						<ElementBlock node={child} />
-						<DropZone parentId={node.id} index={i + 1} />
-					</div>
-				))}
 			</div>
 		);
 	}

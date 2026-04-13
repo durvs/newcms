@@ -1,4 +1,4 @@
-import { LayoutGrid, Sliders, Layers } from 'lucide-react';
+import { LayoutGrid, SlidersHorizontal, Layers } from 'lucide-react';
 import { useEditorStore, type PanelView } from '../store/editor-store';
 import { WidgetPicker } from './WidgetPicker';
 import { ControlPanel } from './ControlPanel';
@@ -6,37 +6,66 @@ import { NavigatorTree } from './NavigatorTree';
 
 const tabs: { view: PanelView; icon: typeof LayoutGrid; label: string }[] = [
 	{ view: 'widgets', icon: LayoutGrid, label: 'Widgets' },
-	{ view: 'controls', icon: Sliders, label: 'Controls' },
-	{ view: 'navigator', icon: Layers, label: 'Navigator' },
+	{ view: 'controls', icon: SlidersHorizontal, label: 'Style' },
+	{ view: 'navigator', icon: Layers, label: 'Layers' },
 ];
 
 export function Panel() {
 	const panelView = useEditorStore((s) => s.panelView);
 	const setPanelView = useEditorStore((s) => s.setPanelView);
-	const selectedId = useEditorStore((s) => s.selectedId);
 
 	return (
-		<div className="flex h-full w-[320px] flex-col border-r border-[var(--cm-border)] bg-[var(--cm-surface)]">
-			{/* Tabs */}
-			<div className="flex border-b border-[var(--cm-border)]">
-				{tabs.map((tab) => (
-					<button
-						key={tab.view}
-						onClick={() => setPanelView(tab.view)}
-						className={`flex flex-1 items-center justify-center gap-1.5 py-2.5 text-[11px] font-semibold uppercase tracking-wider transition-colors ${
-							panelView === tab.view
-								? 'border-b-2 border-[var(--color-accent)] text-[var(--color-accent)]'
-								: 'text-[var(--cm-text-muted)] hover:text-[var(--cm-text)]'
-						}`}
-					>
-						<tab.icon className="h-3.5 w-3.5" />
-						{tab.label}
-					</button>
-				))}
+		<div style={{
+			width: 300,
+			height: '100%',
+			display: 'flex',
+			flexDirection: 'column',
+			borderRight: '1px solid var(--cm-border)',
+			background: 'var(--cm-surface)',
+			flexShrink: 0,
+		}}>
+			{/* Tab bar */}
+			<div style={{
+				display: 'flex',
+				borderBottom: '1px solid var(--cm-border)',
+				padding: '0 4px',
+				gap: 0,
+				flexShrink: 0,
+			}}>
+				{tabs.map((tab) => {
+					const active = panelView === tab.view;
+					return (
+						<button
+							key={tab.view}
+							onClick={() => setPanelView(tab.view)}
+							style={{
+								flex: 1,
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								gap: 6,
+								padding: '10px 0',
+								border: 'none',
+								borderBottom: `2px solid ${active ? 'var(--color-accent)' : 'transparent'}`,
+								background: 'transparent',
+								color: active ? 'var(--cm-text)' : 'var(--cm-text-muted)',
+								fontSize: 11,
+								fontWeight: 600,
+								letterSpacing: '0.03em',
+								cursor: 'pointer',
+								transition: 'all .15s',
+								marginBottom: -1,
+							}}
+						>
+							<tab.icon size={14} strokeWidth={active ? 2 : 1.5} />
+							{tab.label}
+						</button>
+					);
+				})}
 			</div>
 
 			{/* Content */}
-			<div className="flex-1 overflow-y-auto">
+			<div style={{ flex: 1, overflow: 'auto' }}>
 				{panelView === 'widgets' && <WidgetPicker />}
 				{panelView === 'controls' && <ControlPanel />}
 				{panelView === 'navigator' && <NavigatorTree />}

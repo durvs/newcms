@@ -1,27 +1,23 @@
 'use client';
 
-import { useParams } from 'next/navigation';
-import { usePost } from '@/hooks/use-posts';
-import { PostEditor } from '@/components/posts/post-editor';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
+/**
+ * Edit post redirects to the visual editor — the builder is the primary editing mode.
+ */
 export default function EditPostPage() {
 	const params = useParams();
-	const id = Number(params.id);
-	const { data: post, isLoading } = usePost(id);
+	const router = useRouter();
+	const id = params.id;
 
-	if (isLoading) {
-		return (
-			<div className="flex items-center justify-center py-20">
-				<div className="h-6 w-6 animate-spin rounded-full border-2 border-border border-t-accent" />
-			</div>
-		);
-	}
+	useEffect(() => {
+		router.replace(`/posts/${id}/visual-editor`);
+	}, [id, router]);
 
-	if (!post) {
-		return (
-			<div className="py-20 text-center text-sm text-text-muted">Post not found</div>
-		);
-	}
-
-	return <PostEditor post={post} />;
+	return (
+		<div className="flex items-center justify-center py-20">
+			<div className="h-6 w-6 animate-spin rounded-full border-2 border-border border-t-accent" />
+		</div>
+	);
 }
