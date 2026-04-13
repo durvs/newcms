@@ -62,10 +62,21 @@ const WIDGET_MAP: Record<string, string> = {
 
 	// Navigation
 	'nav-menu': 'nav-menu',
+	'navigation-menu': 'nav-menu',
 	'mega-menu': 'mega-menu',
 	'search-form': 'search',
 	'table-of-contents': 'toc',
 	'breadcrumbs': 'breadcrumb',
+
+	// Nested / compound
+	'nested-accordion': 'accordion',
+	'image-box': 'icon-box',
+
+	// Third-party / addon widgets → map to closest native
+	'hfe-cart': 'cart',
+	'jkit_product_grid': 'product-grid',
+	'metform': 'form',
+	'rkit-post-grid-post': 'loop-grid',
 
 	// Social
 	'share-buttons': 'share-buttons',

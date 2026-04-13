@@ -446,8 +446,37 @@ function WidgetPreview({ node }: { node: ElementNode }) {
 		case 'tabs':
 			return <div><div style={{ display: 'flex', borderBottom: '2px solid #e9ecef', gap: 0 }}>{['Tab 1', 'Tab 2', 'Tab 3'].map((t, i) => <div key={t} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, color: i === 0 ? 'var(--color-accent)' : '#868e96', borderBottom: i === 0 ? '2px solid var(--color-accent)' : 'none', marginBottom: -2, cursor: 'pointer' }}>{t}</div>)}</div><div style={{ padding: 16, color: '#495057', fontSize: 13 }}>Tab content goes here.</div></div>;
 		case 'accordion':
-		case 'toggle':
+		case 'toggle': {
+			// If this has inner elements (from Elementor nested-accordion), render them
+			if (node.elements && node.elements.length > 0) {
+				return (
+					<div>
+						{node.elements.map((child, i) => {
+							const title = String(child.settings?.title ?? child.settings?.tab_title ?? `Item ${i + 1}`);
+							return (
+								<div key={child.id} style={{ borderBottom: '1px solid #e9ecef' }}>
+									<div style={{ padding: '10px 0', display: 'flex', justifyContent: 'space-between', fontSize: 14, fontWeight: 500, color: '#212529', cursor: 'pointer' }}>
+										{title}
+										<span>{i === 0 ? '−' : '+'}</span>
+									</div>
+									{i === 0 && child.elements && child.elements.length > 0 && (
+										<div style={{ padding: '0 0 10px' }}>
+											{child.elements.map((inner) => (
+												<div key={inner.id} style={{ marginBottom: 4 }}>
+													<WidgetPreview node={inner} />
+												</div>
+											))}
+										</div>
+									)}
+								</div>
+							);
+						})}
+					</div>
+				);
+			}
+			// Fallback: static placeholder
 			return <div>{['Accordion Item 1', 'Accordion Item 2', 'Accordion Item 3'].map((t, i) => <div key={t} style={{ borderBottom: '1px solid #e9ecef' }}><div style={{ padding: '10px 0', display: 'flex', justifyContent: 'space-between', fontSize: 14, fontWeight: 500, color: '#212529', cursor: 'pointer' }}>{t}<span>{i === 0 ? '−' : '+'}</span></div>{i === 0 && <div style={{ padding: '0 0 10px', fontSize: 13, color: '#6c757d' }}>Content for this item.</div>}</div>)}</div>;
+		}
 		case 'icon':
 			return <div style={{ textAlign: 'center', fontSize: 40 }}>⭐</div>;
 		case 'icon-box':
