@@ -1,0 +1,94 @@
+import { useEffect, useCallback } from 'react';
+import { Toolbar } from './Toolbar';
+import { Panel } from '../panel/Panel';
+import { PreviewCanvas } from '../preview/PreviewCanvas';
+import { useEditorStore } from '../store/editor-store';
+import type { ElementNode } from '@newcms/editor';
+
+interface EditorShellProps {
+	documentId: number;
+	documentType?: string;
+	initialElements?: ElementNode[];
+	title?: string;
+	onSave: (elements: ElementNode[]) => Promise<void>;
+	onBack: () => void;
+}
+
+export function EditorShell({
+	documentId,
+	documentType = 'page',
+	initialElements,
+	title,
+	onSave,
+	onBack,
+}: EditorShellProps) {
+	const setDocument = useEditorStore((s) => s.setDocument);
+	const elements = useEditorStore((s) => s.elements);
+	const undo = useEditorStore((s) => s.undo);
+	const redo = useEditorStore((s) => s.redo);
+	const removeElement = useEditorStore((s) => s.removeElement);
+	const duplicateElement = useEditorStore((s) => s.duplicateElement);
+	const selectedId = useEditorStore((s) => s.selectedId);
+
+	// Initialize document
+	useEffect(() => {
+		setDocument(documentId, documentType, initialElements ?? []);
+	}, [documentId, documentType, initialElements, setDocument]);
+
+	// Keyboard shortcuts
+	const handleKeyDown = useCallback(
+		(e: KeyboardEvent) => {
+			const mod = e.metaKey || e.ctrlKey;
+
+			if (mod && e.key === 'z' && !e.shiftKey) {
+				e.preventDefault();
+				undo();
+			}
+			if (mod && e.key === 'z' && e.shiftKey) {
+				e.preventDefault();
+				redo();
+			}
+			if (mod && e.key === 's') {
+				e.preventDefault();
+				onSave(elements);
+			}
+			if ((e.key === 'Delete' || e.key === 'Backspace') && selectedId && !isInputFocused()) {
+				e.preventDefault();
+				removeElement(selectedId);
+			}
+			if (mod && e.key === 'd' && selectedId) {
+				e.preventDefault();
+				duplicateElement(selectedId);
+			}
+		},
+		[undo, redo, elements, onSave, removeElement, duplicateElement, selectedId],
+	);
+
+	useEffect(() => {
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	}, [handleKeyDown]);
+
+	return (
+		<div className="flex h-screen flex-col" style={{ background: 'var(--cm-surface)' }}>
+			<Toolbar
+				onSave={() => onSave(elements)}
+				onBack={onBack}
+				title={title}
+			/>
+			<div className="flex flex-1 overflow-hidden">
+				<Panel />
+				<div className="flex-1 overflow-auto" style={{ background: 'var(--cm-surface-elevated)' }}>
+					<PreviewCanvas />
+				</div>
+			</div>
+		</div>
+	);
+}
+
+function isInputFocused(): boolean {
+	const el = document.activeElement;
+	if (!el) return false;
+	const tag = el.tagName.toLowerCase();
+	return tag === 'input' || tag === 'textarea' || tag === 'select' || (el as HTMLElement).isContentEditable;
+}

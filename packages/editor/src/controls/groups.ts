@@ -1,5 +1,3 @@
-import type { ControlDefinition } from './types';
-
 /**
  * Reusable control groups — expand into multiple CSS properties.
  * When a control has type: 'group' and groupType: 'typography',
@@ -61,7 +59,7 @@ export const CONTROL_GROUPS: Record<string, ControlGroupExpansion[]> = {
 export function expandGroup(
 	controlId: string,
 	groupType: string,
-	selector: string,
+	_selector: string,
 ): { id: string; property: string; suffix: string }[] {
 	const group = CONTROL_GROUPS[groupType];
 	if (!group) return [];

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCreatePost, useUpdatePost } from '@/hooks/use-posts';
-import { ArrowLeft, Save, Eye, Globe, Code2 } from 'lucide-react';
+import { ArrowLeft, Save, Eye, Globe, Code2, Palette } from 'lucide-react';
 import { BlockPreview } from './block-preview';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -74,6 +74,15 @@ export function PostEditor({ post }: PostEditorProps) {
 					</div>
 				</div>
 				<div className="flex items-center gap-2">
+					{!isNew && (
+						<Link
+							href={`/posts/${post?.id}/visual-editor`}
+							className="flex items-center gap-2 rounded-lg border border-accent/30 px-4 py-2 text-[13px] font-medium text-accent transition-colors hover:bg-accent/10"
+						>
+							<Palette className="h-3.5 w-3.5" />
+							Visual Editor
+						</Link>
+					)}
 					{status !== 'publish' && (
 						<button
 							onClick={() => handleSave('draft')}
