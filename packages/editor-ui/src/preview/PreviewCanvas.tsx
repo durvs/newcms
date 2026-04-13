@@ -85,7 +85,7 @@ export function PreviewCanvas() {
 				transition: 'width .3s ease',
 				overflow: 'hidden',
 			}}>
-				<div style={{ padding: 0 }}>
+				<div style={{ padding: 16 }}>
 					<DropZone parentId={null} index={0} />
 					{elements.map((el, i) => (
 						<div key={el.id}>
@@ -252,7 +252,7 @@ function ElementBlock({ node }: { node: ElementNode }) {
 					padding: '16px',
 					minHeight: 48,
 					outline: `2px solid ${outlineColor}`,
-					outlineOffset: 2,
+					outlineOffset: -2,
 					borderRadius: 4,
 					transition: 'outline .12s',
 					...userStyles,
@@ -289,7 +289,7 @@ function ElementBlock({ node }: { node: ElementNode }) {
 			style={{
 				position: 'relative',
 				outline: `2px solid ${outlineColor}`,
-				outlineOffset: 2,
+				outlineOffset: -2,
 				borderRadius: 4,
 				cursor: 'pointer',
 				transition: 'outline .12s',
