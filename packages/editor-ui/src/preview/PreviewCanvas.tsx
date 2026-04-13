@@ -1,7 +1,67 @@
-import { useState, type DragEvent } from 'react';
+import { useState, type DragEvent, type CSSProperties } from 'react';
 import type { ElementNode } from '@newcms/editor';
 import { useEditorStore } from '../store/editor-store';
-import { Plus, GripVertical, Trash2, Copy, ArrowUp, ArrowDown } from 'lucide-react';
+import { GripVertical, Trash2, Copy } from 'lucide-react';
+
+/**
+ * Extract CSS inline styles from element settings.
+ * Maps setting keys to CSS properties.
+ */
+function extractStyles(settings: Record<string, unknown>): CSSProperties {
+	const css: CSSProperties = {};
+	const s = settings;
+
+	// Direct string values
+	if (s.padding) css.padding = String(s.padding);
+	if (s.margin) css.margin = String(s.margin);
+	if (s.backgroundColor) css.backgroundColor = String(s.backgroundColor);
+	if (s.color) css.color = String(s.color);
+	if (s.textAlign) css.textAlign = String(s.textAlign) as CSSProperties['textAlign'];
+	if (s.fontWeight) css.fontWeight = String(s.fontWeight);
+	if (s.position && s.position !== 'static') css.position = String(s.position) as CSSProperties['position'];
+	if (s.overflow) css.overflow = String(s.overflow) as CSSProperties['overflow'];
+
+	// Border
+	if (s.borderStyle && s.borderStyle !== 'none') {
+		css.borderStyle = String(s.borderStyle);
+		if (s.borderColor) css.borderColor = String(s.borderColor);
+		const bw = s.borderWidth;
+		if (bw && typeof bw === 'object' && 'size' in (bw as Record<string, unknown>)) {
+			const v = bw as { size: number; unit: string };
+			css.borderWidth = `${v.size}${v.unit}`;
+		}
+	}
+
+	// Border radius
+	const br = s.borderRadius;
+	if (br && typeof br === 'object' && 'top' in (br as Record<string, unknown>)) {
+		const v = br as { top: number; right: number; bottom: number; left: number; unit: string };
+		css.borderRadius = `${v.top}${v.unit} ${v.right}${v.unit} ${v.bottom}${v.unit} ${v.left}${v.unit}`;
+	}
+
+	// Slider values: { size, unit }
+	const sliderProps: [string, keyof CSSProperties][] = [
+		['fontSize', 'fontSize'],
+		['lineHeight', 'lineHeight'],
+		['width', 'width'],
+		['minHeight', 'minHeight'],
+		['gap', 'gap'],
+	];
+	for (const [key, cssProp] of sliderProps) {
+		const v = s[key];
+		if (v && typeof v === 'object' && 'size' in (v as Record<string, unknown>)) {
+			const sv = v as { size: number; unit: string };
+			(css as Record<string, unknown>)[cssProp] = `${sv.size}${sv.unit}`;
+		} else if (typeof v === 'string' && v) {
+			(css as Record<string, unknown>)[cssProp] = v;
+		}
+	}
+
+	// Z-index
+	if (typeof s.zIndex === 'number') css.zIndex = s.zIndex;
+
+	return css;
+}
 
 export function PreviewCanvas() {
 	const elements = useEditorStore((s) => s.elements);
@@ -173,8 +233,10 @@ function ElementBlock({ node }: { node: ElementNode }) {
 
 	// Container
 	if (node.elType === 'container') {
-		const dir = String(node.settings.direction ?? 'column') as 'row' | 'column';
-		const gap = String(node.settings.gap ?? '16px');
+		const dir = String(node.settings.direction ?? 'column');
+		const justify = String(node.settings.justifyContent ?? 'flex-start');
+		const align = String(node.settings.alignItems ?? 'stretch');
+		const userStyles = extractStyles(node.settings);
 
 		return (
 			<div
@@ -183,16 +245,17 @@ function ElementBlock({ node }: { node: ElementNode }) {
 				onMouseLeave={(e) => { e.stopPropagation(); hoverElement(null); }}
 				style={{
 					position: 'relative',
-					display: 'flex', flexDirection: dir, gap,
-					padding: String(node.settings.padding ?? '16px'),
-					backgroundColor: String(node.settings.backgroundColor ?? ''),
-					color: String(node.settings.color ?? ''),
-					margin: String(node.settings.margin ?? ''),
+					display: 'flex',
+					flexDirection: dir as CSSProperties['flexDirection'],
+					justifyContent: justify,
+					alignItems: align,
+					padding: '16px',
 					minHeight: 48,
 					outline: `2px solid ${outlineColor}`,
 					outlineOffset: 2,
 					borderRadius: 4,
 					transition: 'outline .12s',
+					...userStyles,
 				}}
 			>
 				{isSelected && <ElementToolbar id={node.id} label="Container" onRemove={removeElement} onDuplicate={duplicateElement} onDragStart={onDragStartExisting} />}
@@ -228,12 +291,9 @@ function ElementBlock({ node }: { node: ElementNode }) {
 				outline: `2px solid ${outlineColor}`,
 				outlineOffset: 2,
 				borderRadius: 4,
-				padding: String(node.settings.padding ?? ''),
-				backgroundColor: String(node.settings.backgroundColor ?? ''),
-				color: String(node.settings.color ?? 'inherit'),
-				margin: String(node.settings.margin ?? ''),
 				cursor: 'pointer',
 				transition: 'outline .12s',
+				...extractStyles(node.settings),
 			}}
 		>
 			{isSelected && <ElementToolbar id={node.id} label={node.widgetType ?? 'widget'} onRemove={removeElement} onDuplicate={duplicateElement} onDragStart={onDragStartExisting} />}
@@ -296,10 +356,10 @@ function WidgetPreview({ node }: { node: ElementNode }) {
 	switch (node.widgetType) {
 		case 'heading': {
 			const Tag = `h${s.level ?? 2}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-			return <Tag style={{ margin: 0, color: 'inherit' }}>{String(s.content || 'Add Your Heading Text Here')}</Tag>;
+			return <Tag style={{ margin: 0, color: 'inherit', textAlign: (s.textAlign as string) || undefined }}>{String(s.content || 'Add Your Heading Text Here')}</Tag>;
 		}
 		case 'paragraph':
-			return <p style={{ margin: 0, lineHeight: 1.6 }}>{String(s.content || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis.')}</p>;
+			return <p style={{ margin: 0, lineHeight: 1.6, textAlign: (s.textAlign as string) || undefined }}>{String(s.content || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis.')}</p>;
 		case 'image': {
 			const url = String(s.url ?? '');
 			if (!url) return <div style={{ padding: '40px 20px', textAlign: 'center', background: '#f8f9fa', borderRadius: 8, color: '#adb5bd', fontSize: 13, border: '1px dashed #dee2e6' }}>Click to set image URL</div>;
