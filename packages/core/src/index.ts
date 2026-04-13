@@ -27,3 +27,7 @@ export type {
 	CapabilityContext,
 } from './types';
 export { POST_STATUS, USER_ROLES, HOOK_PRIORITY } from './types';
+export { ShortcodeRegistry } from './shortcode';
+export type { ShortcodeCallback } from './shortcode';
+export { MenuRegistry } from './menu-registry';
+export type { MenuLocation, MenuItem } from './menu-registry';
