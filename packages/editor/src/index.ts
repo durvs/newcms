@@ -7,3 +7,6 @@ export type {
 	BlockSupports,
 	BlockPattern,
 } from './types';
+
+// Element tree (visual builder data model)
+export * from './element-tree/index';
