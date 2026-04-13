@@ -9,6 +9,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { TaxonomyModule } from './modules/taxonomy/taxonomy.module';
 import { OptionsModule } from './modules/options/options.module';
 import { CommentsModule } from './modules/comments/comments.module';
+import { TemplatesModule } from './modules/templates/templates.module';
 
 @Module({
 	imports: [
@@ -21,6 +22,7 @@ import { CommentsModule } from './modules/comments/comments.module';
 		TaxonomyModule,
 		OptionsModule,
 		CommentsModule,
+		TemplatesModule,
 	],
 })
 export class AppModule implements OnModuleInit {

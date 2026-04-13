@@ -14,6 +14,7 @@ import {
 	Moon,
 	MessageSquare,
 	Menu,
+	Layout,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
@@ -23,6 +24,7 @@ import { useState, useEffect } from 'react';
 const navItems = [
 	{ title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
 	{ title: 'Posts', href: '/posts', icon: FileText },
+	{ title: 'Templates', href: '/templates', icon: Layout },
 	{ title: 'Comments', href: '/comments', icon: MessageSquare },
 	{ title: 'Menus', href: '/menus', icon: Menu },
 	{ title: 'Users', href: '/users', icon: Users },
