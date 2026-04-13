@@ -119,7 +119,7 @@ export default function DashboardPage() {
 						{postsData?.posts.map((post) => (
 							<Link
 								key={post.id}
-								href={`/posts/${post.id}/edit`}
+								href={`/editor/${post.id}`}
 								className="group flex items-center justify-between px-5 py-3.5 transition-colors hover:bg-surface/50"
 							>
 								<div className="min-w-0 flex-1">
@@ -172,7 +172,7 @@ export default function DashboardPage() {
 							{draftsData?.posts.slice(0, 3).map((post) => (
 								<Link
 									key={post.id}
-									href={`/posts/${post.id}/edit`}
+									href={`/editor/${post.id}`}
 									className="group flex items-center justify-between px-5 py-3 transition-colors hover:bg-surface/50"
 								>
 									<p className="truncate text-[13px] text-text-muted group-hover:text-text transition-colors">

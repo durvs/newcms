@@ -106,7 +106,7 @@ export default function PostsPage() {
 							{data?.posts.map((post) => (
 								<tr key={post.id} className="group transition-colors hover:bg-surface-overlay/50">
 									<td className="px-5 py-3">
-										<Link href={`/posts/${post.id}/edit`} className="block">
+										<Link href={`/editor/${post.id}`} className="block">
 											<p className="text-[13px] font-medium text-text group-hover:text-accent transition-colors">
 												{post.postTitle || '(no title)'}
 											</p>
@@ -126,7 +126,7 @@ export default function PostsPage() {
 									<td className="px-5 py-3 text-right">
 										<div className="flex items-center justify-end gap-1">
 											<Link
-												href={`/posts/${post.id}/edit`}
+												href={`/editor/${post.id}`}
 												className="rounded-md p-1.5 text-text-faint transition-colors hover:bg-surface hover:text-text"
 												title="Edit"
 											>

@@ -37,7 +37,7 @@ export function PostEditor({ post }: PostEditorProps) {
 				{
 					onSuccess: (data) => {
 						toast.success(saveStatus === 'publish' ? 'Post published' : 'Draft saved');
-						router.push(`/posts/${data.id}/edit`);
+						router.push(`/editor/${data.id}`);
 					},
 					onError: (err) => toast.error(err.message),
 				},
@@ -76,7 +76,7 @@ export function PostEditor({ post }: PostEditorProps) {
 				<div className="flex items-center gap-2">
 					{!isNew && (
 						<Link
-							href={`/posts/${post?.id}/visual-editor`}
+							href={`/editor/${post?.id}`}
 							className="flex items-center gap-2 rounded-lg border border-accent/30 px-4 py-2 text-[13px] font-medium text-accent transition-colors hover:bg-accent/10"
 						>
 							<Palette className="h-3.5 w-3.5" />

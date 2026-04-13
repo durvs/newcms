@@ -12,7 +12,7 @@ export default function EditPostPage() {
 	const id = params.id;
 
 	useEffect(() => {
-		router.replace(`/posts/${id}/visual-editor`);
+		router.replace(`/editor/${id}`);
 	}, [id, router]);
 
 	return (
