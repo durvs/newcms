@@ -355,8 +355,38 @@ function WidgetPreview({ node }: { node: ElementNode }) {
 	const s = node.settings;
 	switch (node.widgetType) {
 		case 'heading': {
-			const Tag = `h${s.level ?? 2}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-			return <Tag style={{ margin: 0, color: 'inherit', textAlign: (s.textAlign as string) || undefined }}>{String(s.content || 'Add Your Heading Text Here')}</Tag>;
+			const level = Number(s.level ?? 2);
+			const Tag = `h${level}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+			const headingSizes: Record<number, { fontSize: string; fontWeight: number; lineHeight: number }> = {
+				1: { fontSize: '2.5em', fontWeight: 700, lineHeight: 1.2 },
+				2: { fontSize: '2em', fontWeight: 700, lineHeight: 1.25 },
+				3: { fontSize: '1.5em', fontWeight: 600, lineHeight: 1.3 },
+				4: { fontSize: '1.25em', fontWeight: 600, lineHeight: 1.35 },
+				5: { fontSize: '1.1em', fontWeight: 600, lineHeight: 1.4 },
+				6: { fontSize: '1em', fontWeight: 600, lineHeight: 1.45 },
+			};
+			const defaults = headingSizes[level] ?? headingSizes[2];
+			// User overrides from Style tab take priority over tag defaults
+			const userFontSize = s.fontSize && typeof s.fontSize === 'object' && 'size' in (s.fontSize as Record<string,unknown>)
+				? `${(s.fontSize as {size:number;unit:string}).size}${(s.fontSize as {size:number;unit:string}).unit}`
+				: undefined;
+			const userFontWeight = s.fontWeight ? String(s.fontWeight) : undefined;
+			const userLineHeight = s.lineHeight && typeof s.lineHeight === 'object' && 'size' in (s.lineHeight as Record<string,unknown>)
+				? `${(s.lineHeight as {size:number;unit:string}).size}${(s.lineHeight as {size:number;unit:string}).unit}`
+				: undefined;
+
+			return (
+				<Tag style={{
+					margin: 0,
+					color: 'inherit',
+					fontSize: userFontSize ?? defaults.fontSize,
+					fontWeight: userFontWeight ? Number(userFontWeight) : defaults.fontWeight,
+					lineHeight: userLineHeight ?? defaults.lineHeight,
+					textAlign: (s.textAlign as string) || undefined,
+				}}>
+					{String(s.content || 'Add Your Heading Text Here')}
+				</Tag>
+			);
 		}
 		case 'paragraph':
 			return <p style={{ margin: 0, lineHeight: 1.6, textAlign: (s.textAlign as string) || undefined }}>{String(s.content || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis.')}</p>;
