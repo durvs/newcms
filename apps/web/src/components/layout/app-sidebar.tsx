@@ -15,6 +15,7 @@ import {
 	MessageSquare,
 	Menu,
 	Layout,
+	ExternalLink,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
@@ -104,6 +105,20 @@ export function AppSidebar() {
 
 			{/* Bottom controls */}
 			<div className="space-y-1 px-2 pb-1">
+				{/* View site */}
+				<a
+					href="/"
+					target="_blank"
+					rel="noopener noreferrer"
+					className={cn(
+						'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium text-text-muted transition-colors hover:bg-surface-elevated hover:text-accent',
+						collapsed && 'justify-center px-0',
+					)}
+				>
+					<ExternalLink className="h-[18px] w-[18px] shrink-0" />
+					{!collapsed && 'View Site'}
+				</a>
+
 				{/* Theme toggle */}
 				<button
 					onClick={toggleTheme}

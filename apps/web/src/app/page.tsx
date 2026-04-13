@@ -1,5 +1,4 @@
-import { redirect } from 'next/navigation';
-
-export default function Home() {
-	redirect('/login');
-}
+/**
+ * Root page — re-exports the public homepage.
+ */
+export { default } from './(public)/page';

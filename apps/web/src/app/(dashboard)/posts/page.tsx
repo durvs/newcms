@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { usePosts, useDeletePost } from '@/hooks/use-posts';
 import Link from 'next/link';
-import { Plus, Search, Trash2, Pencil, MoreHorizontal } from 'lucide-react';
+import { Plus, Search, Trash2, Pencil, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 
 const statusTabs = [
@@ -125,6 +125,15 @@ export default function PostsPage() {
 									</td>
 									<td className="px-5 py-3 text-right">
 										<div className="flex items-center justify-end gap-1">
+											<a
+												href={`/${post.postName}`}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="rounded-md p-1.5 text-text-faint transition-colors hover:bg-surface hover:text-accent"
+												title="View"
+											>
+												<ExternalLink className="h-3.5 w-3.5" />
+											</a>
 											<Link
 												href={`/editor/${post.id}`}
 												className="rounded-md p-1.5 text-text-faint transition-colors hover:bg-surface hover:text-text"
