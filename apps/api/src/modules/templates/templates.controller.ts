@@ -17,13 +17,53 @@ import { DatabaseProvider } from '../../database.provider';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { PermissionGuard } from '../../common/guards/permission.guard';
 import { RequireCapability } from '../../common/decorators/require-capability.decorator';
-import {
-	importKit,
-	convertElementorTree,
-	type KitManifest,
-	type KitSiteSettings,
-	type ElementorNode,
-} from '@newcms/editor';
+import { convertElementorTree, type ElementorNode } from '@newcms/editor';
+
+/**
+ * Envato/Elementor kit manifest format (array-based).
+ */
+interface EnvatoManifestEntry {
+	name: string;
+	screenshot?: string;
+	source: string;
+	preview_url?: string;
+	type: string;
+	category?: string;
+	metadata?: {
+		template_type?: string;
+		include_in_zip?: string;
+		elementor_pro_required?: boolean | null;
+	};
+}
+
+interface EnvatoManifest {
+	manifest_version?: string;
+	title: string;
+	page_builder?: string;
+	kit_version?: string;
+	templates: EnvatoManifestEntry[];
+	required_plugins?: { name: string; slug?: string }[];
+	images?: string[];
+}
+
+/**
+ * Map template_type / name to our post type.
+ */
+function resolvePostType(entry: EnvatoManifestEntry): string {
+	const tmplType = entry.metadata?.template_type ?? '';
+	const name = entry.name.toLowerCase();
+
+	if (tmplType === 'global-styles') return 'builder_global';
+	if (tmplType === 'header' || name.includes('header')) return 'builder_header';
+	if (tmplType === 'footer' || name.includes('footer')) return 'builder_footer';
+	if (tmplType === 'single-post' || name.includes('single')) return 'builder_single_post';
+	if (tmplType === 'single-page' || entry.type === 'page') return 'builder_page';
+	if (tmplType === 'archive' || name.includes('archive') || name.includes('news')) return 'builder_archive';
+	if (tmplType === 'error-404' || name.includes('404')) return 'builder_error_404';
+	if (tmplType === 'search-results') return 'builder_search';
+	if (name.includes('product')) return 'builder_product';
+	return 'builder_section';
+}
 
 @ApiTags('templates')
 @Controller('v2/templates')
@@ -44,103 +84,80 @@ export class TemplatesController {
 		if (!file.originalname.endsWith('.zip')) throw new BadRequestException('File must be a ZIP');
 
 		try {
-			// Extract ZIP
 			const entries = unzipSync(new Uint8Array(file.buffer));
 
-			// Parse manifest
+			// Find manifest
 			const manifestRaw = entries['manifest.json'];
 			if (!manifestRaw) throw new BadRequestException('ZIP missing manifest.json');
-			const manifest: KitManifest = JSON.parse(strFromU8(manifestRaw));
+			const manifest: EnvatoManifest = JSON.parse(strFromU8(manifestRaw));
 
-			// Parse site settings
-			let siteSettings: KitSiteSettings | undefined;
-			if (entries['site-settings.json']) {
-				siteSettings = JSON.parse(strFromU8(entries['site-settings.json']));
-			}
+			const created: { id: number; title: string; type: string; postType: string }[] = [];
+			const errors: string[] = [];
 
-			// Parse template files
-			const templateFiles = new Map<string, Record<string, unknown>>();
-			if (manifest.templates) {
-				for (const id of Object.keys(manifest.templates)) {
-					const path = `templates/${id}.json`;
-					if (entries[path]) {
-						templateFiles.set(id, JSON.parse(strFromU8(entries[path])));
+			for (const entry of manifest.templates) {
+				try {
+					// Read the template JSON from the ZIP
+					const sourcePath = entry.source;
+					const sourceRaw = entries[sourcePath];
+					if (!sourceRaw) {
+						errors.push(`Missing file: ${sourcePath}`);
+						continue;
 					}
-				}
-			}
 
-			// Parse content files
-			const contentFiles = new Map<string, Record<string, unknown>>();
-			if (manifest.content) {
-				for (const [postType, posts] of Object.entries(manifest.content)) {
-					for (const postId of Object.keys(posts)) {
-						const path = `content/${postType}/${postId}.json`;
-						if (entries[path]) {
-							contentFiles.set(`${postType}/${postId}`, JSON.parse(strFromU8(entries[path])));
-						}
+					const templateJson = JSON.parse(strFromU8(sourceRaw));
+					const content = templateJson.content;
+
+					if (!Array.isArray(content)) {
+						errors.push(`Invalid content in ${sourcePath}`);
+						continue;
 					}
+
+					// Convert Elementor tree to NewCMS format
+					const elements = convertElementorTree(content as ElementorNode[]);
+					const postType = resolvePostType(entry);
+
+					// Skip global styles (they're kit settings, not a visual template)
+					if (postType === 'builder_global') {
+						// Could extract site settings here in the future
+						continue;
+					}
+
+					// Create post
+					const post = await this.dbProvider.posts.create({
+						postAuthor: 1,
+						postTitle: entry.name,
+						postType,
+						postStatus: 'publish',
+					});
+
+					// Save builder data
+					await this.dbProvider.posts.meta.add(post.id, '_builder_data', elements);
+					await this.dbProvider.posts.meta.add(post.id, '_builder_edit_mode', 'builder');
+					if (entry.metadata?.template_type) {
+						await this.dbProvider.posts.meta.add(post.id, '_builder_template_type', entry.metadata.template_type);
+					}
+
+					created.push({
+						id: post.id,
+						title: entry.name,
+						type: entry.metadata?.template_type ?? entry.type,
+						postType,
+					});
+				} catch (err) {
+					const msg = err instanceof Error ? err.message : 'Unknown error';
+					errors.push(`${entry.name}: ${msg}`);
 				}
-			}
-
-			// Run the importer
-			const result = importKit(manifest, siteSettings, templateFiles, contentFiles);
-
-			// Create posts for templates
-			const createdTemplates: { id: number; title: string; type: string }[] = [];
-			for (const tmpl of result.templates) {
-				const post = await this.dbProvider.posts.create({
-					postAuthor: 1,
-					postTitle: tmpl.title,
-					postType: `builder_${tmpl.docType.replace(/-/g, '_')}`,
-					postStatus: 'publish',
-				});
-
-				// Save builder data
-				await this.dbProvider.posts.meta.add(post.id, '_builder_data', tmpl.elements);
-				if (tmpl.conditions) {
-					await this.dbProvider.posts.meta.add(post.id, '_builder_conditions', tmpl.conditions);
-				}
-				if (tmpl.location) {
-					await this.dbProvider.posts.meta.add(post.id, '_builder_location', tmpl.location);
-				}
-				await this.dbProvider.posts.meta.add(post.id, '_builder_edit_mode', 'builder');
-
-				createdTemplates.push({ id: post.id, title: tmpl.title, type: tmpl.docType });
-			}
-
-			// Create posts for content
-			const createdContent: { id: number; title: string; type: string }[] = [];
-			for (const item of result.content) {
-				const post = await this.dbProvider.posts.create({
-					postAuthor: 1,
-					postTitle: item.title,
-					postType: item.postType === 'page' ? 'page' : 'post',
-					postStatus: 'publish',
-					postExcerpt: item.excerpt,
-				});
-
-				await this.dbProvider.posts.meta.add(post.id, '_builder_data', item.elements);
-				await this.dbProvider.posts.meta.add(post.id, '_builder_edit_mode', 'builder');
-
-				createdContent.push({ id: post.id, title: item.title, type: item.postType });
-			}
-
-			// Save site settings to design kit option if present
-			if (result.siteSettings) {
-				await this.dbProvider.options.updateOption('builder_design_kit', result.siteSettings);
 			}
 
 			return {
 				success: true,
 				kit: {
-					name: manifest.title ?? manifest.name,
-					version: manifest.version,
+					name: manifest.title,
+					version: manifest.kit_version ?? manifest.manifest_version ?? '1.0',
+					templateCount: manifest.templates.length,
 				},
-				imported: {
-					templates: createdTemplates,
-					content: createdContent,
-					mediaUrls: result.mediaUrls.length,
-				},
+				imported: created,
+				errors: errors.length > 0 ? errors : undefined,
 			};
 		} catch (err) {
 			if (err instanceof BadRequestException) throw err;
@@ -155,7 +172,11 @@ export class TemplatesController {
 		const { QueryEngine } = await import('@newcms/query-engine');
 		const qe = new QueryEngine(this.dbProvider.db);
 		const result = await qe.query({
-			postType: ['builder_header', 'builder_footer', 'builder_single_post', 'builder_single_page', 'builder_archive', 'builder_error_404', 'builder_search_results', 'builder_section', 'builder_page'],
+			postType: [
+				'builder_header', 'builder_footer', 'builder_single_post',
+				'builder_page', 'builder_archive', 'builder_error_404',
+				'builder_search', 'builder_section', 'builder_product',
+			],
 			postStatus: ['publish', 'draft'],
 			perPage: 100,
 		});
