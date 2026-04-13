@@ -31,3 +31,5 @@ export { ShortcodeRegistry } from './shortcode';
 export type { ShortcodeCallback } from './shortcode';
 export { MenuRegistry } from './menu-registry';
 export type { MenuLocation, MenuItem } from './menu-registry';
+export { UrlRewriter } from './url-rewrite';
+export type { RewriteRule, RewriteResult } from './url-rewrite';
