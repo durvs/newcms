@@ -152,36 +152,274 @@ function convertSettings(
 			continue;
 		}
 
-		// Map common setting keys
-		const mapped = mapSettingKey(key, value);
-		if (mapped) {
-			result[mapped.key] = mapped.value;
-		} else {
-			// Preserve unknown settings as-is
-			result[key] = value;
-		}
+		// Map the key
+		mapSettingKey(key, value, result);
 	}
 
 	return result;
 }
 
-function mapSettingKey(key: string, value: unknown): { key: string; value: unknown } | null {
-	// Direct mappings
+/**
+ * Elementor size value: { size: number, unit: string } or { size: number, unit: string, sizes: {} }
+ */
+function convertSize(val: unknown): { size: number; unit: string } | null {
+	if (!val || typeof val !== 'object') return null;
+	const v = val as Record<string, unknown>;
+	if (typeof v.size === 'number' && typeof v.unit === 'string') {
+		return { size: v.size, unit: v.unit || 'px' };
+	}
+	return null;
+}
+
+/**
+ * Elementor dimensions: { top: string, right: string, bottom: string, left: string, unit: string, isLinked: boolean }
+ */
+function convertDimensions(val: unknown): { top: number; right: number; bottom: number; left: number; unit: string; linked: boolean } | null {
+	if (!val || typeof val !== 'object') return null;
+	const v = val as Record<string, unknown>;
+	return {
+		top: parseInt(String(v.top ?? '0'), 10) || 0,
+		right: parseInt(String(v.right ?? '0'), 10) || 0,
+		bottom: parseInt(String(v.bottom ?? '0'), 10) || 0,
+		left: parseInt(String(v.left ?? '0'), 10) || 0,
+		unit: String(v.unit ?? 'px'),
+		linked: v.isLinked === true || v.isLinked === 'true',
+	};
+}
+
+function dimToCSS(d: { top: number; right: number; bottom: number; left: number; unit: string }): string {
+	return `${d.top}${d.unit} ${d.right}${d.unit} ${d.bottom}${d.unit} ${d.left}${d.unit}`;
+}
+
+function mapSettingKey(key: string, value: unknown, result: Record<string, unknown>): void {
+	// ─── Content ─────────────────────────────────────────
 	const directMap: Record<string, string> = {
 		'title': 'content',
 		'editor': 'content',
-		'title_color': 'color',
 		'header_size': 'level',
-		'align': 'textAlign',
-		'text_align': 'textAlign',
 		'space': 'height',
+		'html': 'content',
+		'shortcode': 'content',
+		'selected_icon': 'icon',
+		'link': 'url',
+		'button_text': 'text',
 	};
 
 	if (directMap[key]) {
-		return { key: directMap[key], value };
+		// For link, extract url from object
+		if (key === 'link' && typeof value === 'object' && value !== null) {
+			result.url = (value as Record<string, unknown>).url ?? '';
+		} else {
+			result[directMap[key]] = value;
+		}
+		return;
 	}
 
-	return null;
+	// ─── Alignment ──────────────────────────────────────
+	if (key === 'align' || key === 'text_align') {
+		result.textAlign = value;
+		return;
+	}
+	if (key === 'content_width') {
+		if (value === 'full') result.width = '100%';
+		return;
+	}
+
+	// ─── Typography ─────────────────────────────────────
+	if (key === 'title_color' || key === 'text_color' || key === 'color') {
+		result.color = value;
+		return;
+	}
+	if (key === 'typography_font_family' || key === 'title_typography_font_family') {
+		result.fontFamily = value;
+		return;
+	}
+	if (key === 'typography_font_size' || key === 'title_typography_font_size') {
+		const s = convertSize(value);
+		if (s) result.fontSize = s;
+		return;
+	}
+	if (key === 'typography_font_weight' || key === 'title_typography_font_weight') {
+		result.fontWeight = String(value);
+		return;
+	}
+	if (key === 'typography_line_height' || key === 'title_typography_line_height') {
+		const s = convertSize(value);
+		if (s) result.lineHeight = s;
+		return;
+	}
+	if (key === 'typography_letter_spacing') {
+		const s = convertSize(value);
+		if (s) result.letterSpacing = s;
+		return;
+	}
+	if (key === 'typography_text_transform') {
+		result.textTransform = value;
+		return;
+	}
+	if (key === 'typography_font_style') {
+		result.fontStyle = value;
+		return;
+	}
+	if (key === 'typography_text_decoration') {
+		result.textDecoration = value;
+		return;
+	}
+
+	// ─── Background ─────────────────────────────────────
+	if (key === 'background_color' || key === 'background_background_color') {
+		result.backgroundColor = value;
+		return;
+	}
+	if (key === 'background_image') {
+		if (typeof value === 'object' && value !== null) {
+			const img = value as Record<string, unknown>;
+			if (img.url) result.backgroundImage = `url(${img.url})`;
+		}
+		return;
+	}
+
+	// ─── Spacing ────────────────────────────────────────
+	if (key === 'padding') {
+		const d = convertDimensions(value);
+		if (d) {
+			result._padding = d;
+			result.padding = dimToCSS(d);
+		}
+		return;
+	}
+	if (key === 'margin') {
+		const d = convertDimensions(value);
+		if (d) {
+			result._margin = d;
+			result.margin = dimToCSS(d);
+		}
+		return;
+	}
+
+	// ─── Border ─────────────────────────────────────────
+	if (key === 'border_border') {
+		result.borderStyle = value || 'none';
+		return;
+	}
+	if (key === 'border_width') {
+		const d = convertDimensions(value);
+		if (d) result.borderWidth = { size: d.top, unit: d.unit };
+		return;
+	}
+	if (key === 'border_color') {
+		result.borderColor = value;
+		return;
+	}
+	if (key === 'border_radius') {
+		const d = convertDimensions(value);
+		if (d) result.borderRadius = d;
+		return;
+	}
+
+	// ─── Shadow ─────────────────────────────────────────
+	if (key === 'box_shadow_box_shadow') {
+		if (typeof value === 'object' && value !== null) {
+			const s = value as Record<string, unknown>;
+			result.shadowColor = s.color ?? '';
+			result.shadowBlur = { size: Number(s.blur ?? 0), unit: 'px' };
+		}
+		return;
+	}
+
+	// ─── Layout (containers) ────────────────────────────
+	if (key === 'flex_direction' || key === 'container_type') {
+		if (value === 'row' || value === 'column' || value === 'row-reverse' || value === 'column-reverse') {
+			result.direction = value;
+		}
+		return;
+	}
+	if (key === 'flex_justify_content' || key === 'justify_content') {
+		result.justifyContent = value;
+		return;
+	}
+	if (key === 'flex_align_items' || key === 'align_items') {
+		result.alignItems = value;
+		return;
+	}
+	if (key === 'flex_gap' || key === 'gap') {
+		const s = convertSize(value);
+		if (s) result.gap = s;
+		return;
+	}
+	if (key === 'flex_wrap') {
+		result.flexWrap = value;
+		return;
+	}
+
+	// ─── Width / Height ─────────────────────────────────
+	if (key === 'width' || key === 'custom_width') {
+		const s = convertSize(value);
+		if (s) result.width = s;
+		return;
+	}
+	if (key === 'min_height') {
+		const s = convertSize(value);
+		if (s) result.minHeight = s;
+		return;
+	}
+	if (key === 'height') {
+		const s = convertSize(value);
+		if (s) result.height = `${s.size}${s.unit}`;
+		else if (typeof value === 'string') result.height = value;
+		return;
+	}
+
+	// ─── Position ───────────────────────────────────────
+	if (key === 'position') {
+		result.position = value;
+		return;
+	}
+	if (key === '_z_index') {
+		result.zIndex = Number(value) || 0;
+		return;
+	}
+
+	// ─── Overflow ───────────────────────────────────────
+	if (key === 'overflow') {
+		result.overflow = value;
+		return;
+	}
+
+	// ─── Image widget ───────────────────────────────────
+	if (key === 'image') {
+		if (typeof value === 'object' && value !== null) {
+			const img = value as Record<string, unknown>;
+			result.url = img.url ?? '';
+			if (img.alt) result.alt = img.alt;
+		}
+		return;
+	}
+	if (key === 'caption') {
+		result.caption = value;
+		return;
+	}
+
+	// ─── Button ─────────────────────────────────────────
+	if (key === 'text' || key === 'button_type') {
+		result[key] = value;
+		return;
+	}
+
+	// ─── CSS classes ────────────────────────────────────
+	if (key === '_css_classes' || key === 'css_classes') {
+		result.cssClasses = value;
+		return;
+	}
+
+	// ─── Custom CSS ─────────────────────────────────────
+	if (key === 'custom_css') {
+		result.customCss = value;
+		return;
+	}
+
+	// Preserve anything not explicitly mapped
+	result[key] = value;
 }
 
 /**
