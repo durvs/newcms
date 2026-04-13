@@ -404,8 +404,15 @@ function WidgetPreview({ node }: { node: ElementNode }) {
 				</Tag>
 			);
 		}
-		case 'paragraph':
-			return <p style={{ margin: 0, lineHeight: 1.6, textAlign: (s.textAlign as string) || undefined }}>{String(s.content || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis.')}</p>;
+		case 'paragraph': {
+			const textContent = String(s.content || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.');
+			const hasHtml = /<[a-z][\s\S]*>/i.test(textContent);
+			// Content comes from CMS builder data (trusted, admin-authored)
+			if (hasHtml) {
+				return <div style={{ margin: 0, lineHeight: 1.6, textAlign: (s.textAlign as string) || undefined }} dangerouslySetInnerHTML={{ __html: textContent }} />;  // nosemgrep: react-dangerouslysetinnerhtml
+			}
+			return <p style={{ margin: 0, lineHeight: 1.6, textAlign: (s.textAlign as string) || undefined }}>{textContent}</p>;
+		}
 		case 'image': {
 			const url = String(s.url ?? '');
 			if (!url) return <div style={{ padding: '40px 20px', textAlign: 'center', background: '#f8f9fa', borderRadius: 8, color: '#adb5bd', fontSize: 13, border: '1px dashed #dee2e6' }}>Click to set image URL</div>;
@@ -447,25 +454,40 @@ function WidgetPreview({ node }: { node: ElementNode }) {
 			return <div><div style={{ display: 'flex', borderBottom: '2px solid #e9ecef', gap: 0 }}>{['Tab 1', 'Tab 2', 'Tab 3'].map((t, i) => <div key={t} style={{ padding: '8px 16px', fontSize: 13, fontWeight: 500, color: i === 0 ? 'var(--color-accent)' : '#868e96', borderBottom: i === 0 ? '2px solid var(--color-accent)' : 'none', marginBottom: -2, cursor: 'pointer' }}>{t}</div>)}</div><div style={{ padding: 16, color: '#495057', fontSize: 13 }}>Tab content goes here.</div></div>;
 		case 'accordion':
 		case 'toggle': {
-			// If this has inner elements (from Elementor nested-accordion), render them
 			if (node.elements && node.elements.length > 0) {
 				return (
-					<div>
+					<div style={{ border: '1px solid #e9ecef', borderRadius: 8, overflow: 'hidden' }}>
 						{node.elements.map((child, i) => {
 							const title = String(child.settings?.title ?? child.settings?.tab_title ?? `Item ${i + 1}`);
 							return (
-								<div key={child.id} style={{ borderBottom: '1px solid #e9ecef' }}>
-									<div style={{ padding: '10px 0', display: 'flex', justifyContent: 'space-between', fontSize: 14, fontWeight: 500, color: '#212529', cursor: 'pointer' }}>
+								<div key={child.id} style={{ borderBottom: i < node.elements.length - 1 ? '1px solid #e9ecef' : 'none' }}>
+									<div style={{
+										padding: '14px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+										fontSize: 15, fontWeight: 600, color: '#1e293b', cursor: 'pointer',
+										background: i === 0 ? '#f8fafc' : 'transparent',
+									}}>
 										{title}
-										<span>{i === 0 ? '−' : '+'}</span>
+										<span style={{ fontSize: 18, color: '#94a3b8', fontWeight: 300 }}>{i === 0 ? '−' : '+'}</span>
 									</div>
-									{i === 0 && child.elements && child.elements.length > 0 && (
-										<div style={{ padding: '0 0 10px' }}>
-											{child.elements.map((inner) => (
-												<div key={inner.id} style={{ marginBottom: 4 }}>
-													<WidgetPreview node={inner} />
-												</div>
-											))}
+									{i === 0 && (
+										<div style={{ padding: '0 16px 16px' }}>
+											{child.elements && child.elements.length > 0 ? (
+												child.elements.map((inner) => (
+													<div key={inner.id} style={{ marginBottom: 8 }}>
+														{inner.elType === 'container' ? (
+															inner.elements.map((deep) => (
+																<div key={deep.id} style={{ marginBottom: 4 }}>
+																	<WidgetPreview node={deep} />
+																</div>
+															))
+														) : (
+															<WidgetPreview node={inner} />
+														)}
+													</div>
+												))
+											) : (
+												<p style={{ margin: 0, fontSize: 14, color: '#64748b', lineHeight: 1.7 }}>Accordion content</p>
+											)}
 										</div>
 									)}
 								</div>
@@ -474,8 +496,18 @@ function WidgetPreview({ node }: { node: ElementNode }) {
 					</div>
 				);
 			}
-			// Fallback: static placeholder
-			return <div>{['Accordion Item 1', 'Accordion Item 2', 'Accordion Item 3'].map((t, i) => <div key={t} style={{ borderBottom: '1px solid #e9ecef' }}><div style={{ padding: '10px 0', display: 'flex', justifyContent: 'space-between', fontSize: 14, fontWeight: 500, color: '#212529', cursor: 'pointer' }}>{t}<span>{i === 0 ? '−' : '+'}</span></div>{i === 0 && <div style={{ padding: '0 0 10px', fontSize: 13, color: '#6c757d' }}>Content for this item.</div>}</div>)}</div>;
+			return (
+				<div style={{ border: '1px solid #e9ecef', borderRadius: 8, overflow: 'hidden' }}>
+					{['Accordion Item 1', 'Accordion Item 2', 'Accordion Item 3'].map((t, i) => (
+						<div key={t} style={{ borderBottom: i < 2 ? '1px solid #e9ecef' : 'none' }}>
+							<div style={{ padding: '14px 16px', display: 'flex', justifyContent: 'space-between', fontSize: 15, fontWeight: 600, color: '#1e293b', cursor: 'pointer', background: i === 0 ? '#f8fafc' : 'transparent' }}>
+								{t}<span style={{ fontSize: 18, color: '#94a3b8', fontWeight: 300 }}>{i === 0 ? '−' : '+'}</span>
+							</div>
+							{i === 0 && <div style={{ padding: '0 16px 16px', fontSize: 14, color: '#64748b', lineHeight: 1.7 }}>Content for this item goes here.</div>}
+						</div>
+					))}
+				</div>
+			);
 		}
 		case 'icon':
 			return <div style={{ textAlign: 'center', fontSize: 40 }}>⭐</div>;
