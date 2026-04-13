@@ -12,9 +12,10 @@ next-env.d.ts
 .env.*.local
 .npmrc
 
-# IDE
+# IDE & tools
 .vscode/
 .idea/
+.claude/
 *.swp
 *.swo
 .DS_Store
