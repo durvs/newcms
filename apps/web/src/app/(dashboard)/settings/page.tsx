@@ -16,10 +16,19 @@ const fields: SettingField[] = [
 	{ key: 'blogname', label: 'Site Title', description: 'The name of your site' },
 	{ key: 'blogdescription', label: 'Tagline', description: 'A short description of your site' },
 	{ key: 'siteurl', label: 'Site URL', description: 'The full URL of your site' },
-	{ key: 'posts_per_page', label: 'Posts per Page', description: 'Number of posts to show per page', type: 'number' },
+	{
+		key: 'posts_per_page',
+		label: 'Posts per Page',
+		description: 'Number of posts to show per page',
+		type: 'number',
+	},
 	{ key: 'date_format', label: 'Date Format', description: 'How dates are displayed' },
 	{ key: 'time_format', label: 'Time Format', description: 'How times are displayed' },
-	{ key: 'permalink_structure', label: 'Permalink Structure', description: 'URL structure for posts' },
+	{
+		key: 'permalink_structure',
+		label: 'Permalink Structure',
+		description: 'URL structure for posts',
+	},
 ];
 
 export default function SettingsPage() {
@@ -32,7 +41,7 @@ export default function SettingsPage() {
 		if (settings) {
 			const v: Record<string, string> = {};
 			for (const f of fields) {
-				v[f.key] = String((settings as Record<string, unknown>)[f.key] ?? '');
+				v[f.key] = String((settings as unknown as Record<string, unknown>)[f.key] ?? '');
 			}
 			setValues(v);
 		}
@@ -63,7 +72,9 @@ export default function SettingsPage() {
 	return (
 		<div>
 			<div className="mb-6 animate-fade-in-up">
-				<p className="text-xs font-medium uppercase tracking-widest text-text-muted font-mono">Configuration</p>
+				<p className="text-xs font-medium uppercase tracking-widest text-text-muted font-mono">
+					Configuration
+				</p>
 				<h1 className="mt-1 text-2xl font-bold tracking-tight text-text">Settings</h1>
 			</div>
 

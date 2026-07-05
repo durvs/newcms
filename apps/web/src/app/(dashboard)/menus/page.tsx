@@ -22,9 +22,13 @@ export default function MenusPage() {
 	const [activeLocation, setActiveLocation] = useState('primary');
 	const [items, setItems] = useState<MenuItemLocal[]>([
 		{ id: '1', title: 'Home', url: '/', type: 'custom', children: [] },
-		{ id: '2', title: 'About', url: '/about', type: 'page', children: [
-			{ id: '3', title: 'Our Team', url: '/about/team', type: 'page', children: [] },
-		]},
+		{
+			id: '2',
+			title: 'About',
+			url: '/about',
+			type: 'page',
+			children: [{ id: '3', title: 'Our Team', url: '/about/team', type: 'page', children: [] }],
+		},
 		{ id: '4', title: 'Blog', url: '/blog', type: 'custom', children: [] },
 		{ id: '5', title: 'Contact', url: '/contact', type: 'page', children: [] },
 	]);
@@ -33,23 +37,28 @@ export default function MenusPage() {
 
 	function addItem() {
 		if (!newTitle.trim() || !newUrl.trim()) return;
-		setItems([...items, {
-			id: String(Date.now()),
-			title: newTitle,
-			url: newUrl,
-			type: 'custom',
-			children: [],
-		}]);
+		setItems([
+			...items,
+			{
+				id: String(Date.now()),
+				title: newTitle,
+				url: newUrl,
+				type: 'custom',
+				children: [],
+			},
+		]);
 		setNewTitle('');
 		setNewUrl('');
 		toast.success('Menu item added');
 	}
 
 	function removeItem(id: string) {
-		setItems(items.filter((item) => {
-			item.children = item.children.filter((c) => c.id !== id);
-			return item.id !== id;
-		}));
+		setItems(
+			items.filter((item) => {
+				item.children = item.children.filter((c) => c.id !== id);
+				return item.id !== id;
+			}),
+		);
 		toast.success('Menu item removed');
 	}
 
@@ -83,14 +92,23 @@ export default function MenusPage() {
 	return (
 		<div>
 			<div className="mb-6 animate-fade-in-up">
-				<p className="text-xs font-medium uppercase tracking-widest text-text-muted font-mono">Navigation</p>
+				<p className="text-xs font-medium uppercase tracking-widest text-text-muted font-mono">
+					Navigation
+				</p>
 				<h1 className="mt-1 text-2xl font-bold tracking-tight text-text">Menus</h1>
+			</div>
+
+			<div className="mb-6 rounded-lg border border-accent/30 bg-accent/10 px-4 py-3 text-[13px] text-text-muted animate-fade-in-up">
+				<strong className="font-semibold text-text">UI preview only.</strong> Menu management is not
+				wired to the API yet — changes here are not persisted.
 			</div>
 
 			<div className="grid gap-6 lg:grid-cols-[240px_1fr] animate-fade-in-up-delay-1">
 				{/* Locations sidebar */}
 				<div className="space-y-1">
-					<p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-text-faint">Locations</p>
+					<p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-text-faint">
+						Locations
+					</p>
 					{defaultLocations.map((loc) => (
 						<button
 							key={loc.name}
@@ -128,7 +146,9 @@ export default function MenusPage() {
 
 					{/* Add item form */}
 					<div className="rounded-xl border border-border bg-surface-elevated p-4">
-						<p className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-muted">Add Custom Link</p>
+						<p className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-muted">
+							Add Custom Link
+						</p>
 						<div className="flex gap-2">
 							<input
 								type="text"
