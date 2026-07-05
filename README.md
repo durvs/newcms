@@ -37,6 +37,19 @@ A modern CMS built from scratch in TypeScript — a WordPress-inspired content m
 
 Node 22+ · TypeScript 5.9 (strict) · pnpm 10 + Turborepo · NestJS 11 · Next.js 15 / React 19 · Tailwind CSS 4 · Drizzle ORM · PostgreSQL 17 · Redis 7 · Vitest
 
+## Create a new project
+
+The fastest way to start your own site from this template:
+
+```bash
+pnpm create newcms my-site
+# or: npm create newcms@latest my-site
+```
+
+This clones the template, generates a `.env` with a fresh `AUTH_SECRET`,
+initializes git, and prints the next steps — including the agent instructions
+(`AGENTS.md`) that ship with every new project.
+
 ## Quickstart
 
 Requirements: Node.js 22+, pnpm 10+, Docker (or any container runtime with compose).
@@ -76,6 +89,15 @@ The seed creates the admin user, default options and roles, a "Hello World!" pos
 | Dashboard                                    | Visual editor                                        | Public site                                      |
 | -------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------ |
 | ![Dashboard](docs/screenshots/dashboard.png) | ![Visual editor](docs/screenshots/visual-editor.png) | ![Public site](docs/screenshots/public-site.png) |
+
+## For AI agents
+
+Project-specific decisions are first-class here: [`AGENTS.md`](AGENTS.md) is
+the entry point for AI coding agents (architecture map, commands, and the
+rules that bite), and [`docs/decisions/`](docs/decisions) holds short ADRs
+with the _why_ behind non-obvious choices. `CLAUDE.md` simply imports
+`AGENTS.md`, so Claude Code and agents.md-compatible tools read the same
+source of truth.
 
 ## Design documents
 
