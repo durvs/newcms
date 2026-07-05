@@ -26,6 +26,5 @@ docker/data/
 # Logs
 *.log
 
-# Specs (private, not part of the codebase)
-CLEAN-ROOM-SPEC*.md
-REVERSE-ENGINEERING-PROMPT.md
+# Playwright MCP artifacts
+.playwright-mcp/

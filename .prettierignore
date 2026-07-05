@@ -3,3 +3,7 @@ dist
 build
 .turbo
 pnpm-lock.yaml
+.next
+next-env.d.ts
+coverage
+docker

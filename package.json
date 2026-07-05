@@ -1,35 +1,31 @@
 {
-  "name": "cms",
-  "private": true,
-  "packageManager": "pnpm@10.6.5",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@nestjs/core",
-      "@scarf/scarf",
-      "bcrypt"
-    ]
-  },
-  "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "typecheck": "turbo run typecheck",
-    "test": "turbo run test",
-    "test:watch": "turbo run test:watch",
-    "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md}\"",
-    "clean": "turbo run clean && rm -rf node_modules",
-    "db:generate": "turbo run db:generate --filter=@newcms/database",
-    "db:migrate": "turbo run db:migrate --filter=@newcms/database",
-    "db:seed": "turbo run db:seed --filter=@newcms/database",
-    "env:start": "docker compose up -d",
-    "env:stop": "docker compose down",
-    "env:restart": "docker compose down && docker compose up -d",
-    "env:reset": "docker compose down -v && docker compose up -d"
-  },
-  "devDependencies": {
-    "@newcms/config": "workspace:*",
-    "prettier": "^3.5.3",
-    "turbo": "^2.9.6"
-  }
+	"name": "newcms",
+	"private": true,
+	"packageManager": "pnpm@10.6.5",
+	"engines": {
+		"node": ">=22"
+	},
+	"scripts": {
+		"build": "turbo run build",
+		"dev": "turbo run dev --concurrency 11",
+		"lint": "turbo run lint",
+		"typecheck": "turbo run typecheck",
+		"test": "turbo run test",
+		"test:watch": "turbo run test:watch",
+		"format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
+		"format:check": "prettier --check \"**/*.{ts,tsx,js,json,md}\"",
+		"clean": "turbo run clean && rm -rf node_modules",
+		"db:generate": "turbo run db:generate --filter=@newcms/database",
+		"db:migrate": "turbo run db:migrate --filter=@newcms/database",
+		"db:seed": "turbo run db:seed --filter=@newcms/database",
+		"env:start": "docker compose up -d",
+		"env:stop": "docker compose down",
+		"env:restart": "docker compose down && docker compose up -d",
+		"env:reset": "docker compose down -v && docker compose up -d"
+	},
+	"devDependencies": {
+		"@newcms/config": "workspace:*",
+		"prettier": "^3.5.3",
+		"turbo": "^2.9.6"
+	}
 }
