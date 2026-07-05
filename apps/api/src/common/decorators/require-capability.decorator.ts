@@ -9,5 +9,4 @@ export const CAPABILITY_KEY = 'required_capability';
  *   @RequireCapability('edit_posts')
  *   @UseGuards(AuthGuard, PermissionGuard)
  */
-export const RequireCapability = (capability: string) =>
-	SetMetadata(CAPABILITY_KEY, capability);
+export const RequireCapability = (capability: string) => SetMetadata(CAPABILITY_KEY, capability);

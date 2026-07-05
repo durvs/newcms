@@ -109,9 +109,7 @@ export class ExtensionRegistry {
 		// Check dependencies
 		const unmet = this.getUnmetDependencies(slug);
 		if (unmet.length > 0) {
-			throw new Error(
-				`Cannot activate "${slug}": missing dependencies: ${unmet.join(', ')}`,
-			);
+			throw new Error(`Cannot activate "${slug}": missing dependencies: ${unmet.join(', ')}`);
 		}
 
 		entry.status = 'active';
@@ -188,9 +186,7 @@ export class ExtensionRegistry {
 	 * Get active extensions that depend on the given extension.
 	 */
 	getDependents(slug: string): ExtensionEntry[] {
-		return this.getActive().filter((entry) =>
-			entry.manifest.dependencies?.includes(slug),
-		);
+		return this.getActive().filter((entry) => entry.manifest.dependencies?.includes(slug));
 	}
 
 	/**

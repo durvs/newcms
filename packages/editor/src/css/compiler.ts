@@ -2,7 +2,12 @@ import type { ElementNode } from '../element-tree/types';
 import type { WidgetControlSchema, ControlDefinition } from '../controls/types';
 import { expandGroup, CONTROL_GROUPS } from '../controls/groups';
 import { generateRule } from './selectors';
-import { getMediaQuery, getResponsiveValue, getOrderedBreakpoints, type Breakpoint } from './responsive';
+import {
+	getMediaQuery,
+	getResponsiveValue,
+	getOrderedBreakpoints,
+	type Breakpoint,
+} from './responsive';
 import { walkTree } from '../element-tree/traversal';
 
 /**

@@ -71,11 +71,16 @@ export default function ImportTemplatePage() {
 	return (
 		<div>
 			<div className="mb-6 flex items-center gap-3 animate-fade-in-up">
-				<Link href="/templates" className="rounded-lg p-2 text-text-muted hover:bg-surface-elevated hover:text-text transition-colors">
+				<Link
+					href="/templates"
+					className="rounded-lg p-2 text-text-muted hover:bg-surface-elevated hover:text-text transition-colors"
+				>
 					<ArrowLeft className="h-4 w-4" />
 				</Link>
 				<div>
-					<p className="text-xs font-medium uppercase tracking-widest text-text-muted font-mono">Theme Builder</p>
+					<p className="text-xs font-medium uppercase tracking-widest text-text-muted font-mono">
+						Theme Builder
+					</p>
 					<h1 className="mt-0.5 text-xl font-bold tracking-tight text-text">Import Template Kit</h1>
 				</div>
 			</div>
@@ -84,12 +89,24 @@ export default function ImportTemplatePage() {
 				{/* Drop zone */}
 				{!result && (
 					<div
-						onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+						onDragOver={(e) => {
+							e.preventDefault();
+							setDragOver(true);
+						}}
 						onDragLeave={() => setDragOver(false)}
-						onDrop={(e) => { e.preventDefault(); setDragOver(false); const f = e.dataTransfer.files[0]; if (f) handleFile(f); }}
+						onDrop={(e) => {
+							e.preventDefault();
+							setDragOver(false);
+							const f = e.dataTransfer.files[0];
+							if (f) handleFile(f);
+						}}
 						onClick={() => fileRef.current?.click()}
 						className={`cursor-pointer rounded-xl border-2 border-dashed p-12 text-center transition-all ${
-							dragOver ? 'border-accent bg-accent/5' : file ? 'border-accent/40 bg-surface-elevated' : 'border-border hover:border-text-faint'
+							dragOver
+								? 'border-accent bg-accent/5'
+								: file
+									? 'border-accent/40 bg-surface-elevated'
+									: 'border-border hover:border-text-faint'
 						}`}
 					>
 						<input
@@ -97,7 +114,10 @@ export default function ImportTemplatePage() {
 							type="file"
 							accept=".zip"
 							className="hidden"
-							onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
+							onChange={(e) => {
+								const f = e.target.files?.[0];
+								if (f) handleFile(f);
+							}}
 						/>
 
 						{file ? (
@@ -105,7 +125,9 @@ export default function ImportTemplatePage() {
 								<FileArchive className="h-10 w-10 text-accent" />
 								<div>
 									<p className="text-sm font-semibold text-text">{file.name}</p>
-									<p className="text-xs text-text-muted mt-1">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+									<p className="text-xs text-text-muted mt-1">
+										{(file.size / 1024 / 1024).toFixed(2)} MB
+									</p>
 								</div>
 								<p className="text-xs text-text-faint">Click to change file</p>
 							</div>
@@ -114,7 +136,9 @@ export default function ImportTemplatePage() {
 								<Upload className="h-10 w-10 text-text-faint" />
 								<div>
 									<p className="text-sm font-semibold text-text">Drop your template kit here</p>
-									<p className="text-xs text-text-muted mt-1">or click to browse — accepts .zip files</p>
+									<p className="text-xs text-text-muted mt-1">
+										or click to browse — accepts .zip files
+									</p>
 								</div>
 							</div>
 						)}
@@ -137,9 +161,13 @@ export default function ImportTemplatePage() {
 						className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-accent py-3 text-sm font-semibold text-surface transition-all hover:bg-accent-hover active:scale-[0.98] disabled:opacity-50"
 					>
 						{importing ? (
-							<><Loader2 className="h-4 w-4 animate-spin" /> Importing...</>
+							<>
+								<Loader2 className="h-4 w-4 animate-spin" /> Importing...
+							</>
 						) : (
-							<><Upload className="h-4 w-4" /> Import Kit</>
+							<>
+								<Upload className="h-4 w-4" /> Import Kit
+							</>
 						)}
 					</button>
 				)}
@@ -153,7 +181,9 @@ export default function ImportTemplatePage() {
 							</div>
 							<div>
 								<p className="text-sm font-semibold text-text">Import successful</p>
-								<p className="text-xs text-text-muted">{result.kit.name} v{result.kit.version}</p>
+								<p className="text-xs text-text-muted">
+									{result.kit.name} v{result.kit.version}
+								</p>
 							</div>
 						</div>
 
@@ -187,18 +217,26 @@ export default function ImportTemplatePage() {
 								</p>
 								<div className="space-y-1">
 									{result.errors.map((err, i) => (
-										<p key={i} className="text-xs text-error-soft">{err}</p>
+										<p key={i} className="text-xs text-error-soft">
+											{err}
+										</p>
 									))}
 								</div>
 							</div>
 						)}
 
 						<div className="mt-4 flex gap-2">
-							<Link href="/templates" className="flex-1 rounded-lg border border-border py-2 text-center text-sm font-medium text-text-muted hover:bg-surface hover:text-text transition-colors">
+							<Link
+								href="/templates"
+								className="flex-1 rounded-lg border border-border py-2 text-center text-sm font-medium text-text-muted hover:bg-surface hover:text-text transition-colors"
+							>
 								View Templates
 							</Link>
 							<button
-								onClick={() => { setFile(null); setResult(null); }}
+								onClick={() => {
+									setFile(null);
+									setResult(null);
+								}}
 								className="flex-1 rounded-lg bg-accent py-2 text-center text-sm font-semibold text-surface hover:bg-accent-hover transition-colors"
 							>
 								Import Another

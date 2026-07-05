@@ -62,9 +62,7 @@ export default function DashboardPage() {
 					<p className="text-xs font-medium uppercase tracking-widest text-text-muted font-mono">
 						Overview
 					</p>
-					<h1 className="mt-1 text-2xl font-bold tracking-tight text-text">
-						Dashboard
-					</h1>
+					<h1 className="mt-1 text-2xl font-bold tracking-tight text-text">Dashboard</h1>
 				</div>
 				<Link
 					href="/posts/new"
@@ -90,9 +88,7 @@ export default function DashboardPage() {
 								<stat.icon className={`h-4 w-4 ${stat.color}`} />
 							</div>
 						</div>
-						<p className="mt-3 text-3xl font-bold tracking-tight text-text">
-							{stat.value}
-						</p>
+						<p className="mt-3 text-3xl font-bold tracking-tight text-text">{stat.value}</p>
 					</div>
 				))}
 			</div>
@@ -182,9 +178,7 @@ export default function DashboardPage() {
 								</Link>
 							))}
 							{(!draftsData || draftsData.posts.length === 0) && (
-								<p className="px-5 py-6 text-center text-xs text-text-muted">
-									No drafts
-								</p>
+								<p className="px-5 py-6 text-center text-xs text-text-muted">No drafts</p>
 							)}
 						</div>
 					</div>

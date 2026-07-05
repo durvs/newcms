@@ -39,8 +39,14 @@ export function usePost(id: number) {
 export function useCreatePost() {
 	const qc = useQueryClient();
 	return useMutation({
-		mutationFn: (data: { title: string; content?: string; excerpt?: string; status?: string; type?: string; slug?: string }) =>
-			api.post<Post>('/posts', data),
+		mutationFn: (data: {
+			title: string;
+			content?: string;
+			excerpt?: string;
+			status?: string;
+			type?: string;
+			slug?: string;
+		}) => api.post<Post>('/posts', data),
 		onSuccess: () => {
 			qc.invalidateQueries({ queryKey: ['posts'] });
 		},
@@ -50,8 +56,13 @@ export function useCreatePost() {
 export function useUpdatePost(id: number) {
 	const qc = useQueryClient();
 	return useMutation({
-		mutationFn: (data: { title?: string; content?: string; excerpt?: string; status?: string; slug?: string }) =>
-			api.put<Post>(`/posts/${id}`, data),
+		mutationFn: (data: {
+			title?: string;
+			content?: string;
+			excerpt?: string;
+			status?: string;
+			slug?: string;
+		}) => api.put<Post>(`/posts/${id}`, data),
 		onSuccess: () => {
 			qc.invalidateQueries({ queryKey: ['posts'] });
 			qc.invalidateQueries({ queryKey: ['post', id] });

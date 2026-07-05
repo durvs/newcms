@@ -7,11 +7,7 @@ import type { PostRow } from './post-repository';
  * Fields that are tracked for revision diffing.
  * If none of these change, no revision is created.
  */
-const REVISION_FIELDS = [
-	'postTitle',
-	'postContent',
-	'postExcerpt',
-] as const;
+const REVISION_FIELDS = ['postTitle', 'postContent', 'postExcerpt'] as const;
 
 /**
  * Repository for post revisions.

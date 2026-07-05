@@ -54,15 +54,11 @@ describe('Roles & Capabilities', () => {
 		});
 
 		it('should respect extra user-level capabilities (grant)', () => {
-			expect(
-				userHasCapability(['subscriber'], 'upload_files', { upload_files: true }),
-			).toBe(true);
+			expect(userHasCapability(['subscriber'], 'upload_files', { upload_files: true })).toBe(true);
 		});
 
 		it('should respect extra user-level capabilities (deny)', () => {
-			expect(
-				userHasCapability(['administrator'], 'edit_posts', { edit_posts: false }),
-			).toBe(false);
+			expect(userHasCapability(['administrator'], 'edit_posts', { edit_posts: false })).toBe(false);
 		});
 
 		it('should return false for empty roles array', () => {

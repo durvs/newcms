@@ -36,7 +36,9 @@ export default function TemplatesPage() {
 		<div>
 			<div className="mb-6 flex items-end justify-between animate-fade-in-up">
 				<div>
-					<p className="text-xs font-medium uppercase tracking-widest text-text-muted font-mono">Theme Builder</p>
+					<p className="text-xs font-medium uppercase tracking-widest text-text-muted font-mono">
+						Theme Builder
+					</p>
 					<h1 className="mt-1 text-2xl font-bold tracking-tight text-text">Templates</h1>
 				</div>
 				<Link
@@ -58,7 +60,9 @@ export default function TemplatesPage() {
 				<div className="rounded-xl border border-border bg-surface-elevated py-16 text-center animate-fade-in-up-delay-1">
 					<Layout className="mx-auto h-10 w-10 text-text-faint mb-4" />
 					<p className="text-lg font-semibold text-text">No templates yet</p>
-					<p className="mt-2 text-sm text-text-muted mb-6">Import a template kit to get started with pre-built layouts</p>
+					<p className="mt-2 text-sm text-text-muted mb-6">
+						Import a template kit to get started with pre-built layouts
+					</p>
 					<Link
 						href="/templates/import"
 						className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-surface hover:bg-accent-hover"

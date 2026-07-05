@@ -93,7 +93,9 @@ describe('FullProcessor', () => {
 
 	describe('findByClass / findById', () => {
 		it('should find by class', () => {
-			const p = new FullProcessor('<div class="a"><p class="a b">x</p><span class="c">y</span></div>');
+			const p = new FullProcessor(
+				'<div class="a"><p class="a b">x</p><span class="c">y</span></div>',
+			);
 			expect(p.findByClass('a')).toHaveLength(2);
 			expect(p.findByClass('b')).toHaveLength(1);
 			expect(p.findByClass('z')).toHaveLength(0);

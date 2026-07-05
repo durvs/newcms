@@ -26,7 +26,11 @@ function parseBlocksClient(content: string): ParsedBlock[] {
 
 		const name = match[1];
 		let attrs: Record<string, unknown> = {};
-		try { if (match[2]) attrs = JSON.parse(match[2]); } catch { /* skip */ }
+		try {
+			if (match[2]) attrs = JSON.parse(match[2]);
+		} catch {
+			/* skip */
+		}
 
 		if (match[3]) {
 			blocks.push({ name, attrs, innerHTML: '' });
@@ -42,7 +46,11 @@ function parseBlocksClient(content: string): ParsedBlock[] {
 			break;
 		}
 
-		blocks.push({ name, attrs, innerHTML: content.slice(match.index + match[0].length, closeIdx).trim() });
+		blocks.push({
+			name,
+			attrs,
+			innerHTML: content.slice(match.index + match[0].length, closeIdx).trim(),
+		});
 		pos = closeIdx + closeTag.length;
 		openRe.lastIndex = pos;
 	}
@@ -79,7 +87,9 @@ function BlockItem({ block }: { block: ParsedBlock }) {
 
 	return (
 		<div className="group flex items-start gap-3 rounded-lg border border-border-subtle bg-surface-elevated px-4 py-3 transition-colors hover:border-border">
-			<span className={`mt-0.5 shrink-0 rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${color}`}>
+			<span
+				className={`mt-0.5 shrink-0 rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${color}`}
+			>
 				{label}
 			</span>
 			<div className="min-w-0 flex-1">
@@ -95,7 +105,8 @@ function BlockItem({ block }: { block: ParsedBlock }) {
 					</div>
 				) : preview ? (
 					<p className="text-[13px] leading-relaxed text-text-muted">
-						{preview}{preview.length >= 120 ? '...' : ''}
+						{preview}
+						{preview.length >= 120 ? '...' : ''}
 					</p>
 				) : (
 					<p className="text-[11px] italic text-text-faint">Empty block</p>

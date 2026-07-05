@@ -1,20 +1,7 @@
 import { eq, and, or, desc, asc, sql, inArray, like, gt, lt, notInArray } from 'drizzle-orm';
-import {
-	posts,
-	postmeta,
-	termRelationships,
-	termTaxonomy,
-	terms,
-} from '@newcms/database';
+import { posts, postmeta, termRelationships, termTaxonomy, terms } from '@newcms/database';
 import type { Database } from '@newcms/database';
-import type {
-	QueryParams,
-	QueryResult,
-	QueryFlags,
-	TaxQuery,
-	MetaQuery,
-	DateQuery,
-} from './types';
+import type { QueryParams, QueryResult, QueryFlags, TaxQuery, MetaQuery, DateQuery } from './types';
 
 const DEFAULT_PER_PAGE = 10;
 
@@ -51,7 +38,7 @@ export class QueryEngine {
 			.where(conditions.length > 0 ? and(...conditions) : undefined);
 
 		const total = countResult.count;
-		const totalPages = perPage > 0 ? Math.ceil(total / perPage) : (total > 0 ? 1 : 0);
+		const totalPages = perPage > 0 ? Math.ceil(total / perPage) : total > 0 ? 1 : 0;
 
 		// Fetch posts
 		let query = this.db
@@ -177,10 +164,7 @@ export class QueryEngine {
 			const searchTerm = params.search.replace(/[^\w\s]/g, '').trim();
 			if (searchTerm) {
 				conditions.push(
-					or(
-						like(posts.postTitle, `%${searchTerm}%`),
-						like(posts.postContent, `%${searchTerm}%`),
-					)!,
+					or(like(posts.postTitle, `%${searchTerm}%`), like(posts.postContent, `%${searchTerm}%`))!,
 				);
 			}
 		}
@@ -213,47 +197,55 @@ export class QueryEngine {
 	}
 
 	private buildTaxConditions(tax: TaxQuery): ReturnType<typeof eq> | undefined {
-		const clauseConditions = tax.clauses.map((clause) => {
-			const subConditions: ReturnType<typeof eq>[] = [];
+		const clauseConditions = tax.clauses
+			.map((clause) => {
+				const subConditions: ReturnType<typeof eq>[] = [];
 
-			if (clause.termIds && clause.termIds.length > 0) {
-				// Sub-select to find term_taxonomy_ids for these term IDs
-				const ttIdSubquery = sql`${termRelationships.termTaxonomyId} IN (
+				if (clause.termIds && clause.termIds.length > 0) {
+					// Sub-select to find term_taxonomy_ids for these term IDs
+					const ttIdSubquery = sql`${termRelationships.termTaxonomyId} IN (
 					SELECT ${termTaxonomy.termTaxonomyId} FROM ${termTaxonomy}
 					WHERE ${termTaxonomy.taxonomy} = ${clause.taxonomy}
-					AND ${termTaxonomy.termId} IN (${sql.join(clause.termIds.map((id) => sql`${id}`), sql`, `)})
+					AND ${termTaxonomy.termId} IN (${sql.join(
+						clause.termIds.map((id) => sql`${id}`),
+						sql`, `,
+					)})
 				)`;
 
-				if (clause.operator === 'NOT IN') {
-					subConditions.push(sql`${posts.id} NOT IN (
+					if (clause.operator === 'NOT IN') {
+						subConditions.push(sql`${posts.id} NOT IN (
 						SELECT ${termRelationships.objectId} FROM ${termRelationships}
 						WHERE ${ttIdSubquery}
 					)`);
-				} else {
-					subConditions.push(ttIdSubquery);
+					} else {
+						subConditions.push(ttIdSubquery);
+					}
 				}
-			}
 
-			if (clause.termSlugs && clause.termSlugs.length > 0) {
-				const ttIdSubquery = sql`${termRelationships.termTaxonomyId} IN (
+				if (clause.termSlugs && clause.termSlugs.length > 0) {
+					const ttIdSubquery = sql`${termRelationships.termTaxonomyId} IN (
 					SELECT ${termTaxonomy.termTaxonomyId} FROM ${termTaxonomy}
 					INNER JOIN ${terms} ON ${terms.termId} = ${termTaxonomy.termId}
 					WHERE ${termTaxonomy.taxonomy} = ${clause.taxonomy}
-					AND ${terms.slug} IN (${sql.join(clause.termSlugs.map((s) => sql`${s}`), sql`, `)})
+					AND ${terms.slug} IN (${sql.join(
+						clause.termSlugs.map((s) => sql`${s}`),
+						sql`, `,
+					)})
 				)`;
 
-				if (clause.operator === 'NOT IN') {
-					subConditions.push(sql`${posts.id} NOT IN (
+					if (clause.operator === 'NOT IN') {
+						subConditions.push(sql`${posts.id} NOT IN (
 						SELECT ${termRelationships.objectId} FROM ${termRelationships}
 						WHERE ${ttIdSubquery}
 					)`);
-				} else {
-					subConditions.push(ttIdSubquery);
+					} else {
+						subConditions.push(ttIdSubquery);
+					}
 				}
-			}
 
-			return subConditions.length > 0 ? and(...subConditions) : undefined;
-		}).filter(Boolean);
+				return subConditions.length > 0 ? and(...subConditions) : undefined;
+			})
+			.filter(Boolean);
 
 		if (clauseConditions.length === 0) return undefined;
 
@@ -265,48 +257,67 @@ export class QueryEngine {
 	}
 
 	private buildMetaConditions(meta: MetaQuery): ReturnType<typeof eq> | undefined {
-		const clauseConditions = meta.clauses.map((clause) => {
-			if (clause.compare === 'EXISTS') {
+		const clauseConditions = meta.clauses
+			.map((clause) => {
+				if (clause.compare === 'EXISTS') {
+					return sql`${posts.id} IN (
+					SELECT ${postmeta.postId} FROM ${postmeta}
+					WHERE ${postmeta.metaKey} = ${clause.key}
+				)`;
+				}
+				if (clause.compare === 'NOT EXISTS') {
+					return sql`${posts.id} NOT IN (
+					SELECT ${postmeta.postId} FROM ${postmeta}
+					WHERE ${postmeta.metaKey} = ${clause.key}
+				)`;
+				}
+
+				const valueStr = String(clause.value ?? '');
+				const compare = clause.compare ?? '=';
+				const castCol =
+					clause.type === 'NUMERIC'
+						? sql`CAST(${postmeta.metaValue} AS NUMERIC)`
+						: postmeta.metaValue;
+
+				const compareValue =
+					clause.type === 'NUMERIC' ? sql`CAST(${valueStr} AS NUMERIC)` : sql`${valueStr}`;
+
+				let condition;
+				switch (compare) {
+					case '=':
+						condition = sql`${castCol} = ${compareValue}`;
+						break;
+					case '!=':
+						condition = sql`${castCol} != ${compareValue}`;
+						break;
+					case '>':
+						condition = sql`${castCol} > ${compareValue}`;
+						break;
+					case '<':
+						condition = sql`${castCol} < ${compareValue}`;
+						break;
+					case '>=':
+						condition = sql`${castCol} >= ${compareValue}`;
+						break;
+					case '<=':
+						condition = sql`${castCol} <= ${compareValue}`;
+						break;
+					case 'LIKE':
+						condition = sql`${postmeta.metaValue} LIKE ${valueStr}`;
+						break;
+					case 'NOT LIKE':
+						condition = sql`${postmeta.metaValue} NOT LIKE ${valueStr}`;
+						break;
+					default:
+						condition = sql`${castCol} = ${compareValue}`;
+				}
+
 				return sql`${posts.id} IN (
-					SELECT ${postmeta.postId} FROM ${postmeta}
-					WHERE ${postmeta.metaKey} = ${clause.key}
-				)`;
-			}
-			if (clause.compare === 'NOT EXISTS') {
-				return sql`${posts.id} NOT IN (
-					SELECT ${postmeta.postId} FROM ${postmeta}
-					WHERE ${postmeta.metaKey} = ${clause.key}
-				)`;
-			}
-
-			const valueStr = String(clause.value ?? '');
-			const compare = clause.compare ?? '=';
-			const castCol = clause.type === 'NUMERIC'
-				? sql`CAST(${postmeta.metaValue} AS NUMERIC)`
-				: postmeta.metaValue;
-
-			const compareValue = clause.type === 'NUMERIC'
-				? sql`CAST(${valueStr} AS NUMERIC)`
-				: sql`${valueStr}`;
-
-			let condition;
-			switch (compare) {
-				case '=': condition = sql`${castCol} = ${compareValue}`; break;
-				case '!=': condition = sql`${castCol} != ${compareValue}`; break;
-				case '>': condition = sql`${castCol} > ${compareValue}`; break;
-				case '<': condition = sql`${castCol} < ${compareValue}`; break;
-				case '>=': condition = sql`${castCol} >= ${compareValue}`; break;
-				case '<=': condition = sql`${castCol} <= ${compareValue}`; break;
-				case 'LIKE': condition = sql`${postmeta.metaValue} LIKE ${valueStr}`; break;
-				case 'NOT LIKE': condition = sql`${postmeta.metaValue} NOT LIKE ${valueStr}`; break;
-				default: condition = sql`${castCol} = ${compareValue}`;
-			}
-
-			return sql`${posts.id} IN (
 				SELECT ${postmeta.postId} FROM ${postmeta}
 				WHERE ${postmeta.metaKey} = ${clause.key} AND ${condition}
 			)`;
-		}).filter(Boolean);
+			})
+			.filter(Boolean);
 
 		if (clauseConditions.length === 0) return undefined;
 
@@ -318,30 +329,33 @@ export class QueryEngine {
 	}
 
 	private buildDateConditions(date: DateQuery): ReturnType<typeof eq> | undefined {
-		const clauseConditions = date.clauses.map((clause) => {
-			const col = clause.column === 'post_modified' ? posts.postModified : posts.postDate;
-			const conditions: ReturnType<typeof eq>[] = [];
+		const clauseConditions = date.clauses
+			.map((clause) => {
+				const col = clause.column === 'post_modified' ? posts.postModified : posts.postDate;
+				const conditions: ReturnType<typeof eq>[] = [];
 
-			if (clause.year !== undefined) {
-				conditions.push(sql`EXTRACT(YEAR FROM ${col}) = ${clause.year}`);
-			}
-			if (clause.month !== undefined) {
-				conditions.push(sql`EXTRACT(MONTH FROM ${col}) = ${clause.month}`);
-			}
-			if (clause.day !== undefined) {
-				conditions.push(sql`EXTRACT(DAY FROM ${col}) = ${clause.day}`);
-			}
-			if (clause.after !== undefined) {
-				const afterDate = clause.after instanceof Date ? clause.after : new Date(clause.after);
-				conditions.push(gt(col, afterDate));
-			}
-			if (clause.before !== undefined) {
-				const beforeDate = clause.before instanceof Date ? clause.before : new Date(clause.before);
-				conditions.push(lt(col, beforeDate));
-			}
+				if (clause.year !== undefined) {
+					conditions.push(sql`EXTRACT(YEAR FROM ${col}) = ${clause.year}`);
+				}
+				if (clause.month !== undefined) {
+					conditions.push(sql`EXTRACT(MONTH FROM ${col}) = ${clause.month}`);
+				}
+				if (clause.day !== undefined) {
+					conditions.push(sql`EXTRACT(DAY FROM ${col}) = ${clause.day}`);
+				}
+				if (clause.after !== undefined) {
+					const afterDate = clause.after instanceof Date ? clause.after : new Date(clause.after);
+					conditions.push(gt(col, afterDate));
+				}
+				if (clause.before !== undefined) {
+					const beforeDate =
+						clause.before instanceof Date ? clause.before : new Date(clause.before);
+					conditions.push(lt(col, beforeDate));
+				}
 
-			return conditions.length > 0 ? and(...conditions) : undefined;
-		}).filter(Boolean);
+				return conditions.length > 0 ? and(...conditions) : undefined;
+			})
+			.filter(Boolean);
 
 		if (clauseConditions.length === 0) return undefined;
 
@@ -357,14 +371,21 @@ export class QueryEngine {
 	private buildOrderBy(params: QueryParams) {
 		const direction = params.order === 'asc' ? asc : desc;
 		switch (params.orderBy) {
-			case 'title': return direction(posts.postTitle);
-			case 'name': return direction(posts.postName);
-			case 'modified': return direction(posts.postModified);
-			case 'id': return direction(posts.id);
-			case 'author': return direction(posts.postAuthor);
-			case 'menu_order': return direction(posts.menuOrder);
+			case 'title':
+				return direction(posts.postTitle);
+			case 'name':
+				return direction(posts.postName);
+			case 'modified':
+				return direction(posts.postModified);
+			case 'id':
+				return direction(posts.id);
+			case 'author':
+				return direction(posts.postAuthor);
+			case 'menu_order':
+				return direction(posts.menuOrder);
 			case 'date':
-			default: return direction(posts.postDate);
+			default:
+				return direction(posts.postDate);
 		}
 	}
 
@@ -382,13 +403,15 @@ export class QueryEngine {
 
 	private buildFlags(params: QueryParams, resultCount: number, _total: number): QueryFlags {
 		const isSearch = Boolean(params.search);
-		const isSingle = (params.include?.length === 1 || params.slug !== undefined) && !Array.isArray(params.slug);
+		const isSingle =
+			(params.include?.length === 1 || params.slug !== undefined) && !Array.isArray(params.slug);
 		const isAuthor = params.author !== undefined;
 		const isTaxonomy = params.tax !== undefined;
 		const isDate = params.date !== undefined;
 		const isPage = params.postType === 'page';
 		const is404 = resultCount === 0;
-		const isHome = !isSearch && !isSingle && !isAuthor && !isTaxonomy && !isDate && params.postType === 'post';
+		const isHome =
+			!isSearch && !isSingle && !isAuthor && !isTaxonomy && !isDate && params.postType === 'post';
 		const isArchive = !isSingle && (isAuthor || isTaxonomy || isDate);
 
 		return { isSingle, isArchive, isSearch, is404, isHome, isPage, isAuthor, isTaxonomy, isDate };

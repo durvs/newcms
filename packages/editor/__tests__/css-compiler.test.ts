@@ -48,25 +48,29 @@ function makeSchema(): Map<string, WidgetControlSchema> {
 }
 
 function makeTree(): ElementNode[] {
-	return [{
-		id: 'abc123',
-		elType: 'container',
-		settings: {},
-		elements: [{
-			id: 'h1node',
-			elType: 'widget',
-			widgetType: 'heading',
-			settings: {
-				title_color: '#ff0000',
-				title_font_size: { size: 48, unit: 'px' },
-				title_font_size_tablet: { size: 32, unit: 'px' },
-				title_font_size_mobile: { size: 24, unit: 'px' },
-				typography_title_font_family: 'Inter',
-				typography_title_font_weight: '700',
-			},
-			elements: [],
-		}],
-	}];
+	return [
+		{
+			id: 'abc123',
+			elType: 'container',
+			settings: {},
+			elements: [
+				{
+					id: 'h1node',
+					elType: 'widget',
+					widgetType: 'heading',
+					settings: {
+						title_color: '#ff0000',
+						title_font_size: { size: 48, unit: 'px' },
+						title_font_size_tablet: { size: 32, unit: 'px' },
+						title_font_size_mobile: { size: 24, unit: 'px' },
+						typography_title_font_family: 'Inter',
+						typography_title_font_weight: '700',
+					},
+					elements: [],
+				},
+			],
+		},
+	];
 }
 
 describe('resolveValue', () => {
@@ -79,7 +83,9 @@ describe('resolveValue', () => {
 	});
 
 	it('should resolve SIZE and UNIT separately', () => {
-		expect(resolveValue('font-size: {{SIZE}}{{UNIT}}', { size: 16, unit: 'em' })).toBe('font-size: 16em');
+		expect(resolveValue('font-size: {{SIZE}}{{UNIT}}', { size: 16, unit: 'em' })).toBe(
+			'font-size: 16em',
+		);
 	});
 
 	it('should return null for empty value', () => {
@@ -124,13 +130,15 @@ describe('compileCSS', () => {
 	});
 
 	it('should handle unknown widget type', () => {
-		const tree: ElementNode[] = [{
-			id: 'x',
-			elType: 'widget',
-			widgetType: 'unknown',
-			settings: {},
-			elements: [],
-		}];
+		const tree: ElementNode[] = [
+			{
+				id: 'x',
+				elType: 'widget',
+				widgetType: 'unknown',
+				settings: {},
+				elements: [],
+			},
+		];
 		expect(compileCSS(tree, makeSchema())).toBe('');
 	});
 });

@@ -67,9 +67,7 @@ describe('QueryEngine', () => {
 		it('should order by date descending by default', async () => {
 			const result = await engine.query({ postStatus: 'publish', perPage: 10 });
 			if (result.posts.length >= 2) {
-				const dates = result.posts.map(
-					(p) => (p as { postDate: Date }).postDate.getTime(),
-				);
+				const dates = result.posts.map((p) => (p as { postDate: Date }).postDate.getTime());
 				expect(dates[0]).toBeGreaterThanOrEqual(dates[1]);
 			}
 		});

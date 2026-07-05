@@ -13,7 +13,8 @@ describe('Block Parser', () => {
 	});
 
 	it('should parse block attributes', () => {
-		const content = '<!-- cms:heading {"level":3,"align":"center"} -->\n<h3>Title</h3>\n<!-- /cms:heading -->';
+		const content =
+			'<!-- cms:heading {"level":3,"align":"center"} -->\n<h3>Title</h3>\n<!-- /cms:heading -->';
 		const blocks = parseBlocks(content);
 		expect(blocks[0].attributes).toEqual({ level: 3, align: 'center' });
 	});
@@ -69,7 +70,8 @@ describe('Block Parser', () => {
 	});
 
 	it('should handle freeform HTML before blocks', () => {
-		const content = '<p>Legacy content</p>\n<!-- cms:paragraph -->\n<p>Block</p>\n<!-- /cms:paragraph -->';
+		const content =
+			'<p>Legacy content</p>\n<!-- cms:paragraph -->\n<p>Block</p>\n<!-- /cms:paragraph -->';
 		const blocks = parseBlocks(content);
 		expect(blocks).toHaveLength(2);
 		expect(blocks[0].name).toBe('cms/freeform');
@@ -107,7 +109,12 @@ describe('Block Serializer', () => {
 
 	it('should serialize block attributes', () => {
 		const output = serializeBlocks([
-			{ name: 'cms/heading', attributes: { level: 2 }, innerBlocks: [], innerHTML: '<h2>Title</h2>' },
+			{
+				name: 'cms/heading',
+				attributes: { level: 2 },
+				innerBlocks: [],
+				innerHTML: '<h2>Title</h2>',
+			},
 		]);
 		expect(output).toContain('cms:heading {"level":2}');
 	});
@@ -120,15 +127,17 @@ describe('Block Serializer', () => {
 	});
 
 	it('should serialize nested blocks', () => {
-		const output = serializeBlocks([{
-			name: 'cms/columns',
-			attributes: {},
-			innerBlocks: [
-				{ name: 'cms/column', attributes: {}, innerBlocks: [], innerHTML: '<p>Col1</p>' },
-				{ name: 'cms/column', attributes: {}, innerBlocks: [], innerHTML: '<p>Col2</p>' },
-			],
-			innerHTML: '',
-		}]);
+		const output = serializeBlocks([
+			{
+				name: 'cms/columns',
+				attributes: {},
+				innerBlocks: [
+					{ name: 'cms/column', attributes: {}, innerBlocks: [], innerHTML: '<p>Col1</p>' },
+					{ name: 'cms/column', attributes: {}, innerBlocks: [], innerHTML: '<p>Col2</p>' },
+				],
+				innerHTML: '',
+			},
+		]);
 		expect(output).toContain('<!-- cms:columns -->');
 		expect(output).toContain('<!-- cms:column -->');
 		expect(output).toContain('<!-- /cms:column -->');
@@ -143,7 +152,8 @@ describe('Block Serializer', () => {
 	});
 
 	it('should round-trip: parse then serialize', () => {
-		const original = '<!-- cms:paragraph {"align":"center"} -->\n<p>Hello</p>\n<!-- /cms:paragraph -->';
+		const original =
+			'<!-- cms:paragraph {"align":"center"} -->\n<p>Hello</p>\n<!-- /cms:paragraph -->';
 		const blocks = parseBlocks(original);
 		const serialized = serializeBlocks(blocks);
 		expect(serialized).toContain('cms:paragraph {"align":"center"}');

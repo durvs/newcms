@@ -95,9 +95,7 @@ describe('PostRepository', () => {
 
 			expect(updated?.postTitle).toBe('__test_update__');
 			expect(updated?.postStatus).toBe('publish');
-			expect(updated!.postModified.getTime()).toBeGreaterThanOrEqual(
-				post.postModified.getTime(),
-			);
+			expect(updated!.postModified.getTime()).toBeGreaterThanOrEqual(post.postModified.getTime());
 		});
 
 		it('should return undefined for non-existent post', async () => {

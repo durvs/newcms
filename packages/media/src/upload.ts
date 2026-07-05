@@ -2,15 +2,30 @@ import { ImageProcessor } from './processor';
 import type { StorageAdapter, ImageSize, UploadResult } from './types';
 
 const ALLOWED_MIME_TYPES = new Set([
-	'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif', 'image/svg+xml',
-	'video/mp4', 'video/webm', 'video/ogg',
-	'audio/mpeg', 'audio/ogg', 'audio/wav', 'audio/webm',
+	'image/jpeg',
+	'image/png',
+	'image/gif',
+	'image/webp',
+	'image/avif',
+	'image/svg+xml',
+	'video/mp4',
+	'video/webm',
+	'video/ogg',
+	'audio/mpeg',
+	'audio/ogg',
+	'audio/wav',
+	'audio/webm',
 	'application/pdf',
-	'text/plain', 'text/csv',
+	'text/plain',
+	'text/csv',
 ]);
 
 const IMAGE_MIME_TYPES = new Set([
-	'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif',
+	'image/jpeg',
+	'image/png',
+	'image/gif',
+	'image/webp',
+	'image/avif',
 ]);
 
 /**
@@ -30,17 +45,15 @@ export class UploadManager {
 	/**
 	 * Process and store an uploaded file.
 	 */
-	async upload(
-		buffer: Buffer,
-		filename: string,
-		mimeType: string,
-	): Promise<UploadResult> {
+	async upload(buffer: Buffer, filename: string, mimeType: string): Promise<UploadResult> {
 		// Validate
 		if (!ALLOWED_MIME_TYPES.has(mimeType)) {
 			throw new Error(`File type "${mimeType}" is not allowed`);
 		}
 		if (buffer.byteLength > this.maxFileSize) {
-			throw new Error(`File size ${Math.round(buffer.byteLength / 1024 / 1024)}MB exceeds limit of ${Math.round(this.maxFileSize / 1024 / 1024)}MB`);
+			throw new Error(
+				`File size ${Math.round(buffer.byteLength / 1024 / 1024)}MB exceeds limit of ${Math.round(this.maxFileSize / 1024 / 1024)}MB`,
+			);
 		}
 
 		// Generate storage path: yyyy/mm/filename
@@ -60,8 +73,11 @@ export class UploadManager {
 			mimeType,
 			size: buffer.byteLength,
 			metadata: {
-				width: 0, height: 0, format: mimeType.split('/')[1] ?? 'unknown',
-				hasAlpha: false, fileSize: buffer.byteLength,
+				width: 0,
+				height: 0,
+				format: mimeType.split('/')[1] ?? 'unknown',
+				hasAlpha: false,
+				fileSize: buffer.byteLength,
 			},
 			sizes: [],
 		};

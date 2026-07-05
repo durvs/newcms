@@ -53,7 +53,8 @@ export class CommentsController {
 	@ApiOperation({ summary: 'Create a comment' })
 	@HttpCode(HttpStatus.CREATED)
 	async create(
-		@Body() body: {
+		@Body()
+		body: {
 			post: number;
 			author: string;
 			author_email?: string;
@@ -69,7 +70,11 @@ export class CommentsController {
 
 		// Duplicate check
 		if (body.author_email) {
-			const isDup = await this.dbProvider.comments.isDuplicate(body.post, body.author_email, body.content);
+			const isDup = await this.dbProvider.comments.isDuplicate(
+				body.post,
+				body.author_email,
+				body.content,
+			);
 			if (isDup) throw new ConflictException('Duplicate comment');
 		}
 

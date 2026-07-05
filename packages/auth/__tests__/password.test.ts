@@ -48,11 +48,7 @@ describe('Password hashing', () => {
 	describe('legacy hash support', () => {
 		it('should verify plain bcrypt (no pre-hash) and flag needsRehash', async () => {
 			const plainHash = await bcrypt.hash('legacy-password', 10);
-			const { valid, needsRehash } = await verifyPassword(
-				'legacy-password',
-				plainHash,
-				SECRET,
-			);
+			const { valid, needsRehash } = await verifyPassword('legacy-password', plainHash, SECRET);
 			expect(valid).toBe(true);
 			expect(needsRehash).toBe(true);
 		});

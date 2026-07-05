@@ -82,7 +82,7 @@ export function importKit(
 			const elements = Array.isArray(content)
 				? isElementor
 					? convertElementorTree(content as unknown as import('./types').ElementorNode[])
-					: content as unknown as ElementNode[]
+					: (content as unknown as ElementNode[])
 				: [];
 
 			// Collect media URLs from the tree
@@ -110,7 +110,7 @@ export function importKit(
 				const elements = Array.isArray(content)
 					? isElementor
 						? convertElementorTree(content as unknown as import('./types').ElementorNode[])
-						: content as unknown as ElementNode[]
+						: (content as unknown as ElementNode[])
 					: [];
 
 				collectMediaUrls(elements, result.mediaUrls);

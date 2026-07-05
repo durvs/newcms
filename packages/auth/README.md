@@ -64,20 +64,20 @@ A WordPress-compatible role/capability system with five built-in roles: **admini
 import { DEFAULT_ROLES, roleHasCapability, userHasCapability } from '@newcms/auth';
 
 // Check if a role has a capability
-roleHasCapability('editor', 'edit_posts');        // true
-roleHasCapability('subscriber', 'edit_posts');     // false
+roleHasCapability('editor', 'edit_posts'); // true
+roleHasCapability('subscriber', 'edit_posts'); // false
 
 // Check if a user (by their roles) has a capability
 const userRoles = ['author'];
-userHasCapability(userRoles, 'publish_posts');     // true
-userHasCapability(userRoles, 'manage_options');     // false
+userHasCapability(userRoles, 'publish_posts'); // true
+userHasCapability(userRoles, 'manage_options'); // false
 
 // You can also pass per-user capability overrides
 userHasCapability(
-  ['subscriber'],
-  'upload_files',
-  { upload_files: true },  // extra capabilities granted to this user
-);  // true
+	['subscriber'],
+	'upload_files',
+	{ upload_files: true }, // extra capabilities granted to this user
+); // true
 ```
 
 The `DEFAULT_ROLES` object contains the full capability map for each role and can be used to seed your database or to inspect capabilities at runtime.
@@ -87,11 +87,7 @@ The `DEFAULT_ROLES` object contains the full capability map for each role and ca
 Application passwords provide stateless API authentication via HTTP Basic Auth. The raw password is shown to the user once; only the SHA-256 hash is stored.
 
 ```ts
-import {
-  generateAppPassword,
-  hashAppPassword,
-  verifyAppPassword,
-} from '@newcms/auth';
+import { generateAppPassword, hashAppPassword, verifyAppPassword } from '@newcms/auth';
 
 // Generate a new application password
 const { raw, hash } = generateAppPassword();
@@ -115,17 +111,17 @@ const sessions = new SessionManager(redis);
 
 // Create a session
 const { token, session } = await sessions.create({
-  userId: 42,
-  ip: '203.0.113.1',
-  userAgent: 'Mozilla/5.0 ...',
-  ttlSeconds: 7 * 24 * 3600,  // optional, default 14 days
+	userId: 42,
+	ip: '203.0.113.1',
+	userAgent: 'Mozilla/5.0 ...',
+	ttlSeconds: 7 * 24 * 3600, // optional, default 14 days
 });
 // Give `token` to the client (e.g., in a cookie)
 
 // Validate a session
 const data = await sessions.validate(42, token);
 if (data) {
-  console.log('Session is valid, logged in at', data.loginTime);
+	console.log('Session is valid, logged in at', data.loginTime);
 }
 
 // List all sessions for a user
@@ -141,7 +137,7 @@ await sessions.destroyAllForUser(42);
 ### SessionData
 
 | Field       | Type     | Description                        |
-|-------------|----------|------------------------------------|
+| ----------- | -------- | ---------------------------------- |
 | `userId`    | `number` | The authenticated user's ID        |
 | `ip`        | `string` | IP address at login time           |
 | `userAgent` | `string` | User-Agent header at login time    |

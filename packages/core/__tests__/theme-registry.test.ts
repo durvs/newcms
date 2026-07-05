@@ -127,11 +127,7 @@ describe('resolveTemplateHierarchy', () => {
 	});
 
 	it('should resolve home', () => {
-		expect(resolveTemplateHierarchy({ type: 'home' })).toEqual([
-			'front-page',
-			'home',
-			'index',
-		]);
+		expect(resolveTemplateHierarchy({ type: 'home' })).toEqual(['front-page', 'home', 'index']);
 	});
 
 	it('should resolve attachment with mime type', () => {

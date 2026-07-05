@@ -465,9 +465,13 @@ describe('HookEngine', () => {
 
 		it('should pass hook name and all arguments to "all" handler', async () => {
 			const allArgs: unknown[][] = [];
-			engine.addHook('all', (...args: unknown[]) => {
-				allArgs.push(args);
-			}, { acceptedArgs: 10 });
+			engine.addHook(
+				'all',
+				(...args: unknown[]) => {
+					allArgs.push(args);
+				},
+				{ acceptedArgs: 10 },
+			);
 
 			await engine.doAction('save_post', 42, true);
 

@@ -59,19 +59,32 @@ export function AppSidebar() {
 			)}
 		>
 			{/* Logo */}
-			<div className={cn('flex h-14 items-center border-b border-border', collapsed ? 'justify-center px-2' : 'px-4')}>
+			<div
+				className={cn(
+					'flex h-14 items-center border-b border-border',
+					collapsed ? 'justify-center px-2' : 'px-4',
+				)}
+			>
 				<Link href="/dashboard" className="flex items-center gap-2.5">
 					<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent">
-						<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-surface">
+						<svg
+							width="15"
+							height="15"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2.5"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							className="text-surface"
+						>
 							<path d="M12 2L2 7l10 5 10-5-10-5z" />
 							<path d="M2 17l10 5 10-5" />
 							<path d="M2 12l10 5 10-5" />
 						</svg>
 					</div>
 					{!collapsed && (
-						<span className="text-sm font-semibold tracking-tight text-text">
-							NewCMS
-						</span>
+						<span className="text-sm font-semibold tracking-tight text-text">NewCMS</span>
 					)}
 				</Link>
 			</div>
@@ -79,7 +92,9 @@ export function AppSidebar() {
 			{/* Navigation */}
 			<nav className="flex-1 space-y-0.5 p-2 pt-3">
 				{navItems.map((item) => {
-					const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
+					const isActive =
+						pathname === item.href ||
+						(item.href !== '/dashboard' && pathname.startsWith(item.href));
 					return (
 						<Link
 							key={item.href}
@@ -128,7 +143,11 @@ export function AppSidebar() {
 						collapsed && 'justify-center px-0',
 					)}
 				>
-					{theme === 'dark' ? <Sun className="h-[18px] w-[18px] shrink-0" /> : <Moon className="h-[18px] w-[18px] shrink-0" />}
+					{theme === 'dark' ? (
+						<Sun className="h-[18px] w-[18px] shrink-0" />
+					) : (
+						<Moon className="h-[18px] w-[18px] shrink-0" />
+					)}
 					{!collapsed && (theme === 'dark' ? 'Light mode' : 'Dark mode')}
 				</button>
 
@@ -140,14 +159,23 @@ export function AppSidebar() {
 						collapsed && 'justify-center px-0',
 					)}
 				>
-					{collapsed ? <PanelLeft className="h-[18px] w-[18px]" /> : <PanelLeftClose className="h-[18px] w-[18px]" />}
+					{collapsed ? (
+						<PanelLeft className="h-[18px] w-[18px]" />
+					) : (
+						<PanelLeftClose className="h-[18px] w-[18px]" />
+					)}
 					{!collapsed && 'Collapse'}
 				</button>
 			</div>
 
 			{/* User */}
 			<div className="border-t border-border p-2">
-				<div className={cn('flex items-center gap-2.5 rounded-lg px-2.5 py-2', collapsed && 'justify-center px-0')}>
+				<div
+					className={cn(
+						'flex items-center gap-2.5 rounded-lg px-2.5 py-2',
+						collapsed && 'justify-center px-0',
+					)}
+				>
 					<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-elevated text-xs font-semibold text-accent ring-1 ring-border">
 						{user?.displayName?.charAt(0).toUpperCase() ?? 'A'}
 					</div>
@@ -156,9 +184,7 @@ export function AppSidebar() {
 							<p className="truncate text-[13px] font-medium text-text">
 								{user?.displayName ?? 'Admin'}
 							</p>
-							<p className="truncate text-[11px] text-text-muted">
-								{user?.email}
-							</p>
+							<p className="truncate text-[11px] text-text-muted">{user?.email}</p>
 						</div>
 					)}
 					{!collapsed && (

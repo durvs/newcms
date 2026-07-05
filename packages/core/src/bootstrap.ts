@@ -5,23 +5,23 @@ import type { HookEngine } from './hook-engine';
  * Each phase is a named step executed in strict order during startup.
  */
 export const BOOTSTRAP_PHASES = [
-	'entry_point',          // 1. HTTP request received
-	'configuration',        // 2. Load config (DB, keys, flags)
-	'initial_constants',    // 3. Define constants, memory limits
-	'environment_check',    // 4. Validate runtime versions
-	'error_handling',       // 5. Register fatal error handler + recovery mode
-	'core_functions',       // 6. Load core utility modules
-	'database_connect',     // 7. Connect to database (+ drop-in check)
-	'object_cache',         // 8. Initialize cache system (+ drop-in check)
-	'default_filters',      // 9. Register all core hooks/filters
-	'must_use_extensions',  // 10. Load must-use extensions (alphabetical)
-	'regular_extensions',   // 11. Load active extensions (skip paused)
+	'entry_point', // 1. HTTP request received
+	'configuration', // 2. Load config (DB, keys, flags)
+	'initial_constants', // 3. Define constants, memory limits
+	'environment_check', // 4. Validate runtime versions
+	'error_handling', // 5. Register fatal error handler + recovery mode
+	'core_functions', // 6. Load core utility modules
+	'database_connect', // 7. Connect to database (+ drop-in check)
+	'object_cache', // 8. Initialize cache system (+ drop-in check)
+	'default_filters', // 9. Register all core hooks/filters
+	'must_use_extensions', // 10. Load must-use extensions (alphabetical)
+	'regular_extensions', // 11. Load active extensions (skip paused)
 	'overridable_functions', // 12. Load auth/hash/nonce functions (skip if overridden)
-	'extensions_loaded',    // 13. Fire "extensions_loaded" hook
-	'global_objects',       // 14. Create query engine, rewrite, widgets, roles
-	'theme',                // 15. Load active theme (child → parent)
-	'init',                 // 16. Fire "init" hook (register types, taxonomies, etc.)
-	'system_loaded',        // 17. Fire "cms_loaded" hook
+	'extensions_loaded', // 13. Fire "extensions_loaded" hook
+	'global_objects', // 14. Create query engine, rewrite, widgets, roles
+	'theme', // 15. Load active theme (child → parent)
+	'init', // 16. Fire "init" hook (register types, taxonomies, etc.)
+	'system_loaded', // 17. Fire "cms_loaded" hook
 ] as const;
 
 export type BootstrapPhase = (typeof BOOTSTRAP_PHASES)[number];

@@ -9,20 +9,14 @@ import type { SliderValue } from '../controls/types';
  *   {{SIZE}}    → numeric part of a slider value
  *   {{UNIT}}    → unit part of a slider value
  */
-export function resolveSelector(
-	selectorTemplate: string,
-	elementId: string,
-): string {
+export function resolveSelector(selectorTemplate: string, elementId: string): string {
 	return selectorTemplate.replace(/\{\{WRAPPER\}\}/g, `.builder-el-${elementId}`);
 }
 
 /**
  * Resolve CSS value placeholders.
  */
-export function resolveValue(
-	valueTemplate: string,
-	value: unknown,
-): string | null {
+export function resolveValue(valueTemplate: string, value: unknown): string | null {
 	if (value === undefined || value === null || value === '') return null;
 
 	// Slider value: { size: number, unit: string }

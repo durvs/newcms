@@ -79,8 +79,20 @@ export class PostRepository {
 		};
 		const colNames: MetaColumnNames = {
 			table: 'postmeta',
-			sql: { metaId: 'meta_id', objectId: 'post_id', metaKey: 'meta_key', metaValue: 'meta_value', metaValueJson: 'meta_value_json' },
-			ts: { metaId: 'metaId', objectId: 'postId', metaKey: 'metaKey', metaValue: 'metaValue', metaValueJson: 'metaValueJson' },
+			sql: {
+				metaId: 'meta_id',
+				objectId: 'post_id',
+				metaKey: 'meta_key',
+				metaValue: 'meta_value',
+				metaValueJson: 'meta_value_json',
+			},
+			ts: {
+				metaId: 'metaId',
+				objectId: 'postId',
+				metaKey: 'metaKey',
+				metaValue: 'metaValue',
+				metaValueJson: 'metaValueJson',
+			},
 		};
 		this.meta = new MetaRepository(db, postmeta, metaCols, colNames);
 	}
@@ -90,10 +102,7 @@ export class PostRepository {
 	 */
 	async create(input: CreatePostInput): Promise<PostRow> {
 		const postName = input.postName || this.generateSlug(input.postTitle);
-		const uniqueSlug = await this.ensureUniqueSlug(
-			postName,
-			input.postType ?? 'post',
-		);
+		const uniqueSlug = await this.ensureUniqueSlug(postName, input.postType ?? 'post');
 
 		const now = new Date();
 		const [row] = await this.db
@@ -175,11 +184,7 @@ export class PostRepository {
 			);
 		}
 
-		const [row] = await this.db
-			.update(posts)
-			.set(updateData)
-			.where(eq(posts.id, id))
-			.returning();
+		const [row] = await this.db.update(posts).set(updateData).where(eq(posts.id, id)).returning();
 
 		return row as PostRow;
 	}
@@ -218,10 +223,7 @@ export class PostRepository {
 		// Delete meta first (cascade should handle it but be explicit)
 		await this.meta.deleteAllForObject(id);
 
-		const result = await this.db
-			.delete(posts)
-			.where(eq(posts.id, id))
-			.returning({ id: posts.id });
+		const result = await this.db.delete(posts).where(eq(posts.id, id)).returning({ id: posts.id });
 
 		return result.length > 0;
 	}
@@ -260,9 +262,7 @@ export class PostRepository {
 	/**
 	 * Count posts by type and status.
 	 */
-	async countByStatus(
-		postType: string = 'post',
-	): Promise<Record<string, number>> {
+	async countByStatus(postType: string = 'post'): Promise<Record<string, number>> {
 		const rows = await this.db
 			.select({
 				status: posts.postStatus,

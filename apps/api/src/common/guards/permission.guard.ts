@@ -35,9 +35,7 @@ export class PermissionGuard implements CanActivate {
 		}
 
 		if (!userHasCapability(user.roles, requiredCapability)) {
-			throw new ForbiddenException(
-				`You do not have the "${requiredCapability}" capability`,
-			);
+			throw new ForbiddenException(`You do not have the "${requiredCapability}" capability`);
 		}
 
 		return true;

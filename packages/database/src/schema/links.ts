@@ -1,12 +1,4 @@
-import {
-	pgTable,
-	serial,
-	text,
-	timestamp,
-	varchar,
-	bigint,
-	index,
-} from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, timestamp, varchar, bigint, index } from 'drizzle-orm/pg-core';
 
 export const links = pgTable(
 	'links',

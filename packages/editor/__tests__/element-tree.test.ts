@@ -229,13 +229,17 @@ describe('countNodes', () => {
 describe('walkTree', () => {
 	it('should visit all nodes depth-first', () => {
 		const ids: string[] = [];
-		walkTree(makeTree(), (node) => { ids.push(node.id); });
+		walkTree(makeTree(), (node) => {
+			ids.push(node.id);
+		});
 		expect(ids).toEqual(['container1', 'heading1', 'paragraph1', 'container2', 'image1']);
 	});
 
 	it('should provide depth and path', () => {
 		const depths: number[] = [];
-		walkTree(makeTree(), (_node, depth) => { depths.push(depth); });
+		walkTree(makeTree(), (_node, depth) => {
+			depths.push(depth);
+		});
 		expect(depths).toEqual([0, 1, 1, 0, 1]);
 	});
 });
@@ -244,7 +248,13 @@ describe('flattenTree', () => {
 	it('should return all nodes in order', () => {
 		const flat = flattenTree(makeTree());
 		expect(flat).toHaveLength(5);
-		expect(flat.map((n) => n.id)).toEqual(['container1', 'heading1', 'paragraph1', 'container2', 'image1']);
+		expect(flat.map((n) => n.id)).toEqual([
+			'container1',
+			'heading1',
+			'paragraph1',
+			'container2',
+			'image1',
+		]);
 	});
 });
 

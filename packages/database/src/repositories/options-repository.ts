@@ -40,11 +40,7 @@ export class OptionsRepository {
 		if (isNotFound !== undefined) return defaultValue;
 
 		// 3. Query database
-		const rows = await this.db
-			.select()
-			.from(options)
-			.where(eq(options.optionName, name))
-			.limit(1);
+		const rows = await this.db.select().from(options).where(eq(options.optionName, name)).limit(1);
 
 		if (rows.length === 0) {
 			// Cache as "not found" to avoid future DB queries
@@ -66,11 +62,7 @@ export class OptionsRepository {
 	 *
 	 * @returns true if the option was created
 	 */
-	async addOption(
-		name: string,
-		value: unknown,
-		autoload: boolean = true,
-	): Promise<boolean> {
+	async addOption(name: string, value: unknown, autoload: boolean = true): Promise<boolean> {
 		// Check if already exists
 		const existing = await this.db
 			.select({ optionId: options.optionId })
@@ -106,11 +98,7 @@ export class OptionsRepository {
 	 *
 	 * @returns true if the value was changed
 	 */
-	async updateOption(
-		name: string,
-		value: unknown,
-		autoload?: boolean,
-	): Promise<boolean> {
+	async updateOption(name: string, value: unknown, autoload?: boolean): Promise<boolean> {
 		const { textValue, jsonValue } = this.serializeValue(value);
 
 		// Try to update
@@ -141,10 +129,7 @@ export class OptionsRepository {
 			updateData['autoload'] = autoload;
 		}
 
-		await this.db
-			.update(options)
-			.set(updateData)
-			.where(eq(options.optionName, name));
+		await this.db.update(options).set(updateData).where(eq(options.optionName, name));
 
 		// Update cache
 		await this.cache.set(name, value, CACHE_GROUP);
@@ -183,10 +168,7 @@ export class OptionsRepository {
 	 */
 	async loadAutoloadedOptions(): Promise<Map<string, unknown>> {
 		// Check if already loaded
-		const cached = await this.cache.get<Record<string, unknown>>(
-			AUTOLOAD_CACHE_KEY,
-			CACHE_GROUP,
-		);
+		const cached = await this.cache.get<Record<string, unknown>>(AUTOLOAD_CACHE_KEY, CACHE_GROUP);
 
 		if (cached) {
 			const result = new Map(Object.entries(cached));
@@ -198,10 +180,7 @@ export class OptionsRepository {
 		}
 
 		// Query all autoloaded options
-		const rows = await this.db
-			.select()
-			.from(options)
-			.where(eq(options.autoload, true));
+		const rows = await this.db.select().from(options).where(eq(options.autoload, true));
 
 		const result = new Map<string, unknown>();
 		const autoloadMap: Record<string, unknown> = {};
@@ -254,10 +233,7 @@ export class OptionsRepository {
 	 * Deserialize a value from the database row.
 	 * Prefers JSONB column when available (already parsed).
 	 */
-	private deserializeValue<T>(row: {
-		optionValue: string;
-		optionValueJson: unknown;
-	}): T {
+	private deserializeValue<T>(row: { optionValue: string; optionValueJson: unknown }): T {
 		// Prefer JSONB if available
 		if (row.optionValueJson !== null && row.optionValueJson !== undefined) {
 			return row.optionValueJson as T;

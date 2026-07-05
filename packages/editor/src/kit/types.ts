@@ -51,9 +51,33 @@ export const DEFAULT_KIT: DesignKit = {
 		{ id: 'dark', title: 'Dark', color: '#0f172a' },
 	],
 	typography: [
-		{ id: 'primary', title: 'Primary', fontFamily: 'Inter', fontSize: { size: 16, unit: 'px' }, fontWeight: '400', lineHeight: { size: 1.6, unit: '' }, letterSpacing: { size: 0, unit: 'px' } },
-		{ id: 'secondary', title: 'Secondary', fontFamily: 'Inter', fontSize: { size: 16, unit: 'px' }, fontWeight: '400', lineHeight: { size: 1.6, unit: '' }, letterSpacing: { size: 0, unit: 'px' } },
-		{ id: 'accent', title: 'Accent', fontFamily: 'Inter', fontSize: { size: 16, unit: 'px' }, fontWeight: '600', lineHeight: { size: 1.4, unit: '' }, letterSpacing: { size: -0.2, unit: 'px' } },
+		{
+			id: 'primary',
+			title: 'Primary',
+			fontFamily: 'Inter',
+			fontSize: { size: 16, unit: 'px' },
+			fontWeight: '400',
+			lineHeight: { size: 1.6, unit: '' },
+			letterSpacing: { size: 0, unit: 'px' },
+		},
+		{
+			id: 'secondary',
+			title: 'Secondary',
+			fontFamily: 'Inter',
+			fontSize: { size: 16, unit: 'px' },
+			fontWeight: '400',
+			lineHeight: { size: 1.6, unit: '' },
+			letterSpacing: { size: 0, unit: 'px' },
+		},
+		{
+			id: 'accent',
+			title: 'Accent',
+			fontFamily: 'Inter',
+			fontSize: { size: 16, unit: 'px' },
+			fontWeight: '600',
+			lineHeight: { size: 1.4, unit: '' },
+			letterSpacing: { size: -0.2, unit: 'px' },
+		},
 	],
 	buttonPadding: '12px 24px',
 	buttonBorderRadius: '6px',
@@ -89,7 +113,9 @@ export function kitToCSS(kit: DesignKit): string {
 		lines.push(`  --e-global-typography-${t.id}-font-family: ${t.fontFamily};`);
 		lines.push(`  --e-global-typography-${t.id}-font-size: ${t.fontSize.size}${t.fontSize.unit};`);
 		lines.push(`  --e-global-typography-${t.id}-font-weight: ${t.fontWeight};`);
-		lines.push(`  --e-global-typography-${t.id}-line-height: ${t.lineHeight.size}${t.lineHeight.unit};`);
+		lines.push(
+			`  --e-global-typography-${t.id}-line-height: ${t.lineHeight.size}${t.lineHeight.unit};`,
+		);
 	}
 
 	// Body
@@ -101,7 +127,9 @@ export function kitToCSS(kit: DesignKit): string {
 	lines.push('}');
 
 	lines.push('');
-	lines.push(`body { font-family: ${kit.bodyFontFamily}; font-size: ${kit.bodyFontSize}; color: ${kit.bodyColor}; line-height: ${kit.bodyLineHeight}; }`);
+	lines.push(
+		`body { font-family: ${kit.bodyFontFamily}; font-size: ${kit.bodyFontSize}; color: ${kit.bodyColor}; line-height: ${kit.bodyLineHeight}; }`,
+	);
 
 	return lines.join('\n');
 }

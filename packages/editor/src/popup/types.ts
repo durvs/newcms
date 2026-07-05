@@ -9,7 +9,14 @@ export type PopupTrigger =
 	| { type: 'exit-intent' }
 	| { type: 'inactivity'; timeout: number };
 
-export type PopupAnimation = 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'zoom' | 'none';
+export type PopupAnimation =
+	| 'fade'
+	| 'slide-up'
+	| 'slide-down'
+	| 'slide-left'
+	| 'slide-right'
+	| 'zoom'
+	| 'none';
 
 export interface PopupPosition {
 	horizontal: 'left' | 'center' | 'right';

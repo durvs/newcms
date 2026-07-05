@@ -13,9 +13,7 @@ export function BlockInserter({ onInsert }: BlockInserterProps) {
 	const [search, setSearch] = useState('');
 
 	const filtered = search
-		? BLOCK_DEFINITIONS.filter((b) =>
-				b.label.toLowerCase().includes(search.toLowerCase()),
-			)
+		? BLOCK_DEFINITIONS.filter((b) => b.label.toLowerCase().includes(search.toLowerCase()))
 		: BLOCK_DEFINITIONS;
 
 	const categories = ['text', 'media', 'design'] as const;
@@ -44,7 +42,10 @@ export function BlockInserter({ onInsert }: BlockInserterProps) {
 			<div className="flex items-center justify-between border-b border-border px-4 py-3">
 				<p className="text-sm font-semibold text-text">Add Block</p>
 				<button
-					onClick={() => { setOpen(false); setSearch(''); }}
+					onClick={() => {
+						setOpen(false);
+						setSearch('');
+					}}
 					className="rounded-md p-1 text-text-faint hover:bg-surface hover:text-text"
 				>
 					<X className="h-4 w-4" />

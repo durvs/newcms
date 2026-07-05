@@ -15,8 +15,7 @@ function getConfigFromEnv(): DatabaseConfig {
 	const password = process.env['DB_PASSWORD'];
 	if (!password) {
 		throw new Error(
-			'DB_PASSWORD environment variable is required. ' +
-				'Set it in your .env file or environment.',
+			'DB_PASSWORD environment variable is required. ' + 'Set it in your .env file or environment.',
 		);
 	}
 

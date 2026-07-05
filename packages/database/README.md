@@ -16,35 +16,41 @@ Type-safe [Drizzle ORM](https://orm.drizzle.team/) schema with 14 tables coverin
 
 ```typescript
 import {
-  posts, postmeta,
-  users, usermeta,
-  comments, commentmeta,
-  terms, termTaxonomy, termRelationships, termmeta,
-  options,
-  links,
-  sessions,
-  scheduledEvents,
+	posts,
+	postmeta,
+	users,
+	usermeta,
+	comments,
+	commentmeta,
+	terms,
+	termTaxonomy,
+	termRelationships,
+	termmeta,
+	options,
+	links,
+	sessions,
+	scheduledEvents,
 } from '@newcms/database/schema';
 ```
 
 ### Tables
 
-| Table | Purpose |
-|-------|---------|
-| `posts` | All content types (posts, pages, attachments, custom types) |
-| `postmeta` | Post metadata (EAV with JSONB support) |
-| `users` | User accounts |
-| `usermeta` | User metadata |
-| `comments` | Threaded comments |
-| `commentmeta` | Comment metadata |
-| `terms` | Taxonomy terms |
-| `term_taxonomy` | Term-taxonomy relationships with hierarchy |
-| `term_relationships` | Object-term assignments |
-| `termmeta` | Term metadata |
-| `options` | Site settings (with autoload and JSONB) |
-| `links` | Blogroll / link manager |
-| `sessions` | User sessions (Redis-backed with DB fallback) |
-| `scheduled_events` | Cron-like scheduled tasks (BullMQ-backed) |
+| Table                | Purpose                                                     |
+| -------------------- | ----------------------------------------------------------- |
+| `posts`              | All content types (posts, pages, attachments, custom types) |
+| `postmeta`           | Post metadata (EAV with JSONB support)                      |
+| `users`              | User accounts                                               |
+| `usermeta`           | User metadata                                               |
+| `comments`           | Threaded comments                                           |
+| `commentmeta`        | Comment metadata                                            |
+| `terms`              | Taxonomy terms                                              |
+| `term_taxonomy`      | Term-taxonomy relationships with hierarchy                  |
+| `term_relationships` | Object-term assignments                                     |
+| `termmeta`           | Term metadata                                               |
+| `options`            | Site settings (with autoload and JSONB)                     |
+| `links`              | Blogroll / link manager                                     |
+| `sessions`           | User sessions (Redis-backed with DB fallback)               |
+| `scheduled_events`   | Cron-like scheduled tasks (BullMQ-backed)                   |
 
 ### Key Design Decisions
 
@@ -63,11 +69,11 @@ const { db, client } = createConnection();
 
 // Or with explicit config
 const { db, client } = createConnection({
-  host: 'localhost',
-  port: 5432,
-  database: 'newcms',
-  user: 'newcms',
-  password: 'your-secure-password',
+	host: 'localhost',
+	port: 5432,
+	database: 'newcms',
+	user: 'newcms',
+	password: 'your-secure-password',
 });
 
 // Use Drizzle query builder
@@ -84,8 +90,8 @@ Redis-backed object cache with group isolation, TTL, and multisite support:
 import { ObjectCache } from '@newcms/database';
 
 const cache = new ObjectCache({
-  host: 'localhost',
-  port: 6379,
+	host: 'localhost',
+	port: 6379,
 });
 await cache.connect();
 
@@ -113,7 +119,7 @@ cache.setSiteId(2); // switch site context
 
 // Flush
 await cache.flushGroup('posts'); // flush one group
-await cache.flushAll();          // flush everything
+await cache.flushAll(); // flush everything
 ```
 
 ## Options Repository
@@ -154,14 +160,14 @@ const allOptions = await options.loadAutoloadedOptions();
 
 ## Environment Variables
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `DB_HOST` | No | `localhost` | PostgreSQL host |
-| `DB_PORT` | No | `5432` | PostgreSQL port |
-| `DB_NAME` | No | `newcms` | Database name |
-| `DB_USER` | No | `newcms` | Database user |
-| `DB_PASSWORD` | **Yes** | — | Database password |
-| `DB_MAX_CONNECTIONS` | No | `10` | Connection pool size |
+| Variable             | Required | Default     | Description          |
+| -------------------- | -------- | ----------- | -------------------- |
+| `DB_HOST`            | No       | `localhost` | PostgreSQL host      |
+| `DB_PORT`            | No       | `5432`      | PostgreSQL port      |
+| `DB_NAME`            | No       | `newcms`    | Database name        |
+| `DB_USER`            | No       | `newcms`    | Database user        |
+| `DB_PASSWORD`        | **Yes**  | —           | Database password    |
+| `DB_MAX_CONNECTIONS` | No       | `10`        | Connection pool size |
 
 ## License
 

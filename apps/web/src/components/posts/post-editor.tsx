@@ -69,7 +69,7 @@ export function PostEditor({ post }: PostEditorProps) {
 							{isNew ? 'New post' : 'Editing'}
 						</p>
 						<h1 className="mt-0.5 text-lg font-bold tracking-tight text-text">
-							{isNew ? 'Create Post' : (title || '(untitled)')}
+							{isNew ? 'Create Post' : title || '(untitled)'}
 						</h1>
 					</div>
 				</div>
@@ -121,7 +121,9 @@ export function PostEditor({ post }: PostEditorProps) {
 						<button
 							onClick={() => setViewMode('code')}
 							className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
-								viewMode === 'code' ? 'bg-surface text-text shadow-sm' : 'text-text-muted hover:text-text'
+								viewMode === 'code'
+									? 'bg-surface text-text shadow-sm'
+									: 'text-text-muted hover:text-text'
 							}`}
 						>
 							<Code2 className="h-3.5 w-3.5" />
@@ -130,7 +132,9 @@ export function PostEditor({ post }: PostEditorProps) {
 						<button
 							onClick={() => setViewMode('preview')}
 							className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
-								viewMode === 'preview' ? 'bg-surface text-text shadow-sm' : 'text-text-muted hover:text-text'
+								viewMode === 'preview'
+									? 'bg-surface text-text shadow-sm'
+									: 'text-text-muted hover:text-text'
 							}`}
 						>
 							<Eye className="h-3.5 w-3.5" />
@@ -155,7 +159,9 @@ export function PostEditor({ post }: PostEditorProps) {
 				<div className="space-y-4">
 					{/* Status */}
 					<div className="rounded-xl border border-border bg-surface-elevated p-4">
-						<h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-muted">Status</h3>
+						<h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-muted">
+							Status
+						</h3>
 						<select
 							value={status}
 							onChange={(e) => setStatus(e.target.value)}
@@ -170,7 +176,9 @@ export function PostEditor({ post }: PostEditorProps) {
 
 					{/* Slug */}
 					<div className="rounded-xl border border-border bg-surface-elevated p-4">
-						<h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-muted">URL Slug</h3>
+						<h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-muted">
+							URL Slug
+						</h3>
 						<input
 							type="text"
 							placeholder="auto-generated"
@@ -182,7 +190,9 @@ export function PostEditor({ post }: PostEditorProps) {
 
 					{/* Excerpt */}
 					<div className="rounded-xl border border-border bg-surface-elevated p-4">
-						<h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-muted">Excerpt</h3>
+						<h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-muted">
+							Excerpt
+						</h3>
 						<textarea
 							placeholder="Brief summary..."
 							value={excerpt}
@@ -195,7 +205,9 @@ export function PostEditor({ post }: PostEditorProps) {
 					{/* Info */}
 					{post && (
 						<div className="rounded-xl border border-border-subtle bg-surface-elevated p-4">
-							<h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-muted">Info</h3>
+							<h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-text-muted">
+								Info
+							</h3>
 							<div className="space-y-2 text-xs">
 								<div className="flex justify-between">
 									<span className="text-text-muted">ID</span>
@@ -203,11 +215,15 @@ export function PostEditor({ post }: PostEditorProps) {
 								</div>
 								<div className="flex justify-between">
 									<span className="text-text-muted">Created</span>
-									<span className="font-mono text-text-faint">{new Date(post.postDate).toLocaleDateString()}</span>
+									<span className="font-mono text-text-faint">
+										{new Date(post.postDate).toLocaleDateString()}
+									</span>
 								</div>
 								<div className="flex justify-between">
 									<span className="text-text-muted">Modified</span>
-									<span className="font-mono text-text-faint">{new Date(post.postModified).toLocaleDateString()}</span>
+									<span className="font-mono text-text-faint">
+										{new Date(post.postModified).toLocaleDateString()}
+									</span>
 								</div>
 							</div>
 						</div>

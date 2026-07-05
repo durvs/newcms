@@ -6,7 +6,13 @@ import { RenderElements } from '@/components/frontend/element-renderer';
 import type { Post } from '@/types/api';
 import Link from 'next/link';
 
-interface ElementNode { id: string; elType: string; widgetType?: string; settings: Record<string, unknown>; elements: ElementNode[] }
+interface ElementNode {
+	id: string;
+	elType: string;
+	widgetType?: string;
+	settings: Record<string, unknown>;
+	elements: ElementNode[];
+}
 
 export default function HomePage() {
 	// Try to load the "Home" page by slug
@@ -17,7 +23,9 @@ export default function HomePage() {
 			const pages = await api.get<{ posts: Post[] }>('/posts?slug=home&status=publish&per_page=1');
 			if (pages.posts.length > 0) return pages.posts[0];
 			// Try any page set as front page
-			const allPages = await api.get<{ posts: Post[] }>('/posts?type=page&status=publish&per_page=1');
+			const allPages = await api.get<{ posts: Post[] }>(
+				'/posts?type=page&status=publish&per_page=1',
+			);
 			if (allPages.posts.length > 0) return allPages.posts[0];
 			return null;
 		},
@@ -29,9 +37,13 @@ export default function HomePage() {
 		queryKey: ['public-builder', postId],
 		queryFn: async () => {
 			try {
-				const meta = await api.get<{ key: string; value: unknown }>(`/posts/${postId}/meta/_builder_data`);
+				const meta = await api.get<{ key: string; value: unknown }>(
+					`/posts/${postId}/meta/_builder_data`,
+				);
 				return meta.value as ElementNode[] | null;
-			} catch { return null; }
+			} catch {
+				return null;
+			}
 		},
 		enabled: !!postId,
 		staleTime: 30000,
@@ -61,14 +73,21 @@ function RecentPosts() {
 		<div style={{ maxWidth: 800, margin: '0 auto', padding: '48px 24px' }}>
 			<h1 style={{ fontSize: '2em', fontWeight: 700, marginBottom: 32 }}>Recent Posts</h1>
 			{data?.posts.map((post) => (
-				<article key={post.id} style={{ marginBottom: 32, paddingBottom: 32, borderBottom: '1px solid #f1f5f9' }}>
+				<article
+					key={post.id}
+					style={{ marginBottom: 32, paddingBottom: 32, borderBottom: '1px solid #f1f5f9' }}
+				>
 					<Link href={`/${post.postName}`} style={{ textDecoration: 'none' }}>
 						<h2 style={{ fontSize: '1.5em', fontWeight: 600, color: '#1e293b', margin: 0 }}>
 							{post.postTitle}
 						</h2>
 					</Link>
 					<time style={{ fontSize: 13, color: '#94a3b8', display: 'block', marginTop: 4 }}>
-						{new Date(post.postDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+						{new Date(post.postDate).toLocaleDateString('en-US', {
+							month: 'long',
+							day: 'numeric',
+							year: 'numeric',
+						})}
 					</time>
 					{post.postExcerpt && (
 						<p style={{ color: '#64748b', lineHeight: 1.7, marginTop: 8 }}>{post.postExcerpt}</p>

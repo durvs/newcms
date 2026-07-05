@@ -20,9 +20,7 @@ export const comments = pgTable(
 			.default(0)
 			.references(() => posts.id, { onDelete: 'cascade' }),
 		commentAuthor: text('comment_author').notNull().default(''),
-		commentAuthorEmail: varchar('comment_author_email', { length: 100 })
-			.notNull()
-			.default(''),
+		commentAuthorEmail: varchar('comment_author_email', { length: 100 }).notNull().default(''),
 		commentAuthorUrl: varchar('comment_author_url', { length: 200 }).notNull().default(''),
 		commentAuthorIp: varchar('comment_author_ip', { length: 100 }).notNull().default(''),
 		commentDate: timestamp('comment_date', { withTimezone: true }).notNull().defaultNow(),

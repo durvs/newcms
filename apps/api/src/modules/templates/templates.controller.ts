@@ -58,7 +58,8 @@ function resolvePostType(entry: EnvatoManifestEntry): string {
 	if (tmplType === 'footer' || name.includes('footer')) return 'builder_footer';
 	if (tmplType === 'single-post' || name.includes('single')) return 'builder_single_post';
 	if (tmplType === 'single-page' || entry.type === 'page') return 'builder_page';
-	if (tmplType === 'archive' || name.includes('archive') || name.includes('news')) return 'builder_archive';
+	if (tmplType === 'archive' || name.includes('archive') || name.includes('news'))
+		return 'builder_archive';
 	if (tmplType === 'error-404' || name.includes('404')) return 'builder_error_404';
 	if (tmplType === 'search-results') return 'builder_search';
 	if (name.includes('product')) return 'builder_product';
@@ -72,8 +73,12 @@ function extractDesignKit(settings: Record<string, unknown>): Record<string, unk
 	const kit: Record<string, unknown> = {};
 
 	// System colors (primary, secondary, text, accent)
-	const sysColors = settings.system_colors as { _id: string; title: string; color: string }[] | undefined;
-	const customColors = settings.custom_colors as { _id: string; title: string; color: string }[] | undefined;
+	const sysColors = settings.system_colors as
+		| { _id: string; title: string; color: string }[]
+		| undefined;
+	const customColors = settings.custom_colors as
+		| { _id: string; title: string; color: string }[]
+		| undefined;
 	kit.colors = [
 		...(sysColors ?? []).map((c) => ({ id: c._id, title: c.title, color: c.color })),
 		...(customColors ?? []).map((c) => ({ id: c._id, title: c.title, color: c.color })),
@@ -82,23 +87,25 @@ function extractDesignKit(settings: Record<string, unknown>): Record<string, unk
 	// Typography presets
 	const sysTypo = settings.system_typography as Record<string, unknown>[] | undefined;
 	const customTypo = settings.custom_typography as Record<string, unknown>[] | undefined;
-	kit.typography = [
-		...(sysTypo ?? []),
-		...(customTypo ?? []),
-	].map((t: Record<string, unknown>) => ({
-		id: t._id,
-		title: t.title,
-		fontFamily: t.typography_font_family ?? '',
-		fontSize: t.typography_font_size ?? { size: 16, unit: 'px' },
-		fontWeight: t.typography_font_weight ?? '400',
-		lineHeight: t.typography_line_height ?? { size: 1.5, unit: 'em' },
-		letterSpacing: t.typography_letter_spacing ?? { size: 0, unit: 'px' },
-		textTransform: t.typography_text_transform ?? 'none',
-		fontStyle: t.typography_font_style ?? 'normal',
-	}));
+	kit.typography = [...(sysTypo ?? []), ...(customTypo ?? [])].map(
+		(t: Record<string, unknown>) => ({
+			id: t._id,
+			title: t.title,
+			fontFamily: t.typography_font_family ?? '',
+			fontSize: t.typography_font_size ?? { size: 16, unit: 'px' },
+			fontWeight: t.typography_font_weight ?? '400',
+			lineHeight: t.typography_line_height ?? { size: 1.5, unit: 'em' },
+			letterSpacing: t.typography_letter_spacing ?? { size: 0, unit: 'px' },
+			textTransform: t.typography_text_transform ?? 'none',
+			fontStyle: t.typography_font_style ?? 'normal',
+		}),
+	);
 
 	// Body defaults
-	kit.bodyFontFamily = (kit.typography as Record<string, unknown>[])?.find((t: Record<string, unknown>) => t.id === 'text')?.fontFamily ?? 'system-ui, sans-serif';
+	kit.bodyFontFamily =
+		(kit.typography as Record<string, unknown>[])?.find(
+			(t: Record<string, unknown>) => t.id === 'text',
+		)?.fontFamily ?? 'system-ui, sans-serif';
 
 	// Breakpoints
 	if (settings.viewport_md) kit.breakpointTablet = settings.viewport_md;
@@ -118,7 +125,9 @@ export class TemplatesController {
 	@Post('import')
 	@ApiOperation({ summary: 'Import a template kit (ZIP file)' })
 	@ApiConsumes('multipart/form-data')
-	@ApiBody({ schema: { type: 'object', properties: { file: { type: 'string', format: 'binary' } } } })
+	@ApiBody({
+		schema: { type: 'object', properties: { file: { type: 'string', format: 'binary' } } },
+	})
 	@ApiBearerAuth()
 	@UseGuards(AuthGuard, PermissionGuard)
 	@RequireCapability('edit_posts')
@@ -181,7 +190,11 @@ export class TemplatesController {
 					await this.dbProvider.posts.meta.add(post.id, '_builder_data', elements);
 					await this.dbProvider.posts.meta.add(post.id, '_builder_edit_mode', 'builder');
 					if (entry.metadata?.template_type) {
-						await this.dbProvider.posts.meta.add(post.id, '_builder_template_type', entry.metadata.template_type);
+						await this.dbProvider.posts.meta.add(
+							post.id,
+							'_builder_template_type',
+							entry.metadata.template_type,
+						);
 					}
 
 					created.push({
@@ -220,9 +233,15 @@ export class TemplatesController {
 		const qe = new QueryEngine(this.dbProvider.db);
 		const result = await qe.query({
 			postType: [
-				'builder_header', 'builder_footer', 'builder_single_post',
-				'builder_page', 'builder_archive', 'builder_error_404',
-				'builder_search', 'builder_section', 'builder_product',
+				'builder_header',
+				'builder_footer',
+				'builder_single_post',
+				'builder_page',
+				'builder_archive',
+				'builder_error_404',
+				'builder_search',
+				'builder_section',
+				'builder_product',
 			],
 			postStatus: ['publish', 'draft'],
 			perPage: 100,

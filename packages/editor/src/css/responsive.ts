@@ -47,10 +47,10 @@ export function getResponsiveValue(
 /**
  * Get ordered breakpoints for CSS generation (desktop first, then by max-width descending).
  */
-export function getOrderedBreakpoints(breakpoints: Breakpoint[] = DEFAULT_BREAKPOINTS): Breakpoint[] {
+export function getOrderedBreakpoints(
+	breakpoints: Breakpoint[] = DEFAULT_BREAKPOINTS,
+): Breakpoint[] {
 	const desktop = breakpoints.find((b) => b.isDefault);
-	const others = breakpoints
-		.filter((b) => !b.isDefault)
-		.sort((a, b) => b.maxWidth - a.maxWidth);
+	const others = breakpoints.filter((b) => !b.isDefault).sort((a, b) => b.maxWidth - a.maxWidth);
 	return desktop ? [desktop, ...others] : others;
 }

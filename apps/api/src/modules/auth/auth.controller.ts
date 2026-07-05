@@ -31,10 +31,7 @@ export class AuthController {
 	@ApiOperation({ summary: 'Authenticate and create a session' })
 	@Throttle({ default: { ttl: 60000, limit: 5 } })
 	@HttpCode(HttpStatus.OK)
-	async login(
-		@Body() body: { login: string; password: string },
-		@Req() req: Request,
-	) {
+	async login(@Body() body: { login: string; password: string }, @Req() req: Request) {
 		if (!body.login || !body.password) {
 			throw new UnauthorizedException('Login and password are required');
 		}
@@ -51,11 +48,7 @@ export class AuthController {
 
 		const user = rows[0];
 
-		const { valid, needsRehash } = await verifyPassword(
-			body.password,
-			user.userPass,
-			AUTH_SECRET,
-		);
+		const { valid, needsRehash } = await verifyPassword(body.password, user.userPass, AUTH_SECRET);
 
 		if (!valid) {
 			throw new UnauthorizedException('Invalid credentials');

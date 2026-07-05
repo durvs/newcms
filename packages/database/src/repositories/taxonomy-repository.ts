@@ -1,11 +1,6 @@
 import { eq, and, sql, inArray } from 'drizzle-orm';
 import type { Database } from '../connection';
-import {
-	terms,
-	termTaxonomy,
-	termRelationships,
-	termmeta,
-} from '../schema/index';
+import { terms, termTaxonomy, termRelationships, termmeta } from '../schema/index';
 import { MetaRepository, type MetaTableColumns, type MetaColumnNames } from './meta-repository';
 
 export interface CreateTermInput {
@@ -44,8 +39,20 @@ export class TaxonomyRepository {
 		};
 		const colNames: MetaColumnNames = {
 			table: 'termmeta',
-			sql: { metaId: 'meta_id', objectId: 'term_id', metaKey: 'meta_key', metaValue: 'meta_value', metaValueJson: 'meta_value_json' },
-			ts: { metaId: 'metaId', objectId: 'termId', metaKey: 'metaKey', metaValue: 'metaValue', metaValueJson: 'metaValueJson' },
+			sql: {
+				metaId: 'meta_id',
+				objectId: 'term_id',
+				metaKey: 'meta_key',
+				metaValue: 'meta_value',
+				metaValueJson: 'meta_value_json',
+			},
+			ts: {
+				metaId: 'metaId',
+				objectId: 'termId',
+				metaKey: 'metaKey',
+				metaValue: 'metaValue',
+				metaValueJson: 'metaValueJson',
+			},
 		};
 		this.meta = new MetaRepository(db, termmeta, metaCols, colNames);
 	}
@@ -171,12 +178,13 @@ export class TaxonomyRepository {
 	 */
 	async setObjectTerms(objectId: number, termTaxonomyIds: number[]): Promise<void> {
 		// Remove existing relationships for these taxonomies
-		const existingTtIds = termTaxonomyIds.length > 0
-			? await this.db
-					.select({ taxonomy: termTaxonomy.taxonomy })
-					.from(termTaxonomy)
-					.where(inArray(termTaxonomy.termTaxonomyId, termTaxonomyIds))
-			: [];
+		const existingTtIds =
+			termTaxonomyIds.length > 0
+				? await this.db
+						.select({ taxonomy: termTaxonomy.taxonomy })
+						.from(termTaxonomy)
+						.where(inArray(termTaxonomy.termTaxonomyId, termTaxonomyIds))
+				: [];
 
 		const taxonomies = [...new Set(existingTtIds.map((r) => r.taxonomy))];
 
@@ -203,13 +211,16 @@ export class TaxonomyRepository {
 
 		// Insert new relationships
 		if (termTaxonomyIds.length > 0) {
-			await this.db.insert(termRelationships).values(
-				termTaxonomyIds.map((ttId, i) => ({
-					objectId,
-					termTaxonomyId: ttId,
-					termOrder: i,
-				})),
-			).onConflictDoNothing();
+			await this.db
+				.insert(termRelationships)
+				.values(
+					termTaxonomyIds.map((ttId, i) => ({
+						objectId,
+						termTaxonomyId: ttId,
+						termOrder: i,
+					})),
+				)
+				.onConflictDoNothing();
 		}
 
 		// Update counts
@@ -238,10 +249,7 @@ export class TaxonomyRepository {
 				count: termTaxonomy.count,
 			})
 			.from(termRelationships)
-			.innerJoin(
-				termTaxonomy,
-				eq(termRelationships.termTaxonomyId, termTaxonomy.termTaxonomyId),
-			)
+			.innerJoin(termTaxonomy, eq(termRelationships.termTaxonomyId, termTaxonomy.termTaxonomyId))
 			.innerJoin(terms, eq(termTaxonomy.termId, terms.termId))
 			.where(and(...conditions))
 			.orderBy(termRelationships.termOrder);
@@ -262,9 +270,7 @@ export class TaxonomyRepository {
 			.where(eq(termRelationships.termTaxonomyId, term.termTaxonomyId));
 
 		// Delete term_taxonomy
-		await this.db
-			.delete(termTaxonomy)
-			.where(eq(termTaxonomy.termTaxonomyId, term.termTaxonomyId));
+		await this.db.delete(termTaxonomy).where(eq(termTaxonomy.termTaxonomyId, term.termTaxonomyId));
 
 		// Delete term (if not used by another taxonomy)
 		const otherUsages = await this.db

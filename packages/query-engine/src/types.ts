@@ -70,7 +70,19 @@ export interface MetaQuery {
 export interface MetaQueryClause {
 	key: string;
 	value?: string | number | boolean;
-	compare?: '=' | '!=' | '>' | '<' | '>=' | '<=' | 'LIKE' | 'NOT LIKE' | 'IN' | 'NOT IN' | 'EXISTS' | 'NOT EXISTS';
+	compare?:
+		| '='
+		| '!='
+		| '>'
+		| '<'
+		| '>='
+		| '<='
+		| 'LIKE'
+		| 'NOT LIKE'
+		| 'IN'
+		| 'NOT IN'
+		| 'EXISTS'
+		| 'NOT EXISTS';
 	/** Cast type for comparison */
 	type?: 'CHAR' | 'NUMERIC' | 'DATE' | 'DATETIME';
 }

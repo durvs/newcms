@@ -160,10 +160,7 @@ describe('OptionsRepository', () => {
 			await repo.addOption('test_option', 'value', true);
 			await repo.updateOption('test_option', 'value', false);
 
-			const rows = await db
-				.select()
-				.from(options)
-				.where(eq(options.optionName, 'test_option'));
+			const rows = await db.select().from(options).where(eq(options.optionName, 'test_option'));
 
 			expect(rows[0].autoload).toBe(false);
 		});

@@ -118,7 +118,19 @@ export class ThemeRegistry {
  * names to search for (most specific first).
  */
 export interface TemplateContext {
-	type: 'single' | 'page' | 'category' | 'tag' | 'taxonomy' | 'author' | 'date' | 'search' | '404' | 'home' | 'archive' | 'attachment';
+	type:
+		| 'single'
+		| 'page'
+		| 'category'
+		| 'tag'
+		| 'taxonomy'
+		| 'author'
+		| 'date'
+		| 'search'
+		| '404'
+		| 'home'
+		| 'archive'
+		| 'attachment';
 	slug?: string;
 	id?: number;
 	postType?: string;
@@ -204,9 +216,7 @@ export function resolveTemplateHierarchy(ctx: TemplateContext): string[] {
 
 		case 'attachment':
 			return [
-				ctx.mimeType && ctx.mimeSubtype
-					? `${ctx.mimeType}-${ctx.mimeSubtype}`
-					: null,
+				ctx.mimeType && ctx.mimeSubtype ? `${ctx.mimeType}-${ctx.mimeSubtype}` : null,
 				ctx.mimeSubtype ?? null,
 				ctx.mimeType ?? null,
 				'attachment',

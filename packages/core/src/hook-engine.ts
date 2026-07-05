@@ -97,9 +97,7 @@ export class HookEngine {
 		if (!handlers) return false;
 
 		const initialLength = handlers.length;
-		const filtered = handlers.filter(
-			(h) => !(h.callback === callback && h.priority === priority),
-		);
+		const filtered = handlers.filter((h) => !(h.callback === callback && h.priority === priority));
 
 		if (filtered.length === initialLength) return false;
 

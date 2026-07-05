@@ -2,7 +2,16 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 /** Routes that require authentication */
-const ADMIN_ROUTES = ['/dashboard', '/posts', '/users', '/settings', '/comments', '/menus', '/templates', '/editor'];
+const ADMIN_ROUTES = [
+	'/dashboard',
+	'/posts',
+	'/users',
+	'/settings',
+	'/comments',
+	'/menus',
+	'/templates',
+	'/editor',
+];
 
 function isAdminRoute(pathname: string): boolean {
 	return ADMIN_ROUTES.some((route) => pathname === route || pathname.startsWith(route + '/'));

@@ -28,13 +28,19 @@ export interface KitManifest {
 	content?: Record<string, Record<string, KitContentEntry>>;
 
 	/** Taxonomy terms to create */
-	taxonomies?: Record<string, Record<string, { name: string; slug: string; parent: number; description?: string }>>;
+	taxonomies?: Record<
+		string,
+		Record<string, { name: string; slug: string; parent: number; description?: string }>
+	>;
 
 	/** Required plugins */
 	plugins?: { name: string; plugin: string; version: string }[];
 
 	/** Experiment/feature flags */
-	experiments?: Record<string, { name: string; title: string; state: string; default: string; release_status: string }>;
+	experiments?: Record<
+		string,
+		{ name: string; title: string; state: string; default: string; release_status: string }
+	>;
 }
 
 export interface KitTemplateEntry {

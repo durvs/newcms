@@ -9,7 +9,9 @@ export default function UsersPage() {
 	return (
 		<div>
 			<div className="mb-6 animate-fade-in-up">
-				<p className="text-xs font-medium uppercase tracking-widest text-text-muted font-mono">People</p>
+				<p className="text-xs font-medium uppercase tracking-widest text-text-muted font-mono">
+					People
+				</p>
 				<h1 className="mt-1 text-2xl font-bold tracking-tight text-text">Users</h1>
 			</div>
 
@@ -18,9 +20,15 @@ export default function UsersPage() {
 					<table className="w-full">
 						<thead>
 							<tr className="border-b border-border">
-								<th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-text-muted">User</th>
-								<th className="hidden px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-text-muted sm:table-cell">Email</th>
-								<th className="hidden px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-text-muted md:table-cell">Registered</th>
+								<th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-text-muted">
+									User
+								</th>
+								<th className="hidden px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-text-muted sm:table-cell">
+									Email
+								</th>
+								<th className="hidden px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-text-muted md:table-cell">
+									Registered
+								</th>
 							</tr>
 						</thead>
 						<tbody className="divide-y divide-border">
@@ -49,14 +57,20 @@ export default function UsersPage() {
 									</td>
 									<td className="hidden px-5 py-3 md:table-cell">
 										<span className="text-xs text-text-muted font-mono">
-											{new Date(user.registered).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+											{new Date(user.registered).toLocaleDateString('en-US', {
+												month: 'short',
+												day: 'numeric',
+												year: 'numeric',
+											})}
 										</span>
 									</td>
 								</tr>
 							))}
 							{!isLoading && users?.length === 0 && (
 								<tr>
-									<td colSpan={3} className="px-5 py-12 text-center text-sm text-text-muted">No users found</td>
+									<td colSpan={3} className="px-5 py-12 text-center text-sm text-text-muted">
+										No users found
+									</td>
 								</tr>
 							)}
 						</tbody>

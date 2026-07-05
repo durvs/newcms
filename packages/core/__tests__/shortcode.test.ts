@@ -24,7 +24,9 @@ describe('ShortcodeRegistry', () => {
 			captured = attrs;
 			return `<a href="${attrs.href}">${content}</a>`;
 		});
-		const result = registry.process('[link href="https://example.com" target="_blank"]Click[/link]');
+		const result = registry.process(
+			'[link href="https://example.com" target="_blank"]Click[/link]',
+		);
 		expect(result).toBe('<a href="https://example.com">Click</a>');
 		expect(captured.href).toBe('https://example.com');
 		expect(captured.target).toBe('_blank');

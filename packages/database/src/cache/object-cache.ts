@@ -244,10 +244,7 @@ export class ObjectCache {
 	 *
 	 * @returns Map of key -> value (missing keys are not included)
 	 */
-	async getMultiple(
-		keys: string[],
-		group: string = 'default',
-	): Promise<Map<string, unknown>> {
+	async getMultiple(keys: string[], group: string = 'default'): Promise<Map<string, unknown>> {
 		const result = new Map<string, unknown>();
 		if (keys.length === 0) return result;
 

@@ -34,7 +34,9 @@ export class TaxonomyController {
 	@Post('categories')
 	@ApiOperation({ summary: 'Create a category' })
 	@HttpCode(HttpStatus.CREATED)
-	async createCategory(@Body() body: { name: string; slug?: string; description?: string; parent?: number }) {
+	async createCategory(
+		@Body() body: { name: string; slug?: string; description?: string; parent?: number },
+	) {
 		return this.dbProvider.taxonomy.createTerm({
 			...body,
 			taxonomy: 'category',

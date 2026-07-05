@@ -22,9 +22,21 @@ export interface MetaTableColumns {
 export interface MetaColumnNames {
 	table: string;
 	/** SQL column names (for raw queries) */
-	sql: { metaId: string; objectId: string; metaKey: string; metaValue: string; metaValueJson: string };
+	sql: {
+		metaId: string;
+		objectId: string;
+		metaKey: string;
+		metaValue: string;
+		metaValueJson: string;
+	};
 	/** TypeScript property names (for reading Drizzle select results) */
-	ts: { metaId: string; objectId: string; metaKey: string; metaValue: string; metaValueJson: string };
+	ts: {
+		metaId: string;
+		objectId: string;
+		metaKey: string;
+		metaValue: string;
+		metaValueJson: string;
+	};
 }
 
 export interface MetaEntry {
@@ -73,10 +85,7 @@ export class MetaRepository {
 	}
 
 	async getAllForObject(objectId: number): Promise<Map<string, unknown[]>> {
-		const rows = await this.db
-			.select()
-			.from(this.table)
-			.where(eq(this.columns.objectId, objectId));
+		const rows = await this.db.select().from(this.table).where(eq(this.columns.objectId, objectId));
 
 		const result = new Map<string, unknown[]>();
 		for (const row of rows) {
@@ -213,7 +222,9 @@ export class MetaRepository {
 				if (typeof parsed === 'object' && parsed !== null) {
 					return { textValue: value, jsonValue: parsed };
 				}
-			} catch { /* plain string */ }
+			} catch {
+				/* plain string */
+			}
 			return { textValue: value, jsonValue: null };
 		}
 		if (typeof value === 'number' || typeof value === 'boolean') {

@@ -94,7 +94,14 @@ export function evaluateConditions(
 
 function matchCondition(
 	cond: TemplateCondition,
-	context: { type: string; postType?: string; postId?: number; taxonomy?: string; termSlug?: string; userRole?: string },
+	context: {
+		type: string;
+		postType?: string;
+		postId?: number;
+		taxonomy?: string;
+		termSlug?: string;
+		userRole?: string;
+	},
 ): boolean {
 	switch (cond.scope) {
 		case 'general':

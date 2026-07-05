@@ -20,18 +20,18 @@ function serializeBlock(block: Block): string {
 		return block.innerHTML;
 	}
 
-	const attrsStr = Object.keys(block.attributes).length > 0
-		? ` ${JSON.stringify(block.attributes)}`
-		: '';
+	const attrsStr =
+		Object.keys(block.attributes).length > 0 ? ` ${JSON.stringify(block.attributes)}` : '';
 
 	// Self-closing (no inner content or blocks)
 	if (!block.innerHTML && block.innerBlocks.length === 0) {
 		return `<!-- cms:${shortName}${attrsStr} /-->`;
 	}
 
-	const inner = block.innerBlocks.length > 0
-		? `\n${serializeBlocks(block.innerBlocks)}\n`
-		: `\n${block.innerHTML}\n`;
+	const inner =
+		block.innerBlocks.length > 0
+			? `\n${serializeBlocks(block.innerBlocks)}\n`
+			: `\n${block.innerHTML}\n`;
 
 	return `<!-- cms:${shortName}${attrsStr} -->${inner}<!-- /cms:${shortName} -->`;
 }

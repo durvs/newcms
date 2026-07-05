@@ -69,7 +69,10 @@ export class AuthGuard implements CanActivate {
 		return true;
 	}
 
-	private async authenticateBasic(request: AuthenticatedRequest, encoded: string): Promise<boolean> {
+	private async authenticateBasic(
+		request: AuthenticatedRequest,
+		encoded: string,
+	): Promise<boolean> {
 		const decoded = Buffer.from(encoded, 'base64').toString('utf-8');
 		const colonIndex = decoded.indexOf(':');
 		if (colonIndex === -1) throw new UnauthorizedException('Invalid credentials');

@@ -16,8 +16,20 @@ export interface HtmlNode {
 }
 
 const VOID_ELEMENTS = new Set([
-	'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
-	'link', 'meta', 'param', 'source', 'track', 'wbr',
+	'area',
+	'base',
+	'br',
+	'col',
+	'embed',
+	'hr',
+	'img',
+	'input',
+	'link',
+	'meta',
+	'param',
+	'source',
+	'track',
+	'wbr',
 ]);
 
 const AUTO_CLOSE_MAP: Record<string, Set<string>> = {
@@ -130,12 +142,18 @@ export class FullProcessor {
 		let i = 0;
 		while (i < html.length) {
 			const openIdx = html.indexOf('<', i);
-			if (openIdx === -1) { this.addText(html.slice(i)); break; }
+			if (openIdx === -1) {
+				this.addText(html.slice(i));
+				break;
+			}
 			if (openIdx > i) this.addText(html.slice(i, openIdx));
 
 			if (html.startsWith('<!--', openIdx)) {
 				const endIdx = html.indexOf('-->', openIdx + 4);
-				if (endIdx === -1) { this.addText(html.slice(openIdx)); break; }
+				if (endIdx === -1) {
+					this.addText(html.slice(openIdx));
+					break;
+				}
 				this.addComment(html.slice(openIdx + 4, endIdx));
 				i = endIdx + 3;
 				continue;
@@ -151,7 +169,12 @@ export class FullProcessor {
 			if (html[openIdx + 1] === '/') {
 				const endIdx = html.indexOf('>', openIdx);
 				if (endIdx === -1) break;
-				this.closeTag(html.slice(openIdx + 2, endIdx).trim().toLowerCase());
+				this.closeTag(
+					html
+						.slice(openIdx + 2, endIdx)
+						.trim()
+						.toLowerCase(),
+				);
 				i = endIdx + 1;
 				continue;
 			}
@@ -178,8 +201,12 @@ export class FullProcessor {
 			this.current = this.current.parent ?? this.root;
 		}
 		const node: HtmlNode = {
-			type: 'element', tag: name, attributes: this.parseAttrs(attrStr),
-			children: [], parent: this.current, selfClosing,
+			type: 'element',
+			tag: name,
+			attributes: this.parseAttrs(attrStr),
+			children: [],
+			parent: this.current,
+			selfClosing,
 		};
 		this.current.children.push(node);
 		if (!selfClosing) this.current = node;
@@ -188,7 +215,10 @@ export class FullProcessor {
 	private closeTag(name: string): void {
 		let node: HtmlNode | undefined = this.current;
 		while (node && node !== this.root) {
-			if (node.tag === name) { this.current = node.parent ?? this.root; return; }
+			if (node.tag === name) {
+				this.current = node.parent ?? this.root;
+				return;
+			}
 			node = node.parent;
 		}
 	}
@@ -213,5 +243,9 @@ export class FullProcessor {
 }
 
 function escapeAttr(v: string): string {
-	return v.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+	return v
+		.replace(/&/g, '&amp;')
+		.replace(/"/g, '&quot;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;');
 }

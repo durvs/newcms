@@ -14,48 +14,48 @@ import type { ElementorNode } from './types';
  */
 const WIDGET_MAP: Record<string, string> = {
 	// Text
-	'heading': 'heading',
+	heading: 'heading',
 	'text-editor': 'paragraph',
 	'animated-headline': 'heading-animated',
-	'blockquote': 'quote',
+	blockquote: 'quote',
 	'code-highlight': 'code',
 	'icon-list': 'icon-list',
 
 	// Media
-	'image': 'image',
-	'video': 'video',
+	image: 'image',
+	video: 'video',
 	'image-gallery': 'gallery',
 	'image-carousel': 'carousel',
 	'media-carousel': 'carousel',
 	'testimonial-carousel': 'testimonial',
-	'slides': 'slides',
-	'lottie': 'lottie',
-	'hotspot': 'hotspot',
+	slides: 'slides',
+	lottie: 'lottie',
+	hotspot: 'hotspot',
 	'google-maps': 'map',
 
 	// Interactive
-	'button': 'button',
-	'tabs': 'tabs',
-	'accordion': 'accordion',
-	'toggle': 'toggle',
-	'divider': 'separator',
-	'spacer': 'spacer',
-	'html': 'html',
-	'shortcode': 'shortcode',
-	'icon': 'icon',
+	button: 'button',
+	tabs: 'tabs',
+	accordion: 'accordion',
+	toggle: 'toggle',
+	divider: 'separator',
+	spacer: 'spacer',
+	html: 'html',
+	shortcode: 'shortcode',
+	icon: 'icon',
 	'icon-box': 'icon-box',
 	'social-icons': 'social-icons',
 	'star-rating': 'rating',
-	'counter': 'counter',
-	'progress': 'progress-bar',
-	'alert': 'alert',
+	counter: 'counter',
+	progress: 'progress-bar',
+	alert: 'alert',
 	'menu-anchor': 'anchor',
 
 	// Marketing
 	'price-table': 'pricing-table',
 	'price-list': 'price-list',
 	'call-to-action': 'cta',
-	'countdown': 'countdown',
+	countdown: 'countdown',
 	'progress-tracker': 'progress-tracker',
 	'flip-box': 'flip-box',
 	'link-in-bio': 'link-in-bio',
@@ -66,7 +66,7 @@ const WIDGET_MAP: Record<string, string> = {
 	'mega-menu': 'mega-menu',
 	'search-form': 'search',
 	'table-of-contents': 'toc',
-	'breadcrumbs': 'breadcrumb',
+	breadcrumbs: 'breadcrumb',
 
 	// Nested / compound
 	'nested-accordion': 'accordion',
@@ -74,16 +74,16 @@ const WIDGET_MAP: Record<string, string> = {
 
 	// Third-party / addon widgets → map to closest native
 	'hfe-cart': 'cart',
-	'jkit_product_grid': 'product-grid',
-	'metform': 'form',
+	jkit_product_grid: 'product-grid',
+	metform: 'form',
 	'rkit-post-grid-post': 'loop-grid',
 
 	// Social
 	'share-buttons': 'share-buttons',
 
 	// Forms
-	'form': 'form',
-	'login': 'login-form',
+	form: 'form',
+	login: 'login-form',
 
 	// Theme
 	'theme-site-logo': 'site-logo',
@@ -185,7 +185,14 @@ function convertSize(val: unknown): { size: number; unit: string } | null {
 /**
  * Elementor dimensions: { top: string, right: string, bottom: string, left: string, unit: string, isLinked: boolean }
  */
-function convertDimensions(val: unknown): { top: number; right: number; bottom: number; left: number; unit: string; linked: boolean } | null {
+function convertDimensions(val: unknown): {
+	top: number;
+	right: number;
+	bottom: number;
+	left: number;
+	unit: string;
+	linked: boolean;
+} | null {
 	if (!val || typeof val !== 'object') return null;
 	const v = val as Record<string, unknown>;
 	return {
@@ -198,22 +205,28 @@ function convertDimensions(val: unknown): { top: number; right: number; bottom: 
 	};
 }
 
-function dimToCSS(d: { top: number; right: number; bottom: number; left: number; unit: string }): string {
+function dimToCSS(d: {
+	top: number;
+	right: number;
+	bottom: number;
+	left: number;
+	unit: string;
+}): string {
 	return `${d.top}${d.unit} ${d.right}${d.unit} ${d.bottom}${d.unit} ${d.left}${d.unit}`;
 }
 
 function mapSettingKey(key: string, value: unknown, result: Record<string, unknown>): void {
 	// ─── Content ─────────────────────────────────────────
 	const directMap: Record<string, string> = {
-		'title': 'content',
-		'editor': 'content',
-		'header_size': 'level',
-		'space': 'height',
-		'html': 'content',
-		'shortcode': 'content',
-		'selected_icon': 'icon',
-		'link': 'url',
-		'button_text': 'text',
+		title: 'content',
+		editor: 'content',
+		header_size: 'level',
+		space: 'height',
+		html: 'content',
+		shortcode: 'content',
+		selected_icon: 'icon',
+		link: 'url',
+		button_text: 'text',
 	};
 
 	if (directMap[key]) {
@@ -340,7 +353,12 @@ function mapSettingKey(key: string, value: unknown, result: Record<string, unkno
 
 	// ─── Layout (containers) ────────────────────────────
 	if (key === 'flex_direction' || key === 'container_type') {
-		if (value === 'row' || value === 'column' || value === 'row-reverse' || value === 'column-reverse') {
+		if (
+			value === 'row' ||
+			value === 'column' ||
+			value === 'row-reverse' ||
+			value === 'column-reverse'
+		) {
 			result.direction = value;
 		}
 		return;
@@ -475,7 +493,8 @@ export function convertSiteSettings(settings: Record<string, unknown>): Record<s
 	}
 
 	// Body typography
-	if (settings.body_typography_font_family) kit.bodyFontFamily = settings.body_typography_font_family;
+	if (settings.body_typography_font_family)
+		kit.bodyFontFamily = settings.body_typography_font_family;
 	if (settings.body_typography_font_size) kit.bodyFontSize = settings.body_typography_font_size;
 
 	return kit;

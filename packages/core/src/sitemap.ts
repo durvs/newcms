@@ -53,7 +53,10 @@ ${sitemaps.join('\n')}
 /**
  * Paginate entries into sub-sitemaps.
  */
-export function paginateEntries(entries: SitemapEntry[], perPage: number = URLS_PER_SITEMAP): SitemapEntry[][] {
+export function paginateEntries(
+	entries: SitemapEntry[],
+	perPage: number = URLS_PER_SITEMAP,
+): SitemapEntry[][] {
 	const pages: SitemapEntry[][] = [];
 	for (let i = 0; i < entries.length; i += perPage) {
 		pages.push(entries.slice(i, i + perPage));
@@ -62,5 +65,10 @@ export function paginateEntries(entries: SitemapEntry[], perPage: number = URLS_
 }
 
 function escapeXml(str: string): string {
-	return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+	return str
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&apos;');
 }

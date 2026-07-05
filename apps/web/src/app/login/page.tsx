@@ -43,15 +43,23 @@ export default function LoginPage() {
 				<div className="animate-fade-in-up">
 					<div className="flex items-center gap-3">
 						<div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent">
-							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-surface">
+							<svg
+								width="18"
+								height="18"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2.5"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								className="text-surface"
+							>
 								<path d="M12 2L2 7l10 5 10-5-10-5z" />
 								<path d="M2 17l10 5 10-5" />
 								<path d="M2 12l10 5 10-5" />
 							</svg>
 						</div>
-						<span className="text-lg font-semibold tracking-tight text-text">
-							NewCMS
-						</span>
+						<span className="text-lg font-semibold tracking-tight text-text">NewCMS</span>
 					</div>
 				</div>
 
@@ -62,8 +70,8 @@ export default function LoginPage() {
 						<span className="text-accent">reimagined.</span>
 					</h2>
 					<p className="mt-5 text-base leading-relaxed text-text-muted">
-						A modern content management system built from the ground up with
-						TypeScript, designed for speed, extensibility, and developer experience.
+						A modern content management system built from the ground up with TypeScript, designed
+						for speed, extensibility, and developer experience.
 					</p>
 				</div>
 
@@ -84,21 +92,27 @@ export default function LoginPage() {
 					{/* Mobile logo */}
 					<div className="mb-10 flex items-center gap-3 lg:hidden animate-fade-in-up">
 						<div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent">
-							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-surface">
+							<svg
+								width="18"
+								height="18"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2.5"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								className="text-surface"
+							>
 								<path d="M12 2L2 7l10 5 10-5-10-5z" />
 								<path d="M2 17l10 5 10-5" />
 								<path d="M2 12l10 5 10-5" />
 							</svg>
 						</div>
-						<span className="text-lg font-semibold tracking-tight text-text">
-							NewCMS
-						</span>
+						<span className="text-lg font-semibold tracking-tight text-text">NewCMS</span>
 					</div>
 
 					<div className="animate-fade-in-up-delay-2">
-						<h1 className="text-2xl font-bold tracking-tight text-text">
-							Welcome back
-						</h1>
+						<h1 className="text-2xl font-bold tracking-tight text-text">Welcome back</h1>
 						<p className="mt-2 text-sm text-text-muted">
 							Enter your credentials to access the dashboard
 						</p>
@@ -107,7 +121,17 @@ export default function LoginPage() {
 					<form onSubmit={handleSubmit} className="mt-8 space-y-5">
 						{error && (
 							<div className="animate-fade-in-up flex items-center gap-2 rounded-lg bg-error-soft/10 px-4 py-3 text-sm text-error-soft ring-1 ring-error-soft/20">
-								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+								<svg
+									width="16"
+									height="16"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									strokeWidth="2"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									className="shrink-0"
+								>
 									<circle cx="12" cy="12" r="10" />
 									<line x1="15" y1="9" x2="9" y2="15" />
 									<line x1="9" y1="9" x2="15" y2="15" />
@@ -117,7 +141,10 @@ export default function LoginPage() {
 						)}
 
 						<div className="space-y-1.5 animate-fade-in-up-delay-3">
-							<label htmlFor="login" className="block text-xs font-medium uppercase tracking-wider text-text-muted">
+							<label
+								htmlFor="login"
+								className="block text-xs font-medium uppercase tracking-wider text-text-muted"
+							>
 								Username or email
 							</label>
 							<input
@@ -132,9 +159,10 @@ export default function LoginPage() {
 									block w-full rounded-lg border bg-input-bg px-4 py-3 text-sm text-text
 									placeholder:text-text-muted/50
 									outline-none transition-all duration-200
-									${focused === 'login'
-										? 'border-accent/60 ring-1 ring-accent/20'
-										: 'border-border hover:border-text-faint/30'
+									${
+										focused === 'login'
+											? 'border-accent/60 ring-1 ring-accent/20'
+											: 'border-border hover:border-text-faint/30'
 									}
 								`}
 								placeholder="admin"
@@ -142,7 +170,10 @@ export default function LoginPage() {
 						</div>
 
 						<div className="space-y-1.5 animate-fade-in-up-delay-3">
-							<label htmlFor="password" className="block text-xs font-medium uppercase tracking-wider text-text-muted">
+							<label
+								htmlFor="password"
+								className="block text-xs font-medium uppercase tracking-wider text-text-muted"
+							>
 								Password
 							</label>
 							<input
@@ -157,9 +188,10 @@ export default function LoginPage() {
 									block w-full rounded-lg border bg-input-bg px-4 py-3 text-sm text-text
 									placeholder:text-text-muted/50
 									outline-none transition-all duration-200
-									${focused === 'password'
-										? 'border-accent/60 ring-1 ring-accent/20'
-										: 'border-border hover:border-text-faint/30'
+									${
+										focused === 'password'
+											? 'border-accent/60 ring-1 ring-accent/20'
+											: 'border-border hover:border-text-faint/30'
 									}
 								`}
 								placeholder="Enter your password"
@@ -182,15 +214,36 @@ export default function LoginPage() {
 								{loading ? (
 									<div className="flex items-center gap-2">
 										<svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-											<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-											<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+											<circle
+												className="opacity-25"
+												cx="12"
+												cy="12"
+												r="10"
+												stroke="currentColor"
+												strokeWidth="4"
+											/>
+											<path
+												className="opacity-75"
+												fill="currentColor"
+												d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+											/>
 										</svg>
 										Signing in...
 									</div>
 								) : (
 									<>
 										Sign in
-										<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="ml-2 transition-transform duration-200 group-hover:translate-x-0.5">
+										<svg
+											width="16"
+											height="16"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2.5"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											className="ml-2 transition-transform duration-200 group-hover:translate-x-0.5"
+										>
 											<path d="M5 12h14" />
 											<path d="m12 5 7 7-7 7" />
 										</svg>

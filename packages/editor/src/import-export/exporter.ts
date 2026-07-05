@@ -53,8 +53,14 @@ export function exportKit(
 		content: {},
 	};
 
-	const templateFiles = new Map<string, { content: ElementNode[]; settings?: Record<string, unknown> }>();
-	const contentFiles = new Map<string, { content: ElementNode[]; settings?: Record<string, unknown> }>();
+	const templateFiles = new Map<
+		string,
+		{ content: ElementNode[]; settings?: Record<string, unknown> }
+	>();
+	const contentFiles = new Map<
+		string,
+		{ content: ElementNode[]; settings?: Record<string, unknown> }
+	>();
 
 	// Templates
 	for (const tmpl of templates) {

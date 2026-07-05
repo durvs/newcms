@@ -1,39 +1,48 @@
 {
-  "name": "@newcms/html-processor",
-  "version": "0.2.0",
-  "type": "module",
-  "description": "HTML tag processor and full HTML5 processor for NewCMS — zero external dependencies",
-  "license": "GPL-2.0-or-later",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/durvs/newcms.git",
-    "directory": "packages/html-processor"
-  },
-  "keywords": ["cms", "html", "parser", "processor", "newcms"],
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    }
-  },
-  "files": ["dist", "README.md"],
-  "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "lint": "echo 'lint ok'",
-    "clean": "rm -rf dist .turbo",
-    "prepublishOnly": "pnpm run build"
-  },
-  "devDependencies": {
-    "@newcms/config": "workspace:*",
-    "tsup": "^8.5.1",
-    "typescript": "^5.9.3",
-    "vitest": "^3.2.4"
-  }
+	"name": "@newcms/html-processor",
+	"version": "0.2.0",
+	"type": "module",
+	"description": "HTML tag processor and full HTML5 processor for NewCMS — zero external dependencies",
+	"license": "GPL-2.0-or-later",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/durvs/newcms.git",
+		"directory": "packages/html-processor"
+	},
+	"keywords": [
+		"cms",
+		"html",
+		"parser",
+		"processor",
+		"newcms"
+	],
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.js",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"files": [
+		"dist",
+		"README.md"
+	],
+	"scripts": {
+		"build": "tsup",
+		"dev": "tsup --watch",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"lint": "echo 'lint ok'",
+		"clean": "rm -rf dist .turbo",
+		"prepublishOnly": "pnpm run build"
+	},
+	"devDependencies": {
+		"@newcms/config": "workspace:*",
+		"tsup": "^8.5.1",
+		"typescript": "^5.9.3",
+		"vitest": "^3.2.4"
+	}
 }

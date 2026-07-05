@@ -36,10 +36,7 @@ export class ShortcodeRegistry {
 		const tagPattern = [...this.handlers.keys()].map(escRegex).join('|');
 
 		// Self-closing: [tag attr="val" /]
-		const selfClosingRe = new RegExp(
-			`\\[(${tagPattern})(\\s[^\\]]*?)?\\s*\\/\\]`,
-			'g',
-		);
+		const selfClosingRe = new RegExp(`\\[(${tagPattern})(\\s[^\\]]*?)?\\s*\\/\\]`, 'g');
 
 		// Enclosing: [tag attr="val"]content[/tag]
 		const enclosingRe = new RegExp(
@@ -86,10 +83,7 @@ export class ShortcodeRegistry {
 			new RegExp(`\\[(${tagPattern})(\\s[^\\]]*?)?\\]([\\s\\S]*?)\\[\\/\\1\\]`, 'g'),
 			'$3',
 		);
-		result = result.replace(
-			new RegExp(`\\[(${tagPattern})(\\s[^\\]]*?)?\\s*\\/\\]`, 'g'),
-			'',
-		);
+		result = result.replace(new RegExp(`\\[(${tagPattern})(\\s[^\\]]*?)?\\s*\\/\\]`, 'g'), '');
 		return result;
 	}
 
@@ -106,7 +100,8 @@ function parseShortcodeAttributes(attrStr: string): Record<string, string> {
 	const attrs: Record<string, string> = {};
 	if (!attrStr) return attrs;
 
-	const re = /([a-zA-Z_][-a-zA-Z0-9_]*)\s*=\s*(?:"([^"]*)"|'([^']*)'|(\S+))|([a-zA-Z_][-a-zA-Z0-9_]*)/g;
+	const re =
+		/([a-zA-Z_][-a-zA-Z0-9_]*)\s*=\s*(?:"([^"]*)"|'([^']*)'|(\S+))|([a-zA-Z_][-a-zA-Z0-9_]*)/g;
 	let match;
 	while ((match = re.exec(attrStr)) !== null) {
 		if (match[1]) {

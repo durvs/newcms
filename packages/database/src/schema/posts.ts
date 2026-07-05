@@ -31,9 +31,7 @@ export const posts = pgTable(
 		toPing: text('to_ping').notNull().default(''),
 		pinged: text('pinged').notNull().default(''),
 		postModified: timestamp('post_modified', { withTimezone: true }).notNull().defaultNow(),
-		postModifiedGmt: timestamp('post_modified_gmt', { withTimezone: true })
-			.notNull()
-			.defaultNow(),
+		postModifiedGmt: timestamp('post_modified_gmt', { withTimezone: true }).notNull().defaultNow(),
 		postContentFiltered: text('post_content_filtered').notNull().default(''),
 		postParent: bigint('post_parent', { mode: 'number' }).notNull().default(0),
 		guid: varchar('guid', { length: 255 }).notNull().default(''),

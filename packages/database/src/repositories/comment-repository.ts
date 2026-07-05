@@ -54,8 +54,20 @@ export class CommentRepository {
 		};
 		const colNames: MetaColumnNames = {
 			table: 'commentmeta',
-			sql: { metaId: 'meta_id', objectId: 'comment_id', metaKey: 'meta_key', metaValue: 'meta_value', metaValueJson: 'meta_value_json' },
-			ts: { metaId: 'metaId', objectId: 'commentId', metaKey: 'metaKey', metaValue: 'metaValue', metaValueJson: 'metaValueJson' },
+			sql: {
+				metaId: 'meta_id',
+				objectId: 'comment_id',
+				metaKey: 'meta_key',
+				metaValue: 'meta_value',
+				metaValueJson: 'meta_value_json',
+			},
+			ts: {
+				metaId: 'metaId',
+				objectId: 'commentId',
+				metaKey: 'metaKey',
+				metaValue: 'metaValue',
+				metaValueJson: 'metaValueJson',
+			},
 		};
 		this.meta = new MetaRepository(db, commentmeta, metaCols, colNames);
 	}
@@ -129,7 +141,10 @@ export class CommentRepository {
 	async spam(id: number): Promise<boolean> {
 		const comment = await this.getById(id);
 		if (!comment) return false;
-		await this.db.update(comments).set({ commentApproved: 'spam' }).where(eq(comments.commentId, id));
+		await this.db
+			.update(comments)
+			.set({ commentApproved: 'spam' })
+			.where(eq(comments.commentId, id));
 		await this.updatePostCommentCount(comment.commentPostId);
 		return true;
 	}
@@ -138,7 +153,10 @@ export class CommentRepository {
 		const comment = await this.getById(id);
 		if (!comment) return false;
 		await this.meta.update(id, '_trash_status', comment.commentApproved);
-		await this.db.update(comments).set({ commentApproved: 'trash' }).where(eq(comments.commentId, id));
+		await this.db
+			.update(comments)
+			.set({ commentApproved: 'trash' })
+			.where(eq(comments.commentId, id));
 		await this.updatePostCommentCount(comment.commentPostId);
 		return true;
 	}
@@ -147,7 +165,10 @@ export class CommentRepository {
 		const comment = await this.getById(id);
 		if (!comment) return false;
 		await this.meta.deleteAllForObject(id);
-		const result = await this.db.delete(comments).where(eq(comments.commentId, id)).returning({ commentId: comments.commentId });
+		const result = await this.db
+			.delete(comments)
+			.where(eq(comments.commentId, id))
+			.returning({ commentId: comments.commentId });
 		if (result.length > 0) await this.updatePostCommentCount(comment.commentPostId);
 		return result.length > 0;
 	}
@@ -155,7 +176,11 @@ export class CommentRepository {
 	/**
 	 * Check moderation rules before approving a comment.
 	 */
-	moderate(content: string, _authorEmail: string, rules: CommentModerationRules): 'approve' | 'hold' | 'spam' {
+	moderate(
+		content: string,
+		_authorEmail: string,
+		rules: CommentModerationRules,
+	): 'approve' | 'hold' | 'spam' {
 		const lower = content.toLowerCase();
 
 		// Blocked words → spam
@@ -207,12 +232,7 @@ export class CommentRepository {
 		const rows = await this.db
 			.select({ commentId: comments.commentId })
 			.from(comments)
-			.where(
-				and(
-					eq(comments.commentAuthorIp, authorIp),
-					sql`${comments.commentDate} > ${cutoff}`,
-				),
-			)
+			.where(and(eq(comments.commentAuthorIp, authorIp), sql`${comments.commentDate} > ${cutoff}`))
 			.limit(1);
 		return rows.length > 0;
 	}
@@ -236,9 +256,6 @@ export class CommentRepository {
 			.from(comments)
 			.where(and(eq(comments.commentPostId, postId), eq(comments.commentApproved, '1')));
 
-		await this.db
-			.update(posts)
-			.set({ commentCount: result.count })
-			.where(eq(posts.id, postId));
+		await this.db.update(posts).set({ commentCount: result.count }).where(eq(posts.id, postId));
 	}
 }

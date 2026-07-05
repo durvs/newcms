@@ -22,7 +22,8 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
 
 	hydrate: () => {
 		const saved = localStorage.getItem('newcms_theme') as Theme | null;
-		const preferred = saved ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+		const preferred =
+			saved ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 		document.documentElement.setAttribute('data-theme', preferred);
 		set({ theme: preferred });
 	},

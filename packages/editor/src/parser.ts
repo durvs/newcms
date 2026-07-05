@@ -27,7 +27,12 @@ export function parseBlocks(content: string): Block[] {
 		if (!result) {
 			const remaining = content.slice(pos).trim();
 			if (remaining) {
-				blocks.push({ name: 'cms/freeform', attributes: {}, innerBlocks: [], innerHTML: remaining });
+				blocks.push({
+					name: 'cms/freeform',
+					attributes: {},
+					innerBlocks: [],
+					innerHTML: remaining,
+				});
 			}
 			break;
 		}
@@ -65,7 +70,9 @@ function parseNextBlock(content: string, startPos: number): ParseResult | null {
 	let attributes: Record<string, unknown> = {};
 	try {
 		attributes = JSON.parse(attrsJson);
-	} catch { /* malformed JSON */ }
+	} catch {
+		/* malformed JSON */
+	}
 
 	if (isSelfClosing) {
 		return {
@@ -79,7 +86,12 @@ function parseNextBlock(content: string, startPos: number): ParseResult | null {
 
 	if (closingResult === null) {
 		return {
-			block: { name: blockName, attributes, innerBlocks: [], innerHTML: content.slice(openTagEnd).trim() },
+			block: {
+				name: blockName,
+				attributes,
+				innerBlocks: [],
+				innerHTML: content.slice(openTagEnd).trim(),
+			},
 			start: openMatch.index,
 			end: content.length,
 		};

@@ -43,9 +43,9 @@ describe('TaxonomyRepository', () => {
 				.from(termTaxonomy)
 				.where(eq(termTaxonomy.termId, t.termId));
 			for (const tt of ttRows) {
-				await db.delete(termRelationships).where(
-					eq(termRelationships.termTaxonomyId, tt.termTaxonomyId),
-				);
+				await db
+					.delete(termRelationships)
+					.where(eq(termRelationships.termTaxonomyId, tt.termTaxonomyId));
 			}
 			await db.delete(termTaxonomy).where(eq(termTaxonomy.termId, t.termId));
 			await db.delete(terms).where(eq(terms.termId, t.termId));
@@ -61,9 +61,9 @@ describe('TaxonomyRepository', () => {
 				.from(termTaxonomy)
 				.where(eq(termTaxonomy.termId, t.termId));
 			for (const tt of ttRows) {
-				await db.delete(termRelationships).where(
-					eq(termRelationships.termTaxonomyId, tt.termTaxonomyId),
-				);
+				await db
+					.delete(termRelationships)
+					.where(eq(termRelationships.termTaxonomyId, tt.termTaxonomyId));
 			}
 			await db.delete(termTaxonomy).where(eq(termTaxonomy.termId, t.termId));
 			await db.delete(terms).where(eq(terms.termId, t.termId));

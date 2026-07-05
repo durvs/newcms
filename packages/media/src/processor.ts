@@ -11,7 +11,6 @@ export class ImageProcessor {
 	 */
 	async getMetadata(buffer: Buffer): Promise<ImageMetadata> {
 		const meta = await sharp(buffer).metadata();
-		
 
 		return {
 			width: meta.width ?? 0,
@@ -40,7 +39,12 @@ export class ImageProcessor {
 
 		for (const size of sizes) {
 			// Skip if image is smaller than the target size
-			if (size.width > 0 && size.height > 0 && originalWidth <= size.width && originalHeight <= size.height) {
+			if (
+				size.width > 0 &&
+				size.height > 0 &&
+				originalWidth <= size.width &&
+				originalHeight <= size.height
+			) {
 				continue;
 			}
 			if (size.width > 0 && size.height === 0 && originalWidth <= size.width) {
@@ -57,11 +61,10 @@ export class ImageProcessor {
 					position: 'centre',
 				});
 			} else {
-				pipeline = pipeline.resize(
-					size.width || undefined,
-					size.height || undefined,
-					{ fit: 'inside', withoutEnlargement: true },
-				);
+				pipeline = pipeline.resize(size.width || undefined, size.height || undefined, {
+					fit: 'inside',
+					withoutEnlargement: true,
+				});
 			}
 
 			// Format conversion
@@ -127,9 +130,7 @@ export class ImageProcessor {
 	/**
 	 * Generate a srcset string for responsive images.
 	 */
-	generateSrcset(
-		sizes: { url: string; width: number }[],
-	): string {
+	generateSrcset(sizes: { url: string; width: number }[]): string {
 		return sizes
 			.filter((s) => s.width > 0)
 			.sort((a, b) => a.width - b.width)

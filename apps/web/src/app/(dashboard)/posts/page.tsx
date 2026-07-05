@@ -29,9 +29,12 @@ export default function PostsPage() {
 	const deleteMut = useDeletePost();
 
 	function handleTrash(id: number) {
-		deleteMut.mutate({ id }, {
-			onSuccess: () => toast.success('Post moved to trash'),
-		});
+		deleteMut.mutate(
+			{ id },
+			{
+				onSuccess: () => toast.success('Post moved to trash'),
+			},
+		);
 	}
 
 	return (
@@ -39,7 +42,9 @@ export default function PostsPage() {
 			{/* Header */}
 			<div className="mb-6 flex items-end justify-between animate-fade-in-up">
 				<div>
-					<p className="text-xs font-medium uppercase tracking-widest text-text-muted font-mono">Content</p>
+					<p className="text-xs font-medium uppercase tracking-widest text-text-muted font-mono">
+						Content
+					</p>
 					<h1 className="mt-1 text-2xl font-bold tracking-tight text-text">Posts</h1>
 				</div>
 				<Link
@@ -58,7 +63,10 @@ export default function PostsPage() {
 					{statusTabs.map((tab) => (
 						<button
 							key={tab.value}
-							onClick={() => { setStatus(tab.value); setPage(1); }}
+							onClick={() => {
+								setStatus(tab.value);
+								setPage(1);
+							}}
 							className={`rounded-md px-3 py-1.5 text-xs font-medium transition-all ${
 								status === tab.value
 									? 'bg-surface text-text shadow-sm'
@@ -77,7 +85,10 @@ export default function PostsPage() {
 						type="text"
 						placeholder="Search posts..."
 						value={search}
-						onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+						onChange={(e) => {
+							setSearch(e.target.value);
+							setPage(1);
+						}}
 						className="h-9 w-full rounded-lg border border-border bg-input-bg pl-9 pr-3 text-sm text-text placeholder:text-text-faint outline-none transition-colors focus:border-accent/50 focus:ring-1 focus:ring-accent/20 sm:w-64"
 					/>
 				</div>
@@ -89,10 +100,18 @@ export default function PostsPage() {
 					<table className="w-full">
 						<thead>
 							<tr className="border-b border-border">
-								<th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-text-muted">Title</th>
-								<th className="hidden px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-text-muted sm:table-cell">Status</th>
-								<th className="hidden px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-text-muted md:table-cell">Date</th>
-								<th className="px-5 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-text-muted">Actions</th>
+								<th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-text-muted">
+									Title
+								</th>
+								<th className="hidden px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-text-muted sm:table-cell">
+									Status
+								</th>
+								<th className="hidden px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-text-muted md:table-cell">
+									Date
+								</th>
+								<th className="px-5 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-text-muted">
+									Actions
+								</th>
 							</tr>
 						</thead>
 						<tbody className="divide-y divide-border">
@@ -110,17 +129,25 @@ export default function PostsPage() {
 											<p className="text-[13px] font-medium text-text group-hover:text-accent transition-colors">
 												{post.postTitle || '(no title)'}
 											</p>
-											<p className="mt-0.5 text-[11px] text-text-faint font-mono">/{post.postName}</p>
+											<p className="mt-0.5 text-[11px] text-text-faint font-mono">
+												/{post.postName}
+											</p>
 										</Link>
 									</td>
 									<td className="hidden px-5 py-3 sm:table-cell">
-										<span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${statusBadge[post.postStatus] ?? statusBadge['draft']}`}>
+										<span
+											className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${statusBadge[post.postStatus] ?? statusBadge['draft']}`}
+										>
 											{post.postStatus}
 										</span>
 									</td>
 									<td className="hidden px-5 py-3 md:table-cell">
 										<span className="text-xs text-text-muted font-mono">
-											{new Date(post.postDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+											{new Date(post.postDate).toLocaleDateString('en-US', {
+												month: 'short',
+												day: 'numeric',
+												year: 'numeric',
+											})}
 										</span>
 									</td>
 									<td className="px-5 py-3 text-right">

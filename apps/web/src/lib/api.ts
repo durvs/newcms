@@ -12,7 +12,12 @@ export function setToken(token: string, expiresAt?: string) {
 	Cookies.set(TOKEN_COOKIE, token, { expires, path: '/' });
 }
 
-export function setUserCookie(user: { id: number; login: string; email: string; displayName: string }) {
+export function setUserCookie(user: {
+	id: number;
+	login: string;
+	email: string;
+	displayName: string;
+}) {
 	Cookies.set(USER_COOKIE, JSON.stringify(user), { expires: 14, path: '/' });
 }
 

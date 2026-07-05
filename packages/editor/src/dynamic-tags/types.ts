@@ -62,7 +62,11 @@ export function parseTagString(tagStr: string): DynamicTag | null {
 	}
 
 	let settings: Record<string, unknown> = {};
-	try { settings = JSON.parse(match[3]); } catch { /* empty */ }
+	try {
+		settings = JSON.parse(match[3]);
+	} catch {
+		/* empty */
+	}
 
 	return { id: match[1], name: match[2], settings };
 }
