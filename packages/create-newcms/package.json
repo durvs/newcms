@@ -1,0 +1,47 @@
+{
+	"name": "create-newcms",
+	"version": "0.1.0",
+	"type": "module",
+	"description": "Scaffold a new NewCMS project — WordPress-inspired CMS with a visual builder, agent instructions included",
+	"license": "GPL-2.0-or-later",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/durvs/newcms.git",
+		"directory": "packages/create-newcms"
+	},
+	"keywords": [
+		"cms",
+		"create",
+		"scaffold",
+		"template",
+		"newcms",
+		"visual-builder"
+	],
+	"bin": {
+		"create-newcms": "./dist/index.js"
+	},
+	"files": [
+		"dist",
+		"README.md"
+	],
+	"engines": {
+		"node": ">=22"
+	},
+	"scripts": {
+		"build": "tsup",
+		"dev": "tsup --watch",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"lint": "echo 'lint ok'",
+		"clean": "rm -rf dist .turbo",
+		"prepublishOnly": "pnpm run build"
+	},
+	"devDependencies": {
+		"@newcms/config": "workspace:*",
+		"@types/node": "^22.15.3",
+		"tsup": "^8.5.1",
+		"typescript": "^5.9.3",
+		"vitest": "^3.2.4"
+	}
+}
