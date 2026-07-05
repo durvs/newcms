@@ -35,6 +35,7 @@ export class PostsController {
 	@ApiQuery({ name: 'page', required: false, type: Number })
 	@ApiQuery({ name: 'per_page', required: false, type: Number })
 	@ApiQuery({ name: 'search', required: false, type: String })
+	@ApiQuery({ name: 'slug', required: false, type: String })
 	@ApiQuery({ name: 'status', required: false, type: String })
 	@ApiQuery({ name: 'type', required: false, type: String })
 	@ApiQuery({ name: 'author', required: false, type: Number })
@@ -44,6 +45,7 @@ export class PostsController {
 		@Query('page') page?: string,
 		@Query('per_page') perPage?: string,
 		@Query('search') search?: string,
+		@Query('slug') slug?: string,
 		@Query('status') status?: string,
 		@Query('type') type?: string,
 		@Query('author') author?: string,
@@ -54,6 +56,7 @@ export class PostsController {
 			page: page ? parseInt(page, 10) : 1,
 			perPage: perPage ? parseInt(perPage, 10) : 10,
 			search: search || undefined,
+			slug: slug || undefined,
 			postStatus: status || 'publish',
 			postType: type || 'post',
 			author: author ? parseInt(author, 10) : undefined,
@@ -152,10 +155,7 @@ export class PostsController {
 	@RequireCapability('delete_posts')
 	@ApiParam({ name: 'id', type: Number })
 	@ApiQuery({ name: 'force', required: false, type: Boolean })
-	async remove(
-		@Param('id', ParseIntPipe) id: number,
-		@Query('force') force?: string,
-	) {
+	async remove(@Param('id', ParseIntPipe) id: number, @Query('force') force?: string) {
 		if (force === 'true') {
 			const deleted = await this.dbProvider.posts.deletePermanently(id);
 			if (!deleted) throw new NotFoundException(`Post ${id} not found`);
@@ -173,10 +173,7 @@ export class PostsController {
 	@ApiOperation({ summary: 'Get a post meta value' })
 	@ApiParam({ name: 'id', type: Number })
 	@ApiParam({ name: 'key', type: String })
-	async getMeta(
-		@Param('id', ParseIntPipe) id: number,
-		@Param('key') key: string,
-	) {
+	async getMeta(@Param('id', ParseIntPipe) id: number, @Param('key') key: string) {
 		const value = await this.dbProvider.posts.meta.get(id, key);
 		return { key, value: value ?? null };
 	}
