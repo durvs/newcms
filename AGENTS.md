@@ -57,6 +57,10 @@ Demo login: `admin` / `password` at http://localhost:3000/login.
   even if login succeeds.
 - **pnpm is strict.** Declare every package you import in that workspace's
   `package.json` — phantom dependencies fail typecheck/resolution.
+- **`.env` loading happens in `apps/api/src/env.ts`, which must stay the
+  first application import in `main.ts`.** ES imports are hoisted, so a
+  `dotenv.config()` call in `main.ts`'s body runs after module-scope
+  `process.env` reads in controllers (this silently broke `AUTH_SECRET` once).
 - **Post content is block markup** (`<!-- cms:paragraph -->...`), and visual
   builder documents are an element-tree JSON stored in the `_builder_data`
   postmeta. See [ADR 0004](docs/decisions/0004-elementor-compatible-element-tree.md).
