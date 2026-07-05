@@ -1,11 +1,16 @@
 import dotenv from 'dotenv';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { hashPassword } from '@newcms/auth';
 import { createConnection } from './connection.js';
-import { users, options, posts, terms, termTaxonomy } from './schema/index.js';
+import { users, usermeta, options, posts, terms, termTaxonomy } from './schema/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: resolve(__dirname, '../../../.env') });
+
+// Must match the AUTH_SECRET the API verifies against, or the seeded login fails.
+const AUTH_SECRET = process.env['AUTH_SECRET'] ?? 'newcms-dev-secret-change-in-production';
+const ADMIN_PASSWORD = process.env['ADMIN_PASSWORD'] ?? 'password';
 
 async function seed() {
 	const { db, client } = createConnection();
@@ -17,7 +22,7 @@ async function seed() {
 		.insert(users)
 		.values({
 			userLogin: 'admin',
-			userPass: '$2b$10$placeholder_hash_replace_on_first_login',
+			userPass: await hashPassword(ADMIN_PASSWORD, AUTH_SECRET),
 			userNicename: 'admin',
 			userEmail: 'admin@example.com',
 			displayName: 'Administrator',
@@ -26,6 +31,16 @@ async function seed() {
 		.returning();
 
 	console.log(`Created admin user (id: ${admin.id})`);
+
+	// Grant the administrator role (AuthGuard reads the "capabilities" usermeta;
+	// without it every user falls back to subscriber)
+	await db.insert(usermeta).values({
+		userId: admin.id,
+		metaKey: 'capabilities',
+		metaValue: JSON.stringify({ administrator: true }),
+	});
+
+	console.log('Granted administrator role to admin user');
 
 	// Create default options
 	const defaultOptions = [
@@ -42,7 +57,11 @@ async function seed() {
 		{ optionName: 'date_format', optionValue: 'Y-m-d', autoload: true },
 		{ optionName: 'time_format', optionValue: 'H:i', autoload: true },
 		{ optionName: 'start_of_week', optionValue: '1', autoload: true },
-		{ optionName: 'permalink_structure', optionValue: '/%year%/%monthnum%/%postname%/', autoload: true },
+		{
+			optionName: 'permalink_structure',
+			optionValue: '/%year%/%monthnum%/%postname%/',
+			autoload: true,
+		},
 		{ optionName: 'default_comment_status', optionValue: 'open', autoload: true },
 		{ optionName: 'default_ping_status', optionValue: 'open', autoload: true },
 		{ optionName: 'comment_moderation', optionValue: '0', autoload: true },
@@ -169,9 +188,24 @@ async function seed() {
 				},
 			}),
 			optionValueJson: {
-				administrator: { name: 'Administrator', capabilities: { switch_themes: true, edit_themes: true, manage_options: true, edit_posts: true, read: true } },
-				editor: { name: 'Editor', capabilities: { moderate_comments: true, edit_posts: true, read: true } },
-				author: { name: 'Author', capabilities: { upload_files: true, edit_posts: true, read: true } },
+				administrator: {
+					name: 'Administrator',
+					capabilities: {
+						switch_themes: true,
+						edit_themes: true,
+						manage_options: true,
+						edit_posts: true,
+						read: true,
+					},
+				},
+				editor: {
+					name: 'Editor',
+					capabilities: { moderate_comments: true, edit_posts: true, read: true },
+				},
+				author: {
+					name: 'Author',
+					capabilities: { upload_files: true, edit_posts: true, read: true },
+				},
 				contributor: { name: 'Contributor', capabilities: { edit_posts: true, read: true } },
 				subscriber: { name: 'Subscriber', capabilities: { read: true } },
 			},
@@ -219,7 +253,7 @@ async function seed() {
 		postAuthor: admin.id,
 		postTitle: 'Sample Page',
 		postContent:
-			'<!-- cms:paragraph -->\n<p>This is an example page. It\'s different from a blog post because it will stay in one place.</p>\n<!-- /cms:paragraph -->',
+			"<!-- cms:paragraph -->\n<p>This is an example page. It's different from a blog post because it will stay in one place.</p>\n<!-- /cms:paragraph -->",
 		postExcerpt: '',
 		postStatus: 'publish',
 		postName: 'sample-page',
@@ -230,6 +264,7 @@ async function seed() {
 
 	await client.end();
 	console.log('Seed completed!');
+	console.log(`Admin login: admin / ${ADMIN_PASSWORD}`);
 }
 
 seed().catch((err) => {
