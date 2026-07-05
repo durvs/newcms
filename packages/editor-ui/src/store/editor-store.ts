@@ -33,7 +33,11 @@ export interface EditorState {
 	activeBreakpoint: string;
 
 	// Design Kit (global colors, typography)
-	designKit: { colors: { id: string; title: string; color: string }[]; typography: Record<string, unknown>[]; bodyFontFamily?: string } | null;
+	designKit: {
+		colors: { id: string; title: string; color: string }[];
+		typography: Record<string, unknown>[];
+		bodyFontFamily?: string;
+	} | null;
 
 	// Drag-and-drop
 	dragging: { type: string; sourceId?: string } | null;
@@ -112,27 +116,49 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 	future: [],
 
 	setDocument: (id, type, elements) =>
-		set({ documentId: id, documentType: type, elements, dirty: false, past: [], future: [], selectedId: null }),
+		set({
+			documentId: id,
+			documentType: type,
+			elements,
+			dirty: false,
+			past: [],
+			future: [],
+			selectedId: null,
+		}),
 
 	setDesignKit: (kit) => set({ designKit: kit }),
 
-	setElements: (elements) =>
-		set((s) => ({ ...pushHistory(s), elements, dirty: true })),
+	setElements: (elements) => set((s) => ({ ...pushHistory(s), elements, dirty: true })),
 
 	addElement: (widgetType, parentId, index) =>
 		set((s) => {
 			const node = createElement('widget', widgetType);
-			return { ...pushHistory(s), elements: insertNode(s.elements, node, parentId, index), dirty: true, selectedId: node.id, panelView: 'controls' };
+			return {
+				...pushHistory(s),
+				elements: insertNode(s.elements, node, parentId, index),
+				dirty: true,
+				selectedId: node.id,
+				panelView: 'controls',
+			};
 		}),
 
 	removeElement: (id) =>
 		set((s) => {
 			const newSelected = s.selectedId === id ? null : s.selectedId;
-			return { ...pushHistory(s), elements: removeNode(s.elements, id), dirty: true, selectedId: newSelected };
+			return {
+				...pushHistory(s),
+				elements: removeNode(s.elements, id),
+				dirty: true,
+				selectedId: newSelected,
+			};
 		}),
 
 	moveElement: (id, newParentId, newIndex) =>
-		set((s) => ({ ...pushHistory(s), elements: moveNode(s.elements, id, newParentId, newIndex), dirty: true })),
+		set((s) => ({
+			...pushHistory(s),
+			elements: moveNode(s.elements, id, newParentId, newIndex),
+			dirty: true,
+		})),
 
 	duplicateElement: (id) =>
 		set((s) => {
@@ -145,26 +171,42 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 			const idx = parent
 				? parent.elements.findIndex((e) => e.id === id) + 1
 				: s.elements.findIndex((e) => e.id === id) + 1;
-			return { ...pushHistory(s), elements: insertNode(s.elements, clone, parentId, idx), dirty: true, selectedId: clone.id };
+			return {
+				...pushHistory(s),
+				elements: insertNode(s.elements, clone, parentId, idx),
+				dirty: true,
+				selectedId: clone.id,
+			};
 		}),
 
 	updateSetting: (id, key, value) =>
-		set((s) => ({ ...pushHistory(s), elements: updateSettings(s.elements, id, key, value), dirty: true })),
+		set((s) => ({
+			...pushHistory(s),
+			elements: updateSettings(s.elements, id, key, value),
+			dirty: true,
+		})),
 
 	updateSettingsBatch: (id, updates) =>
-		set((s) => ({ ...pushHistory(s), elements: updateSettingsBatch(s.elements, id, updates), dirty: true })),
+		set((s) => ({
+			...pushHistory(s),
+			elements: updateSettingsBatch(s.elements, id, updates),
+			dirty: true,
+		})),
 
 	addContainer: (parentId, index) =>
 		set((s) => {
 			const node = createElement('container');
-			return { ...pushHistory(s), elements: insertNode(s.elements, node, parentId, index), dirty: true, selectedId: node.id };
+			return {
+				...pushHistory(s),
+				elements: insertNode(s.elements, node, parentId, index),
+				dirty: true,
+				selectedId: node.id,
+			};
 		}),
 
-	selectElement: (id) =>
-		set({ selectedId: id, panelView: id ? 'controls' : 'widgets' }),
+	selectElement: (id) => set({ selectedId: id, panelView: id ? 'controls' : 'widgets' }),
 
-	hoverElement: (id) =>
-		set({ hoveredId: id }),
+	hoverElement: (id) => set({ hoveredId: id }),
 
 	setPanelView: (view) => set({ panelView: view }),
 	setControlTab: (tab) => set({ controlTab: tab }),
@@ -181,7 +223,12 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 				// Moving existing element
 				return {
 					...pushHistory(s),
-					elements: moveNode(s.elements, s.dragging.sourceId, s.dropTarget.parentId, s.dropTarget.index),
+					elements: moveNode(
+						s.elements,
+						s.dragging.sourceId,
+						s.dropTarget.parentId,
+						s.dropTarget.index,
+					),
 					dirty: true,
 					dragging: null,
 					dropTarget: null,

@@ -49,7 +49,7 @@ export function EditorShell({
 			initialized.current = true;
 		}
 		if (designKitProp) setDesignKit(designKitProp);
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [documentId]);
 
 	// Keyboard shortcuts
@@ -88,24 +88,24 @@ export function EditorShell({
 
 	return (
 		<div className="flex h-screen flex-col" style={{ background: 'var(--cm-surface)' }}>
-			<Toolbar
-				onSave={() => onSave(elements)}
-				onBack={onBack}
-				title={title}
-			/>
+			<Toolbar onSave={() => onSave(elements)} onBack={onBack} title={title} />
 			<div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
 				<Panel />
-				<div style={{
-					flex: 1,
-					position: 'relative',
-					overflow: 'hidden',
-					background: 'var(--cm-surface-elevated)',
-				}}>
-					<div style={{
-						position: 'absolute',
-						inset: 0,
-						overflow: 'auto',
-					}}>
+				<div
+					style={{
+						flex: 1,
+						position: 'relative',
+						overflow: 'hidden',
+						background: 'var(--cm-surface-elevated)',
+					}}
+				>
+					<div
+						style={{
+							position: 'absolute',
+							inset: 0,
+							overflow: 'auto',
+						}}
+					>
 						<PreviewCanvas />
 					</div>
 				</div>
@@ -118,5 +118,10 @@ function isInputFocused(): boolean {
 	const el = document.activeElement;
 	if (!el) return false;
 	const tag = el.tagName.toLowerCase();
-	return tag === 'input' || tag === 'textarea' || tag === 'select' || (el as HTMLElement).isContentEditable;
+	return (
+		tag === 'input' ||
+		tag === 'textarea' ||
+		tag === 'select' ||
+		(el as HTMLElement).isContentEditable
+	);
 }

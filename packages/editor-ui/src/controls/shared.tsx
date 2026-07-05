@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 
 // ─── Shared styles ──────────────────────────────────────────────
 
@@ -68,7 +68,11 @@ export { S };
 
 // ─── Collapsible Section ────────────────────────────────────────
 
-export function ControlSection({ title, children, defaultOpen = true }: {
+export function ControlSection({
+	title,
+	children,
+	defaultOpen = true,
+}: {
 	title: string;
 	children: React.ReactNode;
 	defaultOpen?: boolean;
@@ -79,7 +83,19 @@ export function ControlSection({ title, children, defaultOpen = true }: {
 		<div style={S.section}>
 			<div style={S.sectionLabel} onClick={() => setOpen(!open)}>
 				<span style={S.sectionTitle}>{title}</span>
-				<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--cm-text-faint)', transform: open ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform .15s' }}>
+				<svg
+					width="12"
+					height="12"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="2"
+					style={{
+						color: 'var(--cm-text-faint)',
+						transform: open ? 'rotate(180deg)' : 'rotate(0)',
+						transition: 'transform .15s',
+					}}
+				>
 					<path d="M6 9l6 6 6-6" />
 				</svg>
 			</div>
@@ -96,13 +112,25 @@ export function Label({ children }: { children: React.ReactNode }) {
 
 // ─── Unit Selector ──────────────────────────────────────────────
 
-export function UnitSelector({ units, value, onChange }: {
+export function UnitSelector({
+	units,
+	value,
+	onChange,
+}: {
 	units: string[];
 	value: string;
 	onChange: (unit: string) => void;
 }) {
 	return (
-		<div style={{ display: 'flex', gap: 1, background: 'var(--cm-surface-elevated)', borderRadius: 4, padding: 1 }}>
+		<div
+			style={{
+				display: 'flex',
+				gap: 1,
+				background: 'var(--cm-surface-elevated)',
+				borderRadius: 4,
+				padding: 1,
+			}}
+		>
 			{units.map((u) => (
 				<button key={u} onClick={() => onChange(u)} style={S.unitPill(value === u)}>
 					{u || '—'}

@@ -1,10 +1,19 @@
-import { useState } from 'react';
 import { Label } from './shared';
 import {
-	AlignLeft, AlignCenter, AlignRight, AlignJustify,
-	ArrowRight, ArrowDown, ArrowLeft, ArrowUp,
-	AlignStartHorizontal, AlignCenterHorizontal, AlignEndHorizontal,
-	AlignStartVertical, AlignCenterVertical, AlignEndVertical,
+	AlignLeft,
+	AlignCenter,
+	AlignRight,
+	AlignJustify,
+	ArrowRight,
+	ArrowDown,
+	ArrowLeft,
+	ArrowUp,
+	AlignStartHorizontal,
+	AlignCenterHorizontal,
+	AlignEndHorizontal,
+	AlignStartVertical,
+	AlignCenterVertical,
+	AlignEndVertical,
 } from 'lucide-react';
 
 interface SelectControlProps {
@@ -32,16 +41,26 @@ const iconMap: Record<string, typeof AlignLeft> = {
 	'end-v': AlignEndVertical,
 };
 
-export function SelectControl({ label, value, options, onChange, mode = 'dropdown' }: SelectControlProps) {
+export function SelectControl({
+	label,
+	value,
+	options,
+	onChange,
+	mode = 'dropdown',
+}: SelectControlProps) {
 	if (mode === 'icons') {
 		return (
 			<div>
 				<Label>{label}</Label>
-				<div style={{
-					display: 'flex', gap: 2,
-					background: 'var(--cm-surface-elevated)',
-					borderRadius: 6, padding: 2,
-				}}>
+				<div
+					style={{
+						display: 'flex',
+						gap: 2,
+						background: 'var(--cm-surface-elevated)',
+						borderRadius: 6,
+						padding: 2,
+					}}
+				>
 					{options.map((opt) => {
 						const active = value === opt.value;
 						const Icon = opt.icon ? iconMap[opt.icon] : null;
@@ -65,7 +84,11 @@ export function SelectControl({ label, value, options, onChange, mode = 'dropdow
 									transition: 'all .12s',
 								}}
 							>
-								{Icon ? <Icon size={14} /> : <span style={{ fontSize: 10, fontWeight: 600 }}>{opt.label}</span>}
+								{Icon ? (
+									<Icon size={14} />
+								) : (
+									<span style={{ fontSize: 10, fontWeight: 600 }}>{opt.label}</span>
+								)}
 							</button>
 						);
 					})}
@@ -101,7 +124,9 @@ export function SelectControl({ label, value, options, onChange, mode = 'dropdow
 				}}
 			>
 				{options.map((opt) => (
-					<option key={opt.value} value={opt.value}>{opt.label}</option>
+					<option key={opt.value} value={opt.value}>
+						{opt.label}
+					</option>
 				))}
 			</select>
 		</div>

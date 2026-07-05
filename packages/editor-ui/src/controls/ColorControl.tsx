@@ -41,17 +41,20 @@ export function ColorControl({ label, value, onChange }: ColorControlProps) {
 						flexShrink: 0,
 						position: 'relative',
 						// Checkerboard pattern for transparent colors
-						backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%), linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%)',
+						backgroundImage:
+							'linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%), linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%)',
 						backgroundSize: '8px 8px',
 						backgroundPosition: '0 0, 4px 4px',
 					}}
 				>
-					<div style={{
-						position: 'absolute',
-						inset: 0,
-						background: value || 'transparent',
-						borderRadius: 4,
-					}} />
+					<div
+						style={{
+							position: 'absolute',
+							inset: 0,
+							background: value || 'transparent',
+							borderRadius: 4,
+						}}
+					/>
 					<input
 						ref={pickerRef}
 						type="color"
@@ -93,9 +96,14 @@ export function ColorControl({ label, value, onChange }: ColorControlProps) {
 				{/* Clear button */}
 				{value && (
 					<button
-						onClick={() => { onChange(''); setInputVal(''); }}
+						onClick={() => {
+							onChange('');
+							setInputVal('');
+						}}
 						style={{
-							width: 28, height: 28, borderRadius: 5,
+							width: 28,
+							height: 28,
+							borderRadius: 5,
 							border: '1px solid var(--cm-border)',
 							background: 'var(--cm-input-bg)',
 							color: 'var(--cm-text-faint)',

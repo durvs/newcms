@@ -1,4 +1,14 @@
-import { Undo2, Redo2, Monitor, Tablet, Smartphone, Save, ArrowLeft, Layers, Eye } from 'lucide-react';
+import {
+	Undo2,
+	Redo2,
+	Monitor,
+	Tablet,
+	Smartphone,
+	Save,
+	ArrowLeft,
+	Layers,
+	Eye,
+} from 'lucide-react';
 import { useEditorStore } from '../store/editor-store';
 
 interface ToolbarProps {
@@ -42,23 +52,59 @@ export function Toolbar({ onSave, onBack, onPreview, saving, title }: ToolbarPro
 		>
 			{/* Left */}
 			<div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-				<ToolBtn onClick={onBack} title="Back"><ArrowLeft size={16} /></ToolBtn>
-				{title && <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--cm-text)', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginLeft: 4 }}>{title}</span>}
+				<ToolBtn onClick={onBack} title="Back">
+					<ArrowLeft size={16} />
+				</ToolBtn>
+				{title && (
+					<span
+						style={{
+							fontSize: 13,
+							fontWeight: 600,
+							color: 'var(--cm-text)',
+							maxWidth: 180,
+							overflow: 'hidden',
+							textOverflow: 'ellipsis',
+							whiteSpace: 'nowrap',
+							marginLeft: 4,
+						}}
+					>
+						{title}
+					</span>
+				)}
 				<Divider />
-				<ToolBtn onClick={undo} disabled={past.length === 0} title="Undo (Ctrl+Z)"><Undo2 size={15} /></ToolBtn>
-				<ToolBtn onClick={redo} disabled={future.length === 0} title="Redo (Ctrl+Shift+Z)"><Redo2 size={15} /></ToolBtn>
+				<ToolBtn onClick={undo} disabled={past.length === 0} title="Undo (Ctrl+Z)">
+					<Undo2 size={15} />
+				</ToolBtn>
+				<ToolBtn onClick={redo} disabled={future.length === 0} title="Redo (Ctrl+Shift+Z)">
+					<Redo2 size={15} />
+				</ToolBtn>
 			</div>
 
 			{/* Center — device */}
-			<div style={{ display: 'flex', alignItems: 'center', gap: 2, background: 'var(--cm-surface-elevated)', borderRadius: 8, padding: 2 }}>
+			<div
+				style={{
+					display: 'flex',
+					alignItems: 'center',
+					gap: 2,
+					background: 'var(--cm-surface-elevated)',
+					borderRadius: 8,
+					padding: 2,
+				}}
+			>
 				{devices.map((d) => (
 					<button
 						key={d.name}
 						onClick={() => setBp(d.name)}
 						title={d.name}
 						style={{
-							display: 'flex', alignItems: 'center', justifyContent: 'center',
-							width: 32, height: 28, borderRadius: 6, border: 'none', cursor: 'pointer',
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center',
+							width: 32,
+							height: 28,
+							borderRadius: 6,
+							border: 'none',
+							cursor: 'pointer',
 							background: bp === d.name ? 'var(--cm-surface)' : 'transparent',
 							color: bp === d.name ? 'var(--cm-text)' : 'var(--cm-text-muted)',
 							boxShadow: bp === d.name ? '0 1px 2px rgba(0,0,0,.08)' : 'none',
@@ -79,17 +125,28 @@ export function Toolbar({ onSave, onBack, onPreview, saving, title }: ToolbarPro
 				>
 					<Layers size={15} />
 				</ToolBtn>
-				{onPreview && <ToolBtn onClick={onPreview} title="Preview"><Eye size={15} /></ToolBtn>}
+				{onPreview && (
+					<ToolBtn onClick={onPreview} title="Preview">
+						<Eye size={15} />
+					</ToolBtn>
+				)}
 				<Divider />
 				<button
 					onClick={onSave}
 					disabled={saving || !dirty}
 					style={{
-						display: 'flex', alignItems: 'center', gap: 6,
-						height: 30, padding: '0 14px', borderRadius: 6, border: 'none',
+						display: 'flex',
+						alignItems: 'center',
+						gap: 6,
+						height: 30,
+						padding: '0 14px',
+						borderRadius: 6,
+						border: 'none',
 						background: dirty ? 'var(--color-accent)' : 'var(--cm-surface-elevated)',
 						color: dirty ? 'var(--cm-surface)' : 'var(--cm-text-faint)',
-						fontSize: 12, fontWeight: 600, cursor: dirty ? 'pointer' : 'default',
+						fontSize: 12,
+						fontWeight: 600,
+						cursor: dirty ? 'pointer' : 'default',
 						opacity: saving ? 0.5 : 1,
 						transition: 'all .15s',
 					}}
@@ -102,7 +159,13 @@ export function Toolbar({ onSave, onBack, onPreview, saving, title }: ToolbarPro
 	);
 }
 
-function ToolBtn({ children, onClick, disabled, active, title }: {
+function ToolBtn({
+	children,
+	onClick,
+	disabled,
+	active,
+	title,
+}: {
 	children: React.ReactNode;
 	onClick?: () => void;
 	disabled?: boolean;
@@ -115,10 +178,20 @@ function ToolBtn({ children, onClick, disabled, active, title }: {
 			disabled={disabled}
 			title={title}
 			style={{
-				display: 'flex', alignItems: 'center', justifyContent: 'center',
-				width: 30, height: 30, borderRadius: 6, border: 'none', cursor: disabled ? 'default' : 'pointer',
+				display: 'flex',
+				alignItems: 'center',
+				justifyContent: 'center',
+				width: 30,
+				height: 30,
+				borderRadius: 6,
+				border: 'none',
+				cursor: disabled ? 'default' : 'pointer',
 				background: active ? 'var(--cm-surface-elevated)' : 'transparent',
-				color: disabled ? 'var(--cm-text-faint)' : active ? 'var(--cm-text)' : 'var(--cm-text-muted)',
+				color: disabled
+					? 'var(--cm-text-faint)'
+					: active
+						? 'var(--cm-text)'
+						: 'var(--cm-text-muted)',
 				opacity: disabled ? 0.4 : 1,
 				transition: 'all .12s',
 			}}

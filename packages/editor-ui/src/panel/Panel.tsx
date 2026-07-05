@@ -15,23 +15,27 @@ export function Panel() {
 	const setPanelView = useEditorStore((s) => s.setPanelView);
 
 	return (
-		<div style={{
-			width: 300,
-			height: '100%',
-			display: 'flex',
-			flexDirection: 'column',
-			borderRight: '1px solid var(--cm-border)',
-			background: 'var(--cm-surface)',
-			flexShrink: 0,
-		}}>
-			{/* Tab bar */}
-			<div style={{
+		<div
+			style={{
+				width: 300,
+				height: '100%',
 				display: 'flex',
-				borderBottom: '1px solid var(--cm-border)',
-				padding: '0 4px',
-				gap: 0,
+				flexDirection: 'column',
+				borderRight: '1px solid var(--cm-border)',
+				background: 'var(--cm-surface)',
 				flexShrink: 0,
-			}}>
+			}}
+		>
+			{/* Tab bar */}
+			<div
+				style={{
+					display: 'flex',
+					borderBottom: '1px solid var(--cm-border)',
+					padding: '0 4px',
+					gap: 0,
+					flexShrink: 0,
+				}}
+			>
 				{tabs.map((tab) => {
 					const active = panelView === tab.view;
 					return (

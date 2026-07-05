@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Link2, Unlink } from 'lucide-react';
 import { Label, UnitSelector } from './shared';
 
@@ -24,10 +23,14 @@ const sides = ['top', 'right', 'bottom', 'left'] as const;
 const sideLabels = { top: 'T', right: 'R', bottom: 'B', left: 'L' };
 
 export function DimensionsControl({
-	label, value, units = ['px', '%', 'em', 'rem'], min = 0, max = 200, onChange,
+	label,
+	value,
+	units = ['px', '%', 'em', 'rem'],
+	min = 0,
+	max = 200,
+	onChange,
 }: DimensionsControlProps) {
-
-	function handleSide(side: typeof sides[number], raw: string) {
+	function handleSide(side: (typeof sides)[number], raw: string) {
 		const num = parseFloat(raw);
 		if (isNaN(num)) return;
 		const clamped = Math.min(max, Math.max(min, num));
@@ -50,9 +53,20 @@ export function DimensionsControl({
 
 	return (
 		<div>
-			<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+			<div
+				style={{
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'space-between',
+					marginBottom: 6,
+				}}
+			>
 				<Label>{label}</Label>
-				<UnitSelector units={units} value={value.unit} onChange={(u) => onChange({ ...value, unit: u })} />
+				<UnitSelector
+					units={units}
+					value={value.unit}
+					onChange={(u) => onChange({ ...value, unit: u })}
+				/>
 			</div>
 			<div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
 				{sides.map((side) => (
@@ -78,17 +92,19 @@ export function DimensionsControl({
 								paddingTop: 8,
 							}}
 						/>
-						<span style={{
-							position: 'absolute',
-							top: 2,
-							left: '50%',
-							transform: 'translateX(-50%)',
-							fontSize: 8,
-							fontWeight: 700,
-							color: 'var(--cm-text-faint)',
-							letterSpacing: '0.05em',
-							pointerEvents: 'none',
-						}}>
+						<span
+							style={{
+								position: 'absolute',
+								top: 2,
+								left: '50%',
+								transform: 'translateX(-50%)',
+								fontSize: 8,
+								fontWeight: 700,
+								color: 'var(--cm-text-faint)',
+								letterSpacing: '0.05em',
+								pointerEvents: 'none',
+							}}
+						>
 							{sideLabels[side]}
 						</span>
 					</div>

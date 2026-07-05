@@ -48,11 +48,7 @@ export class MediaController {
 	async upload(@UploadedFile() file: Express.Multer.File) {
 		if (!file) throw new BadRequestException('No file uploaded');
 
-		const result = await this.uploadManager.upload(
-			file.buffer,
-			file.originalname,
-			file.mimetype,
-		);
+		const result = await this.uploadManager.upload(file.buffer, file.originalname, file.mimetype);
 
 		// Create attachment post
 		const post = await this.dbProvider.posts.create({
@@ -105,7 +101,7 @@ export class MediaController {
 
 		// Enrich with URLs from meta
 		const enriched = await Promise.all(
-			result.posts.map(async (p: Record<string, unknown>) => {
+			(result.posts as Record<string, unknown>[]).map(async (p) => {
 				const url = await this.dbProvider.posts.meta.get<string>(p.id as number, '_file_url');
 				const sizes = await this.dbProvider.posts.meta.get(p.id as number, '_file_sizes');
 				return { ...p, url, sizes };
@@ -130,7 +126,10 @@ export class MediaController {
 		const sizes = await this.dbProvider.posts.meta.get<{ path: string }[]>(id, '_file_sizes');
 
 		if (path) {
-			await this.uploadManager.delete(path, sizes?.map((s) => s.path));
+			await this.uploadManager.delete(
+				path,
+				sizes?.map((s) => s.path),
+			);
 		}
 
 		await this.dbProvider.posts.deletePermanently(id);
